@@ -56,16 +56,18 @@ LABELS = {
         "references": "References",
         "tags": "Tags",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
-        "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
+        # A quiet day is an editorial outcome and should read as one. The
+        # inherited copy here addressed the operator of a tool, telling the
+        # reader their information sources needed expansion and inviting them
+        # to check whether the AI was working, on a page linked from a public
+        # profile. Owner's words, with the order doing the work: the count
+        # establishes that the run happened and the bar held, before anything
+        # is asked of the reader.
+        "empty_analyzed": "{total} items were analyzed and scored today, and none cleared the bar.",
         "empty_body": (
-            "No significant developments today. This might indicate:\n"
-            "- A quiet day in your tracked sources\n"
-            "- The AI score threshold is too high\n"
-            "- Your information sources need expansion\n\n"
-            "Consider:\n"
-            "1. Lowering the configured profile threshold\n"
-            "2. Adding more diverse information sources\n"
-            "3. Checking if the AI model is working correctly\n"
+            "See the [method](/method/) for how the bar is set.\n\n"
+            "If you saw something today that my radar missed, tell me on "
+            "[LinkedIn](https://www.linkedin.com/in/bracoelho/).\n"
         ),
     },
     "zh": {
@@ -76,16 +78,14 @@ LABELS = {
         "references": "参考链接",
         "tags": "标签",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
-        "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
+        # Same three beats as the English, and drops 阈值 the way the English
+        # drops "threshold". Dormant: ai.languages is ["en"], so this has
+        # never rendered. It wants a native read before Chinese is enabled.
+        "empty_analyzed": "今天分析并评分了 {total} 条内容，没有一条达到标准。",
         "empty_body": (
-            "今日暂无重要动态，可能原因：\n"
-            "- 今天关注的信息源较平静\n"
-            "- AI 评分阈值设置过高\n"
-            "- 信息源种类有待扩充\n\n"
-            "建议：\n"
-            "1. 降低当前 Profile 的过滤阈值\n"
-            "2. 添加更多多样化的信息源\n"
-            "3. 检查 AI 模型是否正常工作\n"
+            "评分标准见[方法](/method/)。\n\n"
+            "如果今天有你认为重要、而本雷达未能捕捉的内容，"
+            "欢迎在 [LinkedIn](https://www.linkedin.com/in/bracoelho/) 上告诉我。\n"
         ),
     },
 }

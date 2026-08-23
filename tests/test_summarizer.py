@@ -366,8 +366,11 @@ def test_generate_empty_summary_zh_uses_localized_analyzed_line():
         )
     )
 
-    assert "> 已分析 10 条内容，但没有达到重要性阈值的条目。" in result
-    assert "Analyzed 10 items" not in result
+    assert "> 今天分析并评分了 10 条内容，没有一条达到标准。" in result
+    assert "items were analyzed" not in result
+    # The closing invitation is the beat that turns a quiet day into a
+    # standard rather than an apology, so it has to survive localisation.
+    assert "LinkedIn" in result
 
 
 def test_generate_summary_escapes_untrusted_text_in_all_output_contexts():
