@@ -30,12 +30,12 @@ collections:
 # rather than derived from the profiles, because the site needs the order even
 # on a day when a theme is empty.
 themes:
-  - id: critical-infrastructure
-    name: Critical Infrastructure
-    question: What would an operator do differently?
   - id: reliability-assurance
     name: Reliability &amp; Assurance
     question: Who is exposed, and what should they check?
+  - id: critical-infrastructure
+    name: Critical Infrastructure
+    question: What would an operator do differently?
   - id: business-markets
     name: Business &amp; Markets
     question: What changes commercially, and for whom?
