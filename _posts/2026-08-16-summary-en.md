@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Horizon Summary: 2026-08-16 (EN)"
+title: "AI Radar, 16 August 2026"
 date: 2026-08-16
 lang: en
 ---
