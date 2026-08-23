@@ -1,5 +1,5 @@
 ---
-published: false
+published: True
 title: "Interpretability as compliance evidence"
 date: 2026-08-23 09:15:00 +0000
 theme: Reliability & Assurance
@@ -9,12 +9,10 @@ item_score: "7.0"
 edition_url: /2026/08/17/1640-summary-en.html
 ---
 
-**What happened.** A pre-registered study ran 15,840 defensible analytic choices across one model and one task. The EU AI Act Annex IV style statement you would write from the result flipped across 73% of them.
+**What happened.** A pre-registered study ran 15,840 defensible analytic choices across one model (GPT-2) and one task. The EU AI Act Annex IV style statement you would write from the result flipped across 73% of them.
 
-**Why this is signal.** Standardising the single most influential choice, the evaluation metric, left 59% still flipping. The circuits two competent analysts found overlapped by 4%. They were reading the same model and finding different things.
+**Why this is relevant.** Standardising the single most influential choice, the evaluation metric, left 59% still flipping. The circuits two competent analysts found overlapped by 4%. "The evidence fails a filability criterion at every tolerance a conformity assessment body would plausibly accept"
 
-**What it changes.** For a delivery team, interpretability output is a finding rather than a record: date it, name the analyst, keep the specification. For a board, an Annex IV file resting on one analyst's choices is thinner than it looks.
+**The question to ask.** If you have 2 two people (not AI) run the same interpretability analysis independently and compare the statements they produce. If those differ, you have a reproducibility problem even before a compliance problem.
 
-**The question to ask.** Have two people run the same interpretability analysis independently and compare the statements they produce. If those differ, you have a reproducibility problem before you have a compliance one.
-
-**Where I would be wrong.** One model, one task, and a small one. Larger models may be more stable under the same variation. Nobody has shown that yet, which is itself the point.
+**What is next.** The study was done with a "small" model, further studies with "bigger" models are needed in addition to the interpretability mechanisms. 
