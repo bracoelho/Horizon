@@ -35,24 +35,23 @@ def orchestrator(monkeypatch):
     return HorizonOrchestrator(config, storage)
 
 
-def test_selection_is_off_over_the_weekend_and_synthesis_is_not_on(orchestrator) -> None:
+def test_selection_is_on_and_synthesis_is_not(orchestrator) -> None:
     """Pins the deliberate state, so a change to either is a decision.
 
-    Selection is verified: the run of 2026-08-22 gated 141 items to 13, which
-    is the Haiku parameter fix working. It is off again only because the two
-    runs after that verification fall on a Saturday and a Sunday, when arXiv is
-    quiet and the material is thin. The floor published nothing from that quiet
-    input, and a zero-item edition reaches the RSS feed, so two more of them
-    would land on the surface the owner's LinkedIn points at for no evidence in
-    return. The informative run is Monday's, at weekday volume.
+    Selection is on from the 2026-08-26 run. It was verified on 2026-08-22,
+    when the gate filtered 141 items to 13 against 247 to 247 while every
+    batch entry was erroring, then held off while the only runs available were
+    a Saturday and a Sunday with arXiv quiet. The hold outlasted its reason:
+    Monday's run went by on the threshold path, so the weekday test it was
+    waiting for never happened.
 
-    Re-enable for the Monday 2026-08-24 run: set `selection.enabled` true in
+    To turn it off again: set `selection.enabled` false in
     `data/config.github.json`, mirror it in the NEWS-Radar repo, and confirm
     with `python3 check_mirror.py` there.
 
     Synthesis stays off regardless.
     """
-    assert orchestrator.config.selection.enabled is False
+    assert orchestrator.config.selection.enabled is True
     assert orchestrator.config.digest.synthesis_enabled is False
 
     # A floor that could publish an unbounded edition would defeat the point.

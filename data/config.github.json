@@ -633,7 +633,7 @@
     "headers": ""
   },
   "selection": {
-    "enabled": false,
+    "enabled": true,
     "gate_model": "claude-haiku-4-5",
     "rank_model": "claude-sonnet-5",
     "defend_model": "claude-sonnet-5",
