@@ -50,12 +50,19 @@ jobs:
           COLUMNS: "200"
         run: |
           set -o pipefail
-          # 26h window on a daily cadence: 2h of deliberate overlap. Windows that
-          # exactly abut the run interval leave a permanent gap — an item whose
-          # feed lags its own timestamp (CDN caching) misses the run it belongs
-          # to, and the next run's window starts after it. Seen with a Verge
-          # item on 2026-08-16. Overlap costs a few re-scored items.
-          uv run horizon --hours 26 2>&1 | tee horizon-run.log
+          # 30h window on a daily cadence: 6h of deliberate overlap. Windows
+          # that exactly abut the run interval leave a permanent gap, because an
+          # item whose feed lags its own timestamp misses the run it belongs to
+          # and the next window opens after it. Seen with a Verge item on
+          # 2026-08-16.
+          #
+          # 26h was chosen when the scheduler ran under 35 minutes late. Between
+          # 27 and 29 August it ran 218, 493 and 362 minutes late, and the gap
+          # between consecutive starts reached 27.1h and 28.6h. Both exceeded
+          # the window, so items existed that no run ever fetched. The overlap
+          # has to cover the worst drift, not the typical drift. Costs a few
+          # re-scored items a run, which is cheaper than a blind spot.
+          uv run horizon --hours 30 2>&1 | tee horizon-run.log
 
       - name: "Run health check (BACKLOG #5/#6 - distinguish quiet from broken)"
         env:
@@ -65,7 +72,7 @@ jobs:
         run: |
           python scripts/check_run_health.py horizon-run.log \
             --append-digest docs/_posts \
-            --window-hours 26
+            --window-hours 30
 
       - name: Set current date as environment variable
         run: echo "DATE=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_ENV
