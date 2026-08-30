@@ -249,7 +249,7 @@ def test_generate_summary_renders_primary_block_before_source_without_heading():
         "rss · tester · Apr 25, 08:00"
     )
     assert result.index("rss · tester · Apr 25, 08:00") < result.index(
-        "**「Background」** Supporting context."
+        "**Background** Supporting context."
     )
 
 
@@ -289,9 +289,9 @@ def test_generate_summary_renders_non_primary_blog_sections_after_source():
     )
 
     source_index = result.index("rss · tester · Apr 25, 08:00")
-    context_index = result.index("**「Background」** The original constraints.")
-    solution_index = result.index("**「Solution」** The implementation and evidence.")
-    takeaway_index = result.index("**「Takeaway」** The durable lesson.")
+    context_index = result.index("**Background** The original constraints.")
+    solution_index = result.index("**Solution** The implementation and evidence.")
+    takeaway_index = result.index("**Takeaway** The durable lesson.")
     assert source_index < context_index < solution_index < takeaway_index
     assert "#### Background" not in result
 

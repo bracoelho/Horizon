@@ -449,9 +449,14 @@ class DailySummarizer:
                 block_title = _escape_markdown(block.title)
                 block_content = _escape_markdown(block.content)
                 if language == "zh":
+                    # Corner brackets are correct CJK punctuation, so Chinese
+                    # keeps them. English does not, where they read as an
+                    # artifact of the upstream project rather than a choice.
                     block_title = _pangu(block_title)
                     block_content = _pangu(block_content)
-                lines.extend(["", f"**「{block_title}」** {block_content}"])
+                    lines.extend(["", f"**「{block_title}」** {block_content}"])
+                else:
+                    lines.extend(["", f"**{block_title}** {block_content}"])
 
         sources = artifact.sources if artifact else []
         if sources:

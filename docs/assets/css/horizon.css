@@ -668,3 +668,20 @@ pre {
   font-size: 1.08rem;
 }
 .commentary-body { font-family: var(--hz-sans); }
+
+/* --- Analysis block labels. The renderer emits each block as a paragraph
+   opening with a bold run, so the label is styled where it sits rather than
+   restructured. Mono and lettered, matching the section labels elsewhere, so
+   a reader scanning an item meets the same vocabulary as the rest of the
+   site. The heading question, whether these should be real headings, is
+   open with the pipeline. --- */
+.item-body > p > strong:first-child {
+  display: block;
+  font-family: var(--hz-mono);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--hz-accent);
+  margin-bottom: .45em;
+}
