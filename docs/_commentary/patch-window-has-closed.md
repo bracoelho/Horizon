@@ -1,6 +1,6 @@
 ---
 published: false
-title: "The patch window has closed"
+title: "Ten minutes"
 date: 2026-08-30 08:30:00 +0000
 theme: Reliability & Assurance
 item_title: "Maintainers report exploit attempts within minutes of bug disclosure"
