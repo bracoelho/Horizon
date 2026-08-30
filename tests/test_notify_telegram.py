@@ -111,13 +111,12 @@ def test_a_run_that_published_nothing_offers_no_angles(tmp_path):
         "angles": [{"claim": "old", "audience": "old", "rank_reason": "old"}],
     }), encoding="utf-8")
 
-    stale = notify.commentary_lines("", p, stale=True, reason="all 10 were too thin")
-    joined = "\n".join(stale)
+    joined = "\n".join(notify.commentary_lines("", p, stale=True))
 
-    # It says why instead of disappearing: a section that vanishes reads as a
-    # section that broke.
+    # It says so instead of disappearing: a section that vanishes reads as a
+    # section that broke. The reason itself sits in the headline, once.
     assert "Nothing to write about" in joined
-    assert "all 10 were too thin" in joined
+    assert "no angles" in joined
     assert "Yesterday's item" not in joined
 
     assert "Yesterday's item" in "\n".join(notify.commentary_lines("", p, stale=False))

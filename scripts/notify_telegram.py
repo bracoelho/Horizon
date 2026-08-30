@@ -86,7 +86,7 @@ def commentary_lines(
     base: str,
     path: Path = Path("data/commentary_proposal.json"),
     stale: bool = False,
-    reason: str = "",
+    reason: str = "",  # appended when a caller has something the headline lacks
 ) -> list:
     """The day's candidate to write about, assembled by the run.
 
@@ -109,12 +109,14 @@ def commentary_lines(
     # work out whether the angles stopped being generated, which is the same
     # reason every run sends a message at all.
     if stale:
-        out = ["", "✍️ <b>Nothing to write about</b>"]
-        out.append(
-            f"<i>{esc(reason)}.</i>" if reason
-            else "<i>Nothing published this run.</i>"
-        )
-        return out
+        # The headline above already names the stage that emptied the edition.
+        # Repeating it here reads as generated, so this states the consequence
+        # and lets the reason stand once.
+        return [
+            "",
+            "✍️ <b>Nothing to write about</b>",
+            f"<i>No items published, so no angles.{esc(reason)}</i>",
+        ]
     try:
         p = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -264,9 +266,7 @@ def build_message(health: dict, run_type: str) -> str:
         if link:
             lines.append(f'\n→ <a href="{link}">Read the full digest</a>')
 
-    lines += commentary_lines(
-        base, stale=nothing_cleared, reason=why_nothing(stats) if nothing_cleared else "",
-    )
+    lines += commentary_lines(base, stale=nothing_cleared)
 
     message = "\n".join(lines)
     if len(message) > TELEGRAM_LIMIT:
