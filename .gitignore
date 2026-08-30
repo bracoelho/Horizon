@@ -66,5 +66,6 @@ logs/*.log
 todo.txt
 .ruff_cache
 .pytest_cache
-# Written by a run for the notifier to read in the same job. Not state.
-commentary_proposal.json
+# data/commentary_proposal.json is deliberately tracked. The daily run writes
+# it and the Draft Commentary dispatch reads it hours later, in a different
+# job on a different machine, so it has to survive in the repository.

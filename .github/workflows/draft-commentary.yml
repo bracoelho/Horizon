@@ -1,0 +1,72 @@
+name: Draft Commentary
+
+# Dispatch rather than a schedule, because the choice is the owner's and the
+# form is the interface. GitHub renders `angle` as a dropdown on mobile web,
+# so choosing is two taps from the Telegram message the daily run sends.
+on:
+  workflow_dispatch:
+    inputs:
+      angle:
+        description: "Which angle to draft (see the Telegram message)"
+        required: true
+        default: "1"
+        type: choice
+        options: ["1", "2", "3"]
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.26"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Prepare config
+        run: cp data/config.github.json data/config.json
+
+      - name: Draft the commentary
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COLUMNS: "200"
+        run: uv run python scripts/draft_commentary.py --angle "${{ inputs.angle }}"
+
+      - name: Commit the draft
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/_commentary
+          # Nothing to commit is a real outcome, not a failure: the drafting
+          # step may have produced a file identical to one already there.
+          if git diff --cached --quiet; then
+            echo "No change to commit."
+            exit 0
+          fi
+          git commit -m "Draft commentary from angle ${{ inputs.angle }}
+
+          Written by workflow_dispatch at the owner's request, held at
+          published: false. His switch, his edit."
+          git push
+
+      - name: Tell him where it is
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: uv run python scripts/notify_drafted.py --angle "${{ inputs.angle }}"

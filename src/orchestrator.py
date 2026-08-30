@@ -1431,7 +1431,8 @@ class HorizonOrchestrator:
             "angles": angles[:3],
         }
         try:
-            Path("commentary_proposal.json").write_text(
+            Path("data").mkdir(exist_ok=True)
+            Path("data/commentary_proposal.json").write_text(
                 json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
             )
             self.console.print(

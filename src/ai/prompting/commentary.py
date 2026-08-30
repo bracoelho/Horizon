@@ -94,3 +94,84 @@ has not said.
 # Your task
 
 Three angles, ordered best first, as JSON matching the schema."""
+
+
+DRAFT_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["title", "beats"],
+    "properties": {
+        "title": {"type": "string"},
+        "beats": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["label", "text"],
+                "properties": {
+                    "label": {"type": "string"},
+                    "text": {"type": "string"},
+                },
+            },
+        },
+    },
+}
+
+
+def draft_system() -> str:
+    """The four-beat standard, stated as instructions.
+
+    Kept in step with docs/_commentary/README.md by hand. If the shape changes
+    there, it changes here, and a piece written to the old shape is worse than
+    one written to none.
+    """
+    return """You draft a short commentary for a technology leader to edit. He
+publishes it under his name, so write claims he could defend, and leave out
+anything you cannot support from the material given.
+
+Two readers at once: an engineer who wants to know what changes on Monday, and
+a director who wants to know what to ask on Thursday.
+
+Four beats, in this order, and each beat leads with its conclusion in one
+sentence before any evidence:
+
+1. "What happened" - the finding.
+2. "Why it matters" - the belief this overturns. The judgement beat.
+3. "What to do" - the team's action, then the director's question. This beat
+   must contain a question a director could repeat verbatim in a meeting.
+4. "Where I would be wrong" - price the error in both directions. Say what it
+   costs to act and be wrong, and what it costs to wait and be right. Do not
+   list the limits of the evidence; that drains the beats above it.
+
+A sentence is a claim only if swapping it with the sentence below would lose
+something. If it reads as a fact, it belongs lower in the beat.
+
+200 to 260 words in total. Title states the conclusion in a few words, and the
+sharpest number in the piece often makes the best title.
+
+No em dashes. Never write "not X but Y", "X, not Y", "rather than" or "instead
+of" as a rhetorical turn. No three-part lists written for rhythm. Do not use:
+crucial, pivotal, leverage, robust, landscape, unlock, delve, seamless,
+elevate, empower, harness, streamline, holistic. Numbers beat adjectives.
+Understatement carries further than superlatives with this audience."""
+
+
+def draft_user(*, title: str, theme: str, body: str, angle: dict) -> str:
+    return f"""# The item
+
+Title: {title}
+Theme: {theme}
+
+{body}
+
+# The angle he chose
+
+Claim: {angle.get('claim', '')}
+Written for: {angle.get('audience', '')}
+
+Write the piece to this angle. The claim above is the spine; the four beats
+build it and then price being wrong about it.
+
+Return JSON matching the schema."""

@@ -82,7 +82,7 @@ def parse_items(post_path: Path) -> list[dict]:
     return items
 
 
-def commentary_lines(base: str, path: Path = Path("commentary_proposal.json")) -> list:
+def commentary_lines(base: str, path: Path = Path("data/commentary_proposal.json")) -> list:
     """The day's candidate to write about, assembled by the run.
 
     The owner wants a queue of subjects rather than a blank page each
@@ -127,6 +127,15 @@ def commentary_lines(base: str, path: Path = Path("commentary_proposal.json")) -
 
     if p.get("url"):
         out.append(f'\n→ <a href="{esc(p["url"])}">Read the source</a>')
+
+    # Two taps from here to a draft: the form renders `angle` as a dropdown on
+    # mobile web, so choosing needs no typing and no server listening for a
+    # reply. See BACKLOG #34 for why the reply half is not built.
+    repo = os.environ.get("GITHUB_REPOSITORY", "bracoelho/Horizon")
+    out.append(
+        f'→ <a href="https://github.com/{repo}/actions/workflows/'
+        f'draft-commentary.yml">Draft one of these</a>'
+    )
     return out
 
 

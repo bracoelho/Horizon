@@ -46,6 +46,19 @@ def _write(tmp_path: Path, payload) -> Path:
     return p
 
 
+def test_the_section_offers_a_way_to_act_on_it(tmp_path):
+    """Two taps from here to a draft.
+
+    GitHub renders the workflow's `angle` input as a dropdown on mobile web,
+    so the choice needs no typing and nothing listening for a reply. The link
+    is the whole interaction.
+    """
+    out = "\n".join(notify.commentary_lines("https://x", _write(tmp_path, PROPOSAL)))
+
+    assert "actions/workflows/draft-commentary.yml" in out
+    assert "Draft one of these" in out
+
+
 def test_the_section_carries_the_subject_and_its_angles(tmp_path):
     out = "\n".join(notify.commentary_lines("https://x", _write(tmp_path, PROPOSAL)))
 
