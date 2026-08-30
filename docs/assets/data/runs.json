@@ -488,5 +488,35 @@
   "warnings": 12,
   "zero_sources": [],
   "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "33341820513",
+  "event": "schedule",
+  "utc": "2026-08-30T23:32:05Z",
+  "funnel": {
+   "fetched": 117,
+   "gated": 48,
+   "analyzed": 48,
+   "ranked": 20,
+   "floor_rejected": 10,
+   "below_score": 0,
+   "published": 0,
+   "tokens": 245631
+  },
+  "score_distribution": {
+   "1": 10,
+   "2": 4,
+   "3": 12,
+   "4": 7,
+   "5": 1,
+   "6": 9,
+   "7": 5
+  },
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 1,
+  "degraded": 0,
+  "warnings": 17,
+  "zero_sources": []
  }
 ]
