@@ -111,5 +111,28 @@ def test_a_run_that_published_nothing_offers_no_angles(tmp_path):
         "angles": [{"claim": "old", "audience": "old", "rank_reason": "old"}],
     }), encoding="utf-8")
 
-    assert notify.commentary_lines("", p, stale=True) == []
-    assert notify.commentary_lines("", p, stale=False) != []
+    stale = notify.commentary_lines("", p, stale=True, reason="all 10 were too thin")
+    joined = "\n".join(stale)
+
+    # It says why instead of disappearing: a section that vanishes reads as a
+    # section that broke.
+    assert "Nothing to write about" in joined
+    assert "all 10 were too thin" in joined
+    assert "Yesterday's item" not in joined
+
+    assert "Yesterday's item" in "\n".join(notify.commentary_lines("", p, stale=False))
+
+
+def test_the_quiet_reason_names_the_stage_that_emptied_the_edition():
+    """A quiet day and a broken stage must not read the same."""
+    assert notify.why_nothing({"gated": 0}) == (
+        "the gate kept nothing from the day's catch"
+    )
+    assert "too thin" in notify.why_nothing(
+        {"gated": 43, "ranked": 20, "floor_rejected": 10}
+    )
+    assert "score floor" in notify.why_nothing(
+        {"gated": 30, "ranked": 12, "floor_rejected": 8, "below_score": 4}
+    )
+    # No funnel at all still produces a sentence rather than an empty string.
+    assert notify.why_nothing({}) == "nothing cleared selection"

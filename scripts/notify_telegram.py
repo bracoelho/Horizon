@@ -86,6 +86,7 @@ def commentary_lines(
     base: str,
     path: Path = Path("data/commentary_proposal.json"),
     stale: bool = False,
+    reason: str = "",
 ) -> list:
     """The day's candidate to write about, assembled by the run.
 
@@ -103,8 +104,17 @@ def commentary_lines(
     it is the run's own count rather than the file's, for the same reason the
     item list is: a message that contradicts itself is worse than a terse one.
     """
+    # A section that vanishes reads as a section that broke. The owner would
+    # rather be told the radar found nothing to write about than be left to
+    # work out whether the angles stopped being generated, which is the same
+    # reason every run sends a message at all.
     if stale:
-        return []
+        out = ["", "✍️ <b>Nothing to write about</b>"]
+        out.append(
+            f"<i>{esc(reason)}.</i>" if reason
+            else "<i>Nothing published this run.</i>"
+        )
+        return out
     try:
         p = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -150,6 +160,34 @@ def commentary_lines(
     return out
 
 
+def why_nothing(stats: dict) -> str:
+    """Say which stage emptied the edition, in the words of the funnel.
+
+    "Nothing met the threshold" was inherited from the threshold path and
+    stopped being true when ranked selection replaced it: there is no
+    threshold on that path to fail. It also told the reader nothing about
+    where the day went, which is the difference between a quiet news day and
+    a stage that has stopped working.
+    """
+    ranked = stats.get("ranked")
+    floored = stats.get("floor_rejected") or 0
+    under = stats.get("below_score") or 0
+    gated = stats.get("gated")
+
+    if gated == 0:
+        return "the gate kept nothing from the day's catch"
+    if ranked and floored >= ranked:
+        return f"all {floored} shortlisted items were judged too thin to publish"
+    parts = []
+    if floored:
+        parts.append(f"{floored} judged too thin")
+    if under:
+        parts.append(f"{under} under the score floor")
+    if parts:
+        return " and ".join(parts) + ", leaving none"
+    return "nothing cleared selection"
+
+
 def build_message(health: dict, run_type: str) -> str:
     posts = health.get("posts") or []
     base = site_base(Path("docs/_config.yml"))
@@ -169,7 +207,10 @@ def build_message(health: dict, run_type: str) -> str:
                      "No digest was produced.")
         errors = 0  # don't also print the generic error block below
     elif nothing_cleared:
-        lines.append(f'Nothing met the threshold · {stats.get("analyzed")} analyzed')
+        lines.append(
+            f'<b>Quiet edition.</b> {esc(why_nothing(stats))} · '
+            f'{stats.get("analyzed")} analyzed'
+        )
     else:
         # Lead with what the message is about to list. "24 cleared threshold"
         # above a list of 17 items reads as seven items gone missing, when
@@ -223,7 +264,9 @@ def build_message(health: dict, run_type: str) -> str:
         if link:
             lines.append(f'\n→ <a href="{link}">Read the full digest</a>')
 
-    lines += commentary_lines(base, stale=nothing_cleared)
+    lines += commentary_lines(
+        base, stale=nothing_cleared, reason=why_nothing(stats) if nothing_cleared else "",
+    )
 
     message = "\n".join(lines)
     if len(message) > TELEGRAM_LIMIT:
