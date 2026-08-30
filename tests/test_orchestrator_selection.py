@@ -148,3 +148,86 @@ def test_ranking_records_the_theme_the_gate_chose(orchestrator, monkeypatch) -> 
 
     selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
     assert selected[0].processing.classification.profile == "critical-infrastructure"
+
+
+def _scored(items, scores):
+    """Give each item an analysis carrying the score, or none at all."""
+    from src.models import ClassificationResult, ContentAnalysis, ProcessingResult
+
+    for item, score in zip(items, scores):
+        item.processing = ProcessingResult(
+            classification=ClassificationResult(
+                profile="practice", method="ai_match"
+            ),
+            analysis=(
+                None if score is None
+                else ContentAnalysis(score=score, reason="t", summary=item.id)
+            ),
+        )
+    return items
+
+
+def _passthrough(monkeypatch):
+    """Rank everything handed in, in order, so only the floor decides."""
+    from src.selection.contract import Candidate, SelectionResult
+
+    async def fake_select(candidates, client, themes, settings, after_gate=None):
+        cands = list(candidates)
+        return SelectionResult(
+            selected=[
+                Candidate(
+                    id=c.id, title=c.title, summary="", source="", url="",
+                    theme="practice",
+                )
+                for c in cands
+            ],
+            ranked_ids=[c.id for c in cands],
+            gate_kept=len(cands),
+        )
+
+    monkeypatch.setattr("src.orchestrator.run_selection", fake_select)
+    monkeypatch.setattr("src.orchestrator.create_ai_client", lambda cfg: object())
+
+
+def test_the_floor_drops_what_ranked_in_but_scored_under_it(
+    orchestrator, monkeypatch
+) -> None:
+    """Ranking is comparative, so the best of a weak set still ranks first.
+
+    Turning on ranked selection retired the per-theme thresholds without
+    replacing them, and a 5.0 published under a heading advertising 7.0. The
+    floor is the one absolute statement on that path.
+    """
+    orchestrator.config.selection.min_score = 6.0
+    _passthrough(monkeypatch)
+    items = _scored(_items(4), [8.0, 5.0, 6.0, 5.9])
+
+    selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
+
+    # 6.0 is kept: the floor is the lowest publishable score, not the lowest
+    # rejected one, and an off-by-one here silently loses a whole score band.
+    assert [i.id for i in selected] == ["i0", "i2"]
+
+
+def test_an_unscored_item_is_unknown_rather_than_weak(
+    orchestrator, monkeypatch
+) -> None:
+    """A gap in the scoring pass must not quietly empty an edition."""
+    orchestrator.config.selection.min_score = 6.0
+    _passthrough(monkeypatch)
+    items = _scored(_items(2), [None, 4.0])
+
+    selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
+
+    assert [i.id for i in selected] == ["i0"]
+
+
+def test_the_floor_can_be_turned_off(orchestrator, monkeypatch) -> None:
+    """Null means ranking alone decides, which is the behaviour before today."""
+    orchestrator.config.selection.min_score = None
+    _passthrough(monkeypatch)
+    items = _scored(_items(3), [9.0, 2.0, 5.0])
+
+    selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
+
+    assert len(selected) == 3
