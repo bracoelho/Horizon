@@ -69,3 +69,6 @@ todo.txt
 # data/commentary_proposal.json is deliberately tracked. The daily run writes
 # it and the Draft Commentary dispatch reads it hours later, in a different
 # job on a different machine, so it has to survive in the repository.
+committed.txt
+drafted_path.txt
+drafted_title.txt

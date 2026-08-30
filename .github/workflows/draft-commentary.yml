@@ -71,6 +71,10 @@ jobs:
           Written by workflow_dispatch at the owner's request, held at
           published: false. His switch, his edit."
           git push
+          # The notification reports what happened, and cannot know the commit
+          # landed unless the commit says so. Without this it linked a file
+          # that the writing gate had stopped from ever existing.
+          echo ok > committed.txt
 
       - name: Tell him where it is
         if: always()
@@ -78,4 +82,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: uv run python scripts/notify_drafted.py --angle "${{ inputs.angle }}"

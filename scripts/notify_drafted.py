@@ -56,10 +56,26 @@ def main() -> int:
     path = Path("drafted_path.txt")
     title = Path("drafted_title.txt")
 
+    committed = Path("committed.txt")
+    run = os.environ.get("GITHUB_RUN_URL", "")
+    link = f'\n\n→ <a href="{esc(run)}">See the run</a>' if run else ""
+
     if not path.exists():
         text = (
             f"🔴 <b>Drafting angle {esc(args.angle)} failed.</b>\n"
-            "No draft was written. The run log says why."
+            f"No draft was written.{link}"
+        )
+    elif not committed.exists():
+        # The draft was written and then refused, most often by the writing
+        # standard. Saying "Draft ready" here linked a file that was never
+        # committed, which is a 404 on a phone and the reason this branch
+        # exists at all.
+        name = title.read_text().strip() if title.exists() else "the draft"
+        text = (
+            f"🟡 <b>Draft rejected</b>\n"
+            f"<b>{esc(name)}</b>\n"
+            "It broke the writing standard twice and was discarded, so there "
+            f"is nothing to read. Tap the workflow again to retry.{link}"
         )
     else:
         edit = f"https://github.com/{repo}/edit/main/{path.read_text().strip()}"

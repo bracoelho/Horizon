@@ -34,6 +34,35 @@ PROPOSAL = Path("data/commentary_proposal.json")
 OUT_DIR = Path("docs/_commentary")
 
 
+def _voice_findings(drafted: dict) -> list:
+    """Run the same audit the build gate runs, before writing anything.
+
+    Importing the gate rather than restating its patterns: two copies of a
+    rule drift, and this one exists to predict exactly what that one will say.
+    """
+    import importlib.util
+    import tempfile
+
+    spec = importlib.util.spec_from_file_location(
+        "check_voice", Path(__file__).with_name("check_voice.py")
+    )
+    gate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gate)
+
+    text = "\n\n".join(
+        f"**{b.get('label','')}.** {b.get('text','')}"
+        for b in (drafted.get("beats") or [])
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False,
+                                     encoding="utf-8") as fh:
+        fh.write(f"{drafted.get('title','')}\n\n{text}")
+        tmp = Path(fh.name)
+    try:
+        return [f"{name}: {found!r}" for _, name, found, _ in gate.check(tmp)]
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
 def slug(title: str) -> str:
     s = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
     return "-".join(s.split("-")[:8])[:60].strip("-") or "commentary"
@@ -52,17 +81,35 @@ async def run(angle_index: int) -> int:
 
     config = StorageManager().load_config()
     client = create_ai_client(config.ai)
-    raw = await client.complete(
-        draft_system(),
-        draft_user(
-            title=proposal.get("title", ""),
-            theme=proposal.get("theme", ""),
-            body=proposal.get("plain", ""),
-            angle=angle,
-        ),
-        schema=DRAFT_SCHEMA,
+    system = draft_system()
+    user = draft_user(
+        title=proposal.get("title", ""),
+        theme=proposal.get("theme", ""),
+        body=proposal.get("plain", ""),
+        angle=angle,
     )
-    drafted = json.loads(raw)
+
+    # One repair attempt. The model reaches for "rather than" and "X, not Y"
+    # even when told twice, and the gate then throws the whole draft away. The
+    # first attempt went from three violations to one after the prompt was
+    # tightened, so handing the finding back is likely to clear the last one,
+    # and a rejected draft costs a person a second tap on their phone.
+    drafted = {}
+    for attempt in (1, 2):
+        raw = await client.complete(system, user, schema=DRAFT_SCHEMA)
+        drafted = json.loads(raw)
+        findings = _voice_findings(drafted)
+        if not findings:
+            break
+        print(f"Attempt {attempt} broke the standard: {'; '.join(findings)}")
+        if attempt == 2:
+            print("Second attempt still breaks it. The gate will reject this.")
+            break
+        user += (
+            "\n\n# Your previous attempt was rejected\n\n"
+            + "\n".join(f"- {f}" for f in findings)
+            + "\n\nRewrite it without those. State the positive claim and stop."
+        )
     beats = drafted.get("beats") or []
     # The schema cannot pin the count, so the caller checks it. Four is the
     # standard; a piece with three has lost a beat and one with five has
