@@ -100,6 +100,50 @@ async def _rank_call(complete: Completer, group: Sequence[Candidate]) -> str:
         return ""
 
 
+# Enough of the response to tell malformed JSON from a truncation from prose,
+# without pasting a whole rejected answer into the run log.
+RAW_LOG_CHARS = 400
+
+
+async def _order_for(
+    complete: Completer, group: Sequence[Candidate]
+) -> List[str]:
+    """Rank one group, retrying once when the response cannot be read.
+
+    A call that fails and a response that cannot be parsed are different
+    problems and used to look identical. `_parse_order` discards the text it
+    could not read, so a parse failure surfaced only as "omitted N of N ids",
+    which gave no way to tell malformed JSON from a truncated response from a
+    model that answered in prose. On 2026-08-27 and 2026-08-29 whole chunks
+    failed this way and neither log said why.
+
+    The retry is here because a chunk that cannot be read otherwise promotes
+    its first `carry` items on arbitrary order, and those go on to displace
+    genuinely ranked items in the runoff.
+    """
+    for attempt in (1, 2):
+        text = await _rank_call(complete, group)
+        if not text:
+            continue  # _rank_call already logged the exception
+        order = _parse_order(text)
+        if order:
+            if attempt > 1:
+                logger.info(
+                    "Ranker read the response on retry for a chunk of %d",
+                    len(group),
+                )
+            return order
+        logger.warning(
+            "Ranker could not read the response for a chunk of %d "
+            "(attempt %d of 2). First %d chars: %r",
+            len(group),
+            attempt,
+            RAW_LOG_CHARS,
+            text[:RAW_LOG_CHARS],
+        )
+    return []
+
+
 async def rank(
     candidates: Sequence[Candidate],
     complete: Completer,
@@ -114,15 +158,14 @@ async def rank(
         return items
 
     if len(items) <= chunk_size:
-        text = await _rank_call(complete, items)
-        return reconcile(_parse_order(text), items)
+        return reconcile(await _order_for(complete, items), items)
 
     # Too many to compare at once: rank in chunks, then run the winners off.
     groups = [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
     winners: List[Candidate] = []
     for group in groups:
-        text = await _rank_call(complete, group)
-        winners.extend(reconcile(_parse_order(text), group)[:carry])
+        order = await _order_for(complete, group)
+        winners.extend(reconcile(order, group)[:carry])
 
     # Guard against a runoff that cannot shrink, which would recurse forever.
     if len(winners) >= len(items) or _depth >= 3:

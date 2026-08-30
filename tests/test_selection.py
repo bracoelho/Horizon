@@ -350,3 +350,61 @@ def test_adapter_falls_back_when_fields_are_missing() -> None:
     candidate = to_candidate(bare)
     assert candidate.title == "Untitled"
     assert candidate.source == "unknown"
+
+
+def test_ranker_logs_what_it_could_not_read(caplog):
+    """A parse failure and a call failure used to look identical.
+
+    _parse_order discards the text it cannot read, so an unreadable response
+    surfaced only as "omitted N of N ids". That gave no way to tell malformed
+    JSON from a truncation from a model answering in prose, which is exactly
+    what was needed on the runs of 2026-08-27 and 2026-08-29.
+    """
+    cands = _cands(3)
+
+    async def prose(system: str, user: str) -> str:
+        return "Here are the items ranked by importance, most important first."
+
+    with caplog.at_level("WARNING"):
+        result = asyncio.run(rank_mod.rank(cands, prose))
+
+    assert [c.id for c in result] == [c.id for c in cands]  # nothing lost
+    logged = " ".join(r.getMessage() for r in caplog.records)
+    assert "could not read the response" in logged
+    assert "Here are the items ranked" in logged  # the raw text is there
+
+
+def test_ranker_retries_once_before_giving_up():
+    """A chunk that cannot be read promotes items on arbitrary order.
+
+    Those go on to displace genuinely ranked items in the runoff, so one retry
+    is worth more here than it would be on a stage whose failure is contained.
+    """
+    calls: List[int] = []
+    cands = _cands(3)
+
+    async def flaky(system: str, user: str) -> str:
+        calls.append(1)
+        if len(calls) == 1:
+            return "not json at all"
+        return json.dumps({"order": [c.id for c in reversed(cands)]})
+
+    result = asyncio.run(rank_mod.rank(cands, flaky))
+
+    assert len(calls) == 2
+    assert [c.id for c in result] == [c.id for c in reversed(cands)]
+
+
+def test_ranker_stops_after_the_retry():
+    """Two attempts, not an unbounded loop, and the items survive unranked."""
+    calls: List[int] = []
+    cands = _cands(4)
+
+    async def never(system: str, user: str) -> str:
+        calls.append(1)
+        return "{}"
+
+    result = asyncio.run(rank_mod.rank(cands, never))
+
+    assert len(calls) == 2
+    assert sorted(c.id for c in result) == sorted(c.id for c in cands)
