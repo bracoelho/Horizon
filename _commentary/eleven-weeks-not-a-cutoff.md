@@ -1,6 +1,6 @@
 ---
 published: true
-title: "Eleven Weeks, Not a Cutoff"
+title: "Eleven Weeks to Migrate"
 date: 2026-08-30 09:55:56 +0000
 theme: Business & Markets
 item_title: "Reports Say OpenAI Cut Cursor's Model Access"
@@ -15,13 +15,3 @@ edition_url: /2026/08/29/2323-summary-en.html
 **What to do.** Legal and procurement should pull every AI vendor contract this quarter and find the termination and notice clauses before a dispute forces the search. For Cursor users, the practical shift is from a bundled subscription to managing separate API keys and billing with Anthropic or Google. The question to put to your CTO: which of our AI vendor contracts let the vendor end access with less notice than it would take us to migrate?
 
 **Where I would be wrong.** Act now by renegotiating notice terms across every AI contract, and if this dispute turns out to be contained to Cursor, SpaceX, and OpenAI, you spend legal hours and vendor goodwill on a problem that was never yours. Wait for an official statement and be wrong, and a similar clock could already be running on a contract you have not reread since signing it.
-
-<!-- Voice check, for your eye rather than a gate.
-Delete this block when you edit.
-
-  negative to positive: ', Not'
-
-"rather than" and "instead of" are only banned in their
-rhetorical use, so a plain comparison here is fine and this note
-is wrong. ", not" and "not just" are the flourish itself.
--->
