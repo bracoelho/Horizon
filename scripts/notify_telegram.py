@@ -233,7 +233,13 @@ def send(token: str, chat_id: str, text: str) -> None:
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
-        json.load(resp)
+        body = json.load(resp)
+    # Telegram answers 200 with ok:false when it rejects a message, most often
+    # for malformed HTML. Loading the response and discarding it meant a
+    # message that never arrived was reported as sent, which is the failure
+    # this whole script exists to avoid one level down.
+    if not body.get("ok"):
+        raise RuntimeError(f"Telegram refused the message: {body}")
 
 
 def main() -> int:

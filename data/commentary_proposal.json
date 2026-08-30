@@ -1,0 +1,25 @@
+{
+  "title": "Reports Say OpenAI Cut Cursor's Model Access",
+  "theme": "Business & Markets",
+  "score": 6.0,
+  "url": "https://radar.bcoelho.com/2026/08/29/2323-summary-en.html",
+  "edition_url": "/2026/08/29/2323-summary-en.html",
+  "plain": "OpenAI reportedly notified SpaceX on 28 August 2026 that Cursor's access to its models will end by 12 November 2026, a wind-down of an existing supply agreement rather than an immediate cutoff. Reports tie it to SpaceX's acquisition of Cursor and to OpenAI citing trust concerns over Elon Musk's history of contract disputes, including cutting OpenAI's access to Twitter data. The practical effect for Cursor users is a shift from a bundled subscription to managing their own API keys with Anthropic or Google, changing both cost structure and who holds the billing relationship. Anthropic has separately revoked API access from OpenAI and blocked Cursor. The source material does not name the models, the contract terms, or whether the termination is permanent or partial, and neither company has issued an official statement.",
+  "angles": [
+    {
+      "claim": "A tool in your stack can lose its model access because of who acquired it, so single-provider dependency is a risk you are carrying unpriced.",
+      "audience": "engineering leadership and procurement",
+      "rank_reason": "Changes vendor selection and contract terms, and applies wherever a team has standardised on one AI coding tool."
+    },
+    {
+      "claim": "The eleven-week wind-down is the tell: the relationship was governed by a contract, and the contract set a clock instead of offering protection.",
+      "audience": "boards, legal and procurement",
+      "rank_reason": "Sharper on governance than the first, and narrower, since it rests on one reported date."
+    },
+    {
+      "claim": "Bundled access becomes direct API keys, moving both the cost structure and the billing relationship onto your team.",
+      "audience": "engineering managers running budgets",
+      "rank_reason": "The most concrete and the least strategic; it describes a consequence rather than a decision to make."
+    }
+  ]
+}
