@@ -431,6 +431,14 @@ class HorizonOrchestrator:
                         f"{self.icons['document']} Wrote {written} {lang.upper()} "
                         f"item page(s)\n"
                     )
+
+                    if lang == self.config.ai.languages[0]:
+                        self._write_commentary_proposal(
+                            summarizer, important_items, lang, edition_url=(
+                                f"/{today[:4]}/{today[5:7]}/{today[8:10]}/"
+                                f"{run_time}-summary-{lang}.html"
+                            )
+                        )
                 except Exception as e:
                     self.console.print(
                         f"[yellow]{self.icons['warning']} Failed to copy "
@@ -1274,6 +1282,105 @@ class HorizonOrchestrator:
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
         await analyzer.analyze_batch(expanded)
+
+    def _write_commentary_proposal(
+        self,
+        summarizer: DailySummarizer,
+        items: List[ContentItem],
+        lang: str,
+        *,
+        edition_url: str,
+    ) -> None:
+        """Pick the day's commentary candidate and write it for the notifier.
+
+        The owner wants a pipeline of things to write about rather than a
+        blank page each morning, and the choice was happening at a keyboard.
+
+        No model call. The angles come from the item's own enrichment blocks,
+        which already answer the commentary's beats: the first block names the
+        belief being challenged, the rest name who is exposed and what to do.
+        Assembling what the run already produced costs nothing and keeps the
+        proposal honest about what the radar actually found.
+
+        Selection follows `digest.profile_order`, which is the owner's stated
+        preference. Score is not the tiebreak because it does not separate:
+        published items are almost always 7.0.
+        """
+        from pathlib import Path
+
+        if not items:
+            return
+        order = self.config.digest.profile_order or []
+
+        def rank_key(item: ContentItem) -> tuple:
+            profile_id = (
+                item.processing.classification.profile
+                if item.processing and item.processing.classification
+                else ""
+            )
+            place = order.index(profile_id) if profile_id in order else len(order)
+            score = (
+                item.processing.analysis.score
+                if item.processing and item.processing.analysis
+                and item.processing.analysis.score is not None
+                else 0.0
+            )
+            return (place, -score)
+
+        pick = sorted(items, key=rank_key)[0]
+        artifact = pick.processing.artifacts.get(lang) if pick.processing else None
+        analysis = pick.processing.analysis if pick.processing else None
+        profile_id = (
+            pick.processing.classification.profile
+            if pick.processing and pick.processing.classification
+            else ""
+        )
+
+        angles = []
+        if artifact:
+            for block in artifact.blocks:
+                if block.primary:
+                    continue
+                angles.append({
+                    "heading": (
+                        self.profiles.block_titles.get(profile_id, {}).get(block.id)
+                        or block.title
+                    ),
+                    "note": " ".join(str(block.content).split())[:180],
+                })
+
+        payload = {
+            "title": artifact.title if artifact else pick.title,
+            "theme": summarizer.profile_name(profile_id, lang),
+            "score": analysis.score if analysis else None,
+            "url": str(pick.url),
+            "item_url": f"/item/{self._item_slug(pick.title, '')}/",
+            "edition_url": edition_url,
+            "plain": " ".join(
+                str(
+                    next(
+                        (b.content for b in artifact.blocks if b.primary),
+                        analysis.summary if analysis else "",
+                    )
+                    if artifact
+                    else (analysis.summary if analysis else "")
+                ).split()
+            )[:320],
+            "angles": angles[:3],
+        }
+        try:
+            Path("commentary_proposal.json").write_text(
+                json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            self.console.print(
+                f"{self.icons['document']} Commentary candidate: "
+                f"{payload['theme']}, {payload['title'][:60]}\n"
+            )
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(
+                f"[yellow]{self.icons['warning']} Could not write the "
+                f"commentary proposal: {exc}[/yellow]\n"
+            )
 
     @staticmethod
     def _item_slug(title: str, fallback: str) -> str:

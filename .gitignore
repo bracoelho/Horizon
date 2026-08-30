@@ -66,3 +66,5 @@ logs/*.log
 todo.txt
 .ruff_cache
 .pytest_cache
+# Written by a run for the notifier to read in the same job. Not state.
+commentary_proposal.json

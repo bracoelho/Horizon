@@ -82,6 +82,44 @@ def parse_items(post_path: Path) -> list[dict]:
     return items
 
 
+def commentary_lines(base: str, path: Path = Path("commentary_proposal.json")) -> list:
+    """The day's candidate to write about, assembled by the run.
+
+    The owner wants a queue of subjects rather than a blank page each
+    morning, and choosing one was happening at a keyboard. The angles are the
+    item's own enrichment blocks, which already answer the commentary's
+    beats, so this costs no extra model call and cannot claim more than the
+    radar found.
+
+    Absent file means the run published nothing, or predates this. Silence is
+    the right answer either way.
+    """
+    try:
+        p = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    if not p.get("title"):
+        return []
+
+    out = ["", "✍️ <b>Worth writing about</b>"]
+    head = esc(str(p.get("theme") or ""))
+    if p.get("score") is not None:
+        head += f" · {esc(str(p['score']))}"
+    out.append(head)
+    out.append(f'<b>{esc(p["title"])}</b>')
+    if p.get("plain"):
+        out.append(f"<i>{esc(p['plain'])}</i>")
+
+    for n, angle in enumerate(p.get("angles") or [], start=1):
+        heading = esc(str(angle.get("heading") or "").strip())
+        if heading:
+            out.append(f"{n}. <b>{heading}</b>")
+
+    if p.get("url"):
+        out.append(f'\n→ <a href="{esc(p["url"])}">Read the source</a>')
+    return out
+
+
 def build_message(health: dict, run_type: str) -> str:
     posts = health.get("posts") or []
     base = site_base(Path("docs/_config.yml"))
@@ -154,6 +192,8 @@ def build_message(health: dict, run_type: str) -> str:
             lines.append(f"…and {len(items) - MAX_ITEMS_SHOWN} more")
         if link:
             lines.append(f'\n→ <a href="{link}">Read the full digest</a>')
+
+    lines += commentary_lines(base)
 
     message = "\n".join(lines)
     if len(message) > TELEGRAM_LIMIT:
