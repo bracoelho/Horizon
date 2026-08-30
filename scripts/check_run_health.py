@@ -70,6 +70,10 @@ SELECTION_RE = re.compile(
     r"(?:(\d+) below the score floor, )?(\d+) published"
 )
 ENRICHED_RE = re.compile(r"Enriched (\d+)/(\d+) items")
+# Emitted by analyze_items. The scores had taken four values in the radar's
+# whole history and nothing recorded the shape, so every judging change was
+# unmeasurable. See BACKLOG #39/#41.
+SCORE_DIST_RE = re.compile(r"Score distribution: (\{.*\})")
 # A selection stage that produces nothing logs at WARNING and carries on with a
 # fallback, so the 2026-08-20 run published one item and reported success. The
 # fallbacks are right, because losing a stage should not lose the day's items,
@@ -164,6 +168,11 @@ def parse_log(path: Path):
             totals["published"] = int(m.group(6))
         elif m := ENRICHED_RE.search(line):
             totals["enriched"] = int(m.group(1))
+        elif m := SCORE_DIST_RE.search(line):
+            try:
+                totals["score_distribution"] = json.loads(m.group(1))
+            except json.JSONDecodeError:
+                pass  # a malformed line is not worth failing a health report
             totals["enrich_attempted"] = int(m.group(2))
         elif m := TOKENS_RE.search(line):
             totals["tokens"] = int(m.group(1))

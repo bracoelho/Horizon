@@ -1600,7 +1600,21 @@ class HorizonOrchestrator:
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
 
-        return await analyzer.analyze_batch(items)
+        analyzed = await analyzer.analyze_batch(items)
+        # One line the health check and the metrics row can read. The published
+        # scores turned out to have taken four values in the radar's entire
+        # history, and nobody could see it because the distribution was never
+        # recorded anywhere. BACKLOG #41: measure before changing the scorer.
+        counts: Dict[str, int] = {}
+        for item in analyzed:
+            analysis = item.processing.analysis if item.processing else None
+            if analysis and analysis.score is not None:
+                key = f"{analysis.score:g}"
+                counts[key] = counts.get(key, 0) + 1
+        if counts:
+            ordered = dict(sorted(counts.items(), key=lambda kv: float(kv[0])))
+            self.console.print(f"Score distribution: {json.dumps(ordered)}")
+        return analyzed
 
     async def _generate_summary(
         self,

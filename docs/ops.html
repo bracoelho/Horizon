@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar operations</title>
+<!-- Structure and data wiring by the pipeline session; the visual pass
+     belongs to the design session per the two-session split. Tokens below
+     are the site's own (Tenure dark), applied rather than invented.
+     Data: assets/data/runs.json, one row per run, written by
+     scripts/record_metrics.py and backfilled from the published health
+     footers for runs before 2026-08-30. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..600&family=Public+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#161B26; --card:#1E2431; --ink:#E9EAE7; --graphite:#9BA3AF;
+    --hairline:#2E3542; --accent:#D68A96;
+    --t-ra:#D68A96; --t-ci:#8FAEC9; --t-bm:#C4A970; --t-pr:#7FB89C; --t-hr:#9BA3AF;
+    --display:"Newsreader",Georgia,serif;
+    --sans:"Public Sans",-apple-system,Arial,sans-serif;
+    --mono:"Spline Sans Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+       font-size:1rem;line-height:1.6;padding:2.5rem 1.1rem 4rem}
+  .wrap{max-width:66rem;margin:0 auto}
+  h1{font-family:var(--display);font-weight:500;font-size:1.9rem;margin:0 0 .4rem}
+  .lede{color:var(--graphite);margin:0 0 2.2rem;max-width:46rem}
+  h2{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+     color:var(--graphite);font-weight:600;margin:2.6rem 0 .8rem}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.8rem}
+  .stat{background:var(--card);border:1px solid var(--hairline);border-radius:4px;padding:.9rem 1rem}
+  .stat b{display:block;font-family:var(--mono);font-size:1.35rem;font-weight:500;
+          font-variant-numeric:tabular-nums}
+  .stat span{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;
+             text-transform:uppercase;color:var(--graphite)}
+  .panel{background:var(--card);border:1px solid var(--hairline);border-radius:4px;
+         padding:1rem 1.1rem;overflow-x:auto}
+  svg{display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-family:var(--mono);
+          font-size:.68rem;color:var(--graphite);margin-top:.6rem}
+  .legend i{display:inline-block;width:.6rem;height:.6rem;border-radius:2px;margin-right:.35rem}
+  .note{color:var(--graphite);font-size:.85rem;max-width:46rem}
+  a{color:var(--accent)}
+  table{border-collapse:collapse;width:100%;font-size:.82rem;min-width:44rem}
+  th{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;
+     color:var(--graphite);text-align:left;padding:.5rem .8rem .5rem 0;
+     border-bottom:1px solid var(--hairline);font-weight:600}
+  td{padding:.45rem .8rem .45rem 0;border-bottom:1px solid var(--hairline);
+     font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.mono{font-family:var(--mono);font-size:.78rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Radar operations</h1>
+<p class="lede">Every run, measured: the funnel, the cost, what the scorer said, and
+where the editions came from. Rows before 30&nbsp;August are rebuilt from each
+edition's published health footer.</p>
+
+<div id="stats" class="cards"></div>
+
+<h2>Fetched, and what survived to publish</h2>
+<div class="panel"><svg id="funnel" width="960" height="240"></svg>
+  <div class="legend">
+    <span><i style="background:var(--hairline)"></i>fetched</span>
+    <span><i style="background:var(--graphite)"></i>analyzed</span>
+    <span><i style="background:var(--accent)"></i>published</span>
+  </div>
+</div>
+
+<h2>Tokens per run</h2>
+<div class="panel"><svg id="tokens" width="960" height="200"></svg></div>
+<p class="note" id="tokens-note"></p>
+
+<h2>Editions by theme</h2>
+<div class="panel"><svg id="themes" width="960" height="200"></svg>
+  <div class="legend" id="themes-legend"></div>
+</div>
+
+<h2>What the scorer said</h2>
+<div class="panel"><svg id="scores" width="960" height="200"></svg></div>
+<p class="note">Published scores across the radar's history. The full analyzed
+distribution is recorded from 30&nbsp;August onward; earlier runs kept only what
+published. The clustering is the finding that started the judging rebuild.</p>
+
+<h2>Recent runs</h2>
+<div class="panel"><table id="runs"><thead><tr>
+  <th>Run (UTC)</th><th>Fetched</th><th>Analyzed</th><th>Published</th>
+  <th>Tokens</th><th>Errors</th><th>Warnings</th></tr></thead><tbody></tbody></table></div>
+
+<script>
+(async function () {
+  let runs;
+  try {
+    runs = await (await fetch("assets/data/runs.json")).json();
+  } catch (e) {
+    document.getElementById("stats").innerHTML =
+      '<div class="stat"><b>no data</b><span>assets/data/runs.json unreadable</span></div>';
+    return;
+  }
+  runs.sort((a, b) => a.utc.localeCompare(b.utc));
+  const f = k => r => (r.funnel && r.funnel[k]) || 0;
+  const last = runs[runs.length - 1];
+  const fmt = n => n == null ? "–" : n.toLocaleString("en-US");
+  const day = u => u.slice(5, 10) + " " + u.slice(11, 16);
+
+  // headline stats
+  const pubTotal = runs.reduce((s, r) => s + f("published")(r), 0);
+  const tokTotal = runs.reduce((s, r) => s + f("tokens")(r), 0);
+  document.getElementById("stats").innerHTML = [
+    ["runs recorded", runs.length],
+    ["items published", pubTotal],
+    ["last run fetched", fmt(f("fetched")(last))],
+    ["last run published", fmt(f("published")(last))],
+    ["last run tokens", fmt(f("tokens")(last))],
+    ["tokens all time", fmt(tokTotal)],
+  ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join("");
+
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  function bars(svgId, series, colors, opts = {}) {
+    const svg = document.getElementById(svgId);
+    const W = 960, H = +svg.getAttribute("height"), pad = 30, bottom = 26;
+    const n = runs.length, bw = (W - pad) / n;
+    const max = Math.max(...runs.map(r => Math.max(...series.map(s => s(r)))), 1);
+    let out = "";
+    runs.forEach((r, i) => {
+      const x = pad + i * bw;
+      series.forEach((s, si) => {
+        const v = s(r), h = v / max * (H - bottom - 12);
+        const w = opts.grouped ? bw * 0.8 / series.length : bw * 0.8;
+        const xo = opts.grouped ? x + si * w : x;
+        out += `<rect x="${xo.toFixed(1)}" y="${(H - bottom - h).toFixed(1)}" width="${Math.max(w - 1, 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${colors[si]}"><title>${day(r.utc)}: ${fmt(v)}</title></rect>`;
+      });
+      if (i % Math.ceil(n / 8) === 0)
+        out += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 8}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${r.utc.slice(5, 10)}</text>`;
+    });
+    out += `<text x="2" y="12" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono">${fmt(max)}</text>`;
+    svg.innerHTML = out;
+  }
+
+  bars("funnel", [f("fetched"), f("analyzed"), f("published")],
+       [css("--hairline"), css("--graphite"), css("--accent")], { grouped: true });
+
+  bars("tokens", [f("tokens")], [css("--accent")]);
+  const recent = runs.slice(-6).map(f("tokens")).filter(Boolean);
+  const early = runs.slice(0, 6).map(f("tokens")).filter(Boolean);
+  if (recent.length && early.length) {
+    const avg = a => Math.round(a.reduce((x, y) => x + y, 0) / a.length);
+    document.getElementById("tokens-note").textContent =
+      `First recorded runs averaged ${fmt(avg(early))} tokens; the latest average ${fmt(avg(recent))}.`;
+  }
+
+  // themes, stacked
+  const themeKeys = [...new Set(runs.flatMap(r => Object.keys(r.published_by_theme || {})))];
+  const themeColor = {
+    "reliability-assurance": css("--t-ra"), "critical-infrastructure": css("--t-ci"),
+    "business-markets": css("--t-bm"), "practice": css("--t-pr"),
+    "horizon-research": css("--t-hr"),
+  };
+  const tsvg = document.getElementById("themes");
+  {
+    const W = 960, H = 200, pad = 30, bottom = 26, n = runs.length, bw = (W - pad) / n;
+    const max = Math.max(...runs.map(r =>
+      Object.values(r.published_by_theme || {}).reduce((a, b) => a + b, 0)), 1);
+    let out = "";
+    runs.forEach((r, i) => {
+      let y = H - bottom;
+      const x = pad + i * bw;
+      themeKeys.forEach(k => {
+        const v = (r.published_by_theme || {})[k] || 0;
+        if (!v) return;
+        const h = v / max * (H - bottom - 12);
+        y -= h;
+        out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(bw * 0.8 - 1, 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${themeColor[k] || css("--graphite")}"><title>${day(r.utc)} ${k}: ${v}</title></rect>`;
+      });
+      if (i % Math.ceil(n / 8) === 0)
+        out += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 8}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${r.utc.slice(5, 10)}</text>`;
+    });
+    out += `<text x="2" y="12" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono">${max}</text>`;
+    tsvg.innerHTML = out;
+    document.getElementById("themes-legend").innerHTML = themeKeys.map(k =>
+      `<span><i style="background:${themeColor[k] || css("--graphite")}"></i>${k}</span>`).join("");
+  }
+
+  // score histogram, all published scores
+  {
+    const svg = document.getElementById("scores");
+    const counts = {};
+    runs.flatMap(r => r.published_scores || []).forEach(s => {
+      const k = s.toFixed(1); counts[k] = (counts[k] || 0) + 1;
+    });
+    const keys = Object.keys(counts).sort((a, b) => a - b);
+    const W = 960, H = 200, pad = 30, bottom = 26;
+    const bw = (W - pad) / Math.max(keys.length, 1);
+    const max = Math.max(...Object.values(counts), 1);
+    let out = "";
+    keys.forEach((k, i) => {
+      const h = counts[k] / max * (H - bottom - 12);
+      const x = pad + i * bw;
+      out += `<rect x="${x.toFixed(1)}" y="${(H - bottom - h).toFixed(1)}" width="${Math.max(bw * 0.6, 2).toFixed(1)}" height="${h.toFixed(1)}" fill="${css("--accent")}"><title>${k}: ${counts[k]}</title></rect>`;
+      out += `<text x="${(x + bw * 0.3).toFixed(1)}" y="${H - 8}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${k}</text>`;
+      out += `<text x="${(x + bw * 0.3).toFixed(1)}" y="${(H - bottom - h - 4).toFixed(1)}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${counts[k]}</text>`;
+    });
+    svg.innerHTML = out;
+  }
+
+  // recent runs table, newest first
+  document.querySelector("#runs tbody").innerHTML = runs.slice(-14).reverse().map(r => `
+    <tr><td class="mono">${day(r.utc)}${r.event === "backfill" ? " ·bf" : ""}</td>
+    <td>${fmt(f("fetched")(r))}</td><td>${fmt(f("analyzed")(r))}</td>
+    <td>${fmt(f("published")(r))}</td><td>${fmt(f("tokens")(r))}</td>
+    <td>${r.errors || 0}</td><td>${r.warnings || 0}</td></tr>`).join("");
+})();
+</script>
+</div>
+</body>
+</html>
