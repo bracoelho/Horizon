@@ -23,19 +23,22 @@
         "id": "what_this_changes",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "What a team would do differently"
       },
       {
         "id": "caveats",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "Caveats"
       },
       {
         "id": "community_discussion",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "What practitioners are saying"
       }
     ]
   }

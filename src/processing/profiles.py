@@ -26,6 +26,14 @@ class ProfileBlock(BaseModel):
     tools: list[str] = Field(default_factory=list)
     optional: bool = False
     primary: bool = False
+    # A fixed heading for this block. Set it where the heading carries no
+    # information, so a reader can learn the shape of an item. Across six
+    # published items the `exposure` block was headed "Who is affected", "Who
+    # this affects", "Who should check their setup" and "Who should check
+    # their assumptions", which is one heading reworded four times. Leave it
+    # unset where the heading is content: the first block names the specific
+    # belief an item challenges, and no fixed label could replace that.
+    title: Optional[str] = None
 
 
 class ProfileEnrichment(BaseModel):
@@ -168,6 +176,22 @@ class ProfileRegistry:
     @property
     def profiles(self) -> tuple[LoadedProfile, ...]:
         return tuple(self._profiles.values())
+
+    @property
+    def block_titles(self) -> dict[str, dict[str, str]]:
+        """Headings a profile fixes, as {profile_id: {block_id: heading}}.
+
+        Only blocks that declare one appear. The rest write their own, which
+        is right where the heading names the specific claim an item questions.
+        """
+        return {
+            profile_id: {
+                block.id: block.title
+                for block in profile.definition.enrichment.blocks
+                if block.title
+            }
+            for profile_id, profile in self._profiles.items()
+        }
 
     @property
     def names(self) -> dict[str, dict[str, str]]:

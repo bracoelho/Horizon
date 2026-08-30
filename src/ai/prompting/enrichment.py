@@ -104,6 +104,17 @@ def artifact_prompt(
     block_contract = "\n".join(
         f"- `{block.id}`"
         + (" optional" if block.optional else " required")
+        + (
+            # A declared heading is fixed, so asking the model to invent one
+            # spends output tokens on a string that gets discarded. Telling it
+            # the heading also tells it what the block is for, which is the
+            # more useful half.
+            f'; its heading is fixed as "{block.title}", so write the content '
+            f"to sit under that heading and return it as the title verbatim"
+            if getattr(block, "title", None)
+            else "; write its title as the specific claim or belief this item "
+            "puts in question, not a generic label"
+        )
         for block in blocks
     )
     return f"""{profile.enrichment_prompt}

@@ -567,3 +567,48 @@ def test_the_digest_keeps_its_bold_runs():
     assert "**Why it was trusted** Context." in result
     assert "## Why it was trusted" not in result
     assert ".item-block" not in result
+
+
+def test_a_declared_heading_wins_over_whatever_the_model_returned():
+    """Fixed where the heading carries no information, free where it does.
+
+    Across six published items the exposure block was headed "Who is
+    affected", "Who this affects", "Who should check their setup" and "Who
+    should check their assumptions": one heading reworded four times. The
+    first block is left alone because it names the specific belief an item
+    questions, which no fixed label could replace.
+    """
+    item = _make_item(1)
+    item.processing.artifacts["en"] = ContentArtifact(
+        language="en",
+        title="T",
+        blocks=[
+            ContentBlock(id="summary", title="S", content="Opening.", primary=True),
+            ContentBlock(id="background", title="Why auto mode was trusted", content="Ctx."),
+            ContentBlock(id="exposure", title="Who this affects", content="Exp."),
+        ],
+    )
+    summarizer = DailySummarizer(
+        block_titles={"tech-news": {"exposure": "Who is exposed"}}
+    )
+
+    body = summarizer.render_item_body(item, "en")
+
+    assert "## Who is exposed" in body          # declared wins
+    assert "Who this affects" not in body       # the drifting one is gone
+    assert "## Why auto mode was trusted" in body  # block one untouched
+
+
+def test_no_declaration_leaves_the_model_heading_alone():
+    item = _make_item(2)
+    item.processing.artifacts["en"] = ContentArtifact(
+        language="en", title="T",
+        blocks=[
+            ContentBlock(id="summary", title="S", content="Opening.", primary=True),
+            ContentBlock(id="exposure", title="Who this affects", content="Exp."),
+        ],
+    )
+
+    body = DailySummarizer().render_item_body(item, "en")
+
+    assert "## Who this affects" in body

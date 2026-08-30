@@ -25,13 +25,15 @@
         "tools": [
           "web_search"
         ],
-        "optional": true
+        "optional": true,
+        "title": "Who is exposed"
       },
       {
         "id": "mitigation",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "What reduces the risk"
       }
     ]
   }

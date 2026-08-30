@@ -25,13 +25,15 @@
         "tools": [
           "web_search"
         ],
-        "optional": true
+        "optional": true,
+        "title": "What changes commercially"
       },
       {
         "id": "community_discussion",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "What practitioners are saying"
       }
     ]
   }

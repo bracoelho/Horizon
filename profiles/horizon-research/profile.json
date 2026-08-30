@@ -25,13 +25,15 @@
         "tools": [
           "web_search"
         ],
-        "optional": true
+        "optional": true,
+        "title": "What would have to be true"
       },
       {
         "id": "maturity",
         "type": "section",
         "tools": [],
-        "optional": true
+        "optional": true,
+        "title": "Stage of evidence"
       }
     ]
   }

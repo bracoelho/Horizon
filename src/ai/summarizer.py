@@ -122,9 +122,12 @@ class DailySummarizer:
         self,
         profile_names: Optional[Dict[str, Dict[str, str]]] = None,
         profile_order: Optional[List[str]] = None,
+        block_titles: Optional[Dict[str, Dict[str, str]]] = None,
     ):
         self.profile_names = profile_names or {}
         self.profile_order = profile_order or []
+        # {profile_id: {block_id: heading}} for blocks whose heading is fixed.
+        self.block_titles: Dict[str, Dict[str, str]] = block_titles or {}
 
     @staticmethod
     def _profile_id(item: ContentItem) -> str:
@@ -369,6 +372,9 @@ class DailySummarizer:
         """Format a single ContentItem into Markdown."""
         artifact = item.processing.artifacts.get(language) if item.processing else None
         analysis = item.processing.analysis if item.processing else None
+        declared_titles = self.block_titles.get(
+            self._profile_id(item), {}
+        )
         _title = title_override or (artifact.title if artifact else item.title)
         title = _escape_markdown(_title)
         raw_url = str(item.url)
@@ -447,7 +453,12 @@ class DailySummarizer:
             for block in artifact.blocks:
                 if block.primary:
                     continue
-                block_title = _escape_markdown(block.title)
+                # A profile that declares a heading wins over whatever the
+                # model returned. Belt and braces: the prompt already asks for
+                # the declared string, and this makes a drifting answer
+                # impossible rather than unlikely.
+                declared = declared_titles.get(block.id)
+                block_title = _escape_markdown(declared or block.title)
                 block_content = _escape_markdown(block.content)
                 if language == "zh":
                     # Corner brackets are correct CJK punctuation, so Chinese
