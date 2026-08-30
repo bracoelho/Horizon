@@ -96,3 +96,20 @@ def test_a_corrupt_file_cannot_break_the_notification(tmp_path):
     bad.write_text("{not json", encoding="utf-8")
 
     assert notify.commentary_lines("https://x", bad) == []
+
+
+def test_a_run_that_published_nothing_offers_no_angles(tmp_path):
+    """The proposal file outlives the run that wrote it.
+
+    The 2026-08-30 zero-item run left the previous run's proposal in place,
+    so the message would have offered angles the radar had not just found.
+    """
+    p = tmp_path / "commentary_proposal.json"
+    p.write_text(json.dumps({
+        "title": "Yesterday's item",
+        "theme": "Business & Markets",
+        "angles": [{"claim": "old", "audience": "old", "rank_reason": "old"}],
+    }), encoding="utf-8")
+
+    assert notify.commentary_lines("", p, stale=True) == []
+    assert notify.commentary_lines("", p, stale=False) != []

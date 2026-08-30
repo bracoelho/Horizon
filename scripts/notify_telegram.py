@@ -82,18 +82,29 @@ def parse_items(post_path: Path) -> list[dict]:
     return items
 
 
-def commentary_lines(base: str, path: Path = Path("data/commentary_proposal.json")) -> list:
+def commentary_lines(
+    base: str,
+    path: Path = Path("data/commentary_proposal.json"),
+    stale: bool = False,
+) -> list:
     """The day's candidate to write about, assembled by the run.
 
     The owner wants a queue of subjects rather than a blank page each
-    morning, and choosing one was happening at a keyboard. The angles are the
-    item's own enrichment blocks, which already answer the commentary's
-    beats, so this costs no extra model call and cannot claim more than the
-    radar found.
+    morning, and choosing one was happening at a keyboard. The angles are
+    written by the run against the day's items and against a ledger of what
+    has already been published, so the radar does not propose the same piece
+    twice.
 
-    Absent file means the run published nothing, or predates this. Silence is
-    the right answer either way.
+    The file persists between runs, because the workflow only rewrites it when
+    a run picks something. So its presence says nothing about today: after the
+    zero-item run on 2026-08-30 it still held the previous run's angles, and
+    the message would have offered them as if the radar had just found them.
+    `stale` is the caller's answer to whether this run published anything, and
+    it is the run's own count rather than the file's, for the same reason the
+    item list is: a message that contradicts itself is worse than a terse one.
     """
+    if stale:
+        return []
     try:
         p = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
@@ -212,7 +223,7 @@ def build_message(health: dict, run_type: str) -> str:
         if link:
             lines.append(f'\n→ <a href="{link}">Read the full digest</a>')
 
-    lines += commentary_lines(base)
+    lines += commentary_lines(base, stale=nothing_cleared)
 
     message = "\n".join(lines)
     if len(message) > TELEGRAM_LIMIT:
