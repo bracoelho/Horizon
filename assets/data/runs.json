@@ -1,0 +1,492 @@
+[
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-16T12:56:00Z",
+  "funnel": {},
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-17T01:52:00Z",
+  "funnel": {},
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-17T13:33:00Z",
+  "funnel": {},
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 15,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-17T16:40:00Z",
+  "funnel": {},
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 2,
+  "degraded": 0,
+  "warnings": 13,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-17T22:20:00Z",
+  "funnel": {},
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 2,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-18T23:17:00Z",
+  "funnel": {
+   "fetched": 1495,
+   "merged": 180,
+   "analyzed": 1315,
+   "selected": 47,
+   "topic_dupes": 2,
+   "published": 24,
+   "tokens": 4676045
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 21,
+   "practice": 1,
+   "horizon-research": 2
+  },
+  "published_scores": [
+   8.0,
+   8.0,
+   8.0,
+   8.0,
+   8.0,
+   8.0,
+   8.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   8.0,
+   8.0,
+   8.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 0,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-19T21:56:00Z",
+  "funnel": {
+   "fetched": 222,
+   "analyzed": 222,
+   "selected": 13,
+   "published": 13,
+   "tokens": 840620
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "critical-infrastructure": 1,
+   "reliability-assurance": 5,
+   "business-markets": 1,
+   "practice": 6
+  },
+  "published_scores": [
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   8.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-20T21:57:00Z",
+  "funnel": {
+   "fetched": 247,
+   "gated": 247,
+   "analyzed": 247,
+   "floor_rejected": 9,
+   "published": 1,
+   "tokens": 933226
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 1
+  },
+  "published_scores": [
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 24,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-21T21:49:00Z",
+  "funnel": {
+   "fetched": 214,
+   "analyzed": 214,
+   "selected": 7,
+   "published": 7,
+   "tokens": 774822
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "critical-infrastructure": 2,
+   "reliability-assurance": 3,
+   "practice": 2
+  },
+  "published_scores": [
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-22T08:20:00Z",
+  "funnel": {
+   "fetched": 141,
+   "gated": 13,
+   "analyzed": 141,
+   "floor_rejected": 10,
+   "published": 0,
+   "tokens": 522857
+  },
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-22T21:39:00Z",
+  "funnel": {
+   "fetched": 122,
+   "analyzed": 122,
+   "selected": 1,
+   "published": 1,
+   "tokens": 416943
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "practice": 1
+  },
+  "published_scores": [
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 11,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-23T21:38:00Z",
+  "funnel": {
+   "fetched": 93,
+   "analyzed": 93,
+   "selected": 0,
+   "published": 0,
+   "tokens": 351128
+  },
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 11,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-24T21:53:00Z",
+  "funnel": {
+   "fetched": 205,
+   "analyzed": 205,
+   "selected": 8,
+   "published": 8,
+   "tokens": 778717
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 3,
+   "critical-infrastructure": 1,
+   "practice": 4
+  },
+  "published_scores": [
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   8.0,
+   7.0,
+   7.0,
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-25T21:56:00Z",
+  "funnel": {
+   "fetched": 202,
+   "analyzed": 202,
+   "selected": 12,
+   "published": 12,
+   "tokens": 802747
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 6,
+   "critical-infrastructure": 3,
+   "business-markets": 1,
+   "practice": 2
+  },
+  "published_scores": [
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   7.0,
+   8.0,
+   7.0,
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 0,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-27T01:07:00Z",
+  "funnel": {
+   "fetched": 221,
+   "merged": 1,
+   "gated": 73,
+   "analyzed": 220,
+   "ranked": 15,
+   "floor_rejected": 6,
+   "published": 4,
+   "tokens": 889380
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 3,
+   "business-markets": 1
+  },
+  "published_scores": [
+   7.0,
+   5.0,
+   7.0,
+   8.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 16,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-28T05:38:00Z",
+  "funnel": {
+   "fetched": 236,
+   "gated": 93,
+   "analyzed": 236,
+   "ranked": 20,
+   "floor_rejected": 8,
+   "published": 2,
+   "tokens": 924607
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 1,
+   "critical-infrastructure": 1
+  },
+  "published_scores": [
+   8.0,
+   8.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 16,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-29T03:24:00Z",
+  "funnel": {
+   "fetched": 213,
+   "merged": 1,
+   "gated": 64,
+   "analyzed": 212,
+   "ranked": 15,
+   "floor_rejected": 9,
+   "published": 1,
+   "tokens": 801300
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "business-markets": 1
+  },
+  "published_scores": [
+   7.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 14,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-29T23:23:00Z",
+  "funnel": {
+   "fetched": 103,
+   "gated": 19,
+   "analyzed": 103,
+   "ranked": 19,
+   "floor_rejected": 7,
+   "published": 3,
+   "tokens": 433272
+  },
+  "score_distribution": {},
+  "published_by_theme": {
+   "reliability-assurance": 2,
+   "business-markets": 1
+  },
+  "published_scores": [
+   6.0,
+   6.0,
+   6.0
+  ],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ },
+ {
+  "run_id": "",
+  "event": "backfill",
+  "utc": "2026-08-30T10:18:00Z",
+  "funnel": {
+   "fetched": 114,
+   "gated": 43,
+   "analyzed": 43,
+   "ranked": 20,
+   "floor_rejected": 10,
+   "published": 0,
+   "tokens": 227165
+  },
+  "score_distribution": {},
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 12,
+  "zero_sources": [],
+  "note": "backfilled from the published health footer; no score distribution existed yet"
+ }
+]
