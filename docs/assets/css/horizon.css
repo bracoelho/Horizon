@@ -669,12 +669,29 @@ pre {
 }
 .commentary-body { font-family: var(--hz-sans); }
 
-/* --- Analysis block labels. The renderer emits each block as a paragraph
-   opening with a bold run, so the label is styled where it sits rather than
-   restructured. Mono and lettered, matching the section labels elsewhere, so
-   a reader scanning an item meets the same vocabulary as the rest of the
-   site. The heading question, whether these should be real headings, is
-   open with the pipeline. --- */
+/* --- Analysis block headings. An item page now emits each block as a real
+   heading carrying .item-block, so a screen reader can move between them and
+   the outline reads h1 then h2. Keyed on the class rather than the tag: the
+   level is one below whatever heading the item itself has, so it is h2 on an
+   item page today and would nest deeper if an item were ever rendered under
+   a heading. A hairline above separates the blocks the way rules separate
+   sections elsewhere, which is cheaper than boxing them. --- */
+.item-body .item-block {
+  font-family: var(--hz-mono) !important;
+  font-size: .78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--hz-accent) !important;
+  border-top: 1px solid var(--hz-border);
+  padding-top: 1.5rem;
+  margin: 2.2rem 0 .7rem;
+}
+.item-body .item-block:first-of-type { border-top: 0; padding-top: 0; }
+
+/* Items published before that change render the block label as a bold run at
+   the head of a paragraph. They are not rewritten, so this keeps the archive
+   looking deliberate rather than half-converted. --- */
 .item-body > p > strong:first-child {
   display: block;
   font-family: var(--hz-mono);
