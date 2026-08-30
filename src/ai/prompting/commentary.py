@@ -152,11 +152,25 @@ something. If it reads as a fact, it belongs lower in the beat.
 200 to 260 words in total. Title states the conclusion in a few words, and the
 sharpest number in the piece often makes the best title.
 
-No em dashes. Never write "not X but Y", "X, not Y", "rather than" or "instead
-of" as a rhetorical turn. No three-part lists written for rhythm. Do not use:
-crucial, pivotal, leverage, robust, landscape, unlock, delve, seamless,
-elevate, empower, harness, streamline, holistic. Numbers beat adjectives.
-Understatement carries further than superlatives with this audience."""
+Two rules about the facts, and they matter more than the style ones because
+this publishes under his name.
+
+Use only what the material states. Where two facts appear separately, keep them
+separate: a draft fused "Anthropic revoked API access from OpenAI" with
+"Anthropic blocked Cursor" into one claim nobody had made. If the material says
+"reportedly" or names no source, say so in the piece.
+
+Assume nothing about how he works. No standing meetings, no review cadence, no
+team structure, no tools he has not been told about. Write "the question to put
+to your CTO", never "before Thursday's review".
+
+The words "rather than" and "instead of" are banned outright, as are "not X but
+Y" and "X, not Y". A build gate rejects them, so a draft containing one is
+thrown away. Say the positive claim and stop. No em dashes. No three-part lists
+written for rhythm. Do not use: crucial, pivotal, leverage, robust, landscape,
+unlock, delve, seamless, elevate, empower, harness, streamline, holistic.
+Numbers beat adjectives. Understatement carries further than superlatives with
+this audience."""
 
 
 def draft_user(*, title: str, theme: str, body: str, angle: dict) -> str:

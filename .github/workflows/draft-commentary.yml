@@ -45,6 +45,15 @@ jobs:
           COLUMNS: "200"
         run: uv run python scripts/draft_commentary.py --angle "${{ inputs.angle }}"
 
+      # Before the commit, so a draft that breaks the standard is never
+      # written into the repository. Tenure's own linter lives in the owner's
+      # design project and is not on this runner; this is the subset of the
+      # STYLE.md audit that can run here, and it catches what that linter does
+      # not: the first drafted piece passed lint-voice while breaking the
+      # negative-to-positive rule three times.
+      - name: Check the draft against the writing standard
+        run: uv run python scripts/check_voice.py "$(cat drafted_path.txt)"
+
       - name: Commit the draft
         run: |
           set -e
