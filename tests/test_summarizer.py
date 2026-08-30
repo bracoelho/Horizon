@@ -513,3 +513,57 @@ def test_item_slug_is_readable_and_bounded():
     )
     assert slug == "ferc-approves-miso-cost-recovery-for-transmission-projects-sited"
     assert HorizonOrchestrator._item_slug("!!! ???", "item-practice-1") == "item-practice-1"
+
+
+def _blocked_item(idx: int = 1) -> ContentItem:
+    item = _make_item(idx)
+    item.processing.artifacts["en"] = ContentArtifact(
+        language="en",
+        title=f"Important Item {idx}",
+        blocks=[
+            ContentBlock(id="summary", title="S", content="Opening.", primary=True),
+            ContentBlock(id="background", title="Why it was trusted", content="Context."),
+            ContentBlock(id="exposure", title="Who this affects", content="Exposure."),
+        ],
+    )
+    return item
+
+
+def test_an_item_page_gives_each_block_a_real_heading():
+    """An item page had no headings in its body at all.
+
+    A screen reader user could not move between the blocks and a search engine
+    saw the page's best content as one undifferentiated run of prose.
+    """
+    body = DailySummarizer().render_item_body(_blocked_item(), "en")
+
+    assert "## Why it was trusted" in body
+    assert "## Who this affects" in body
+    assert "**Why it was trusted**" not in body
+    # h2, because the item layout supplies the h1.
+    assert "### Why it was trusted" not in body
+
+
+def test_the_block_class_comes_from_the_id_not_the_title():
+    """The id is stable; a title rewrite would silently move a text anchor."""
+    body = DailySummarizer().render_item_body(_blocked_item(), "en")
+
+    assert "{: .item-block .item-block-background}" in body
+    assert "{: .item-block .item-block-exposure}" in body
+
+
+def test_the_digest_keeps_its_bold_runs():
+    """The whole point of scoping this to item pages.
+
+    Headings in a digest would nest twenty items' blocks under theme sections
+    and change the page's outline. Nothing about the digest moves.
+    """
+    result = _run_async(
+        DailySummarizer().generate_summary(
+            [_blocked_item()], date="2026-08-30", total_fetched=1, language="en"
+        )
+    )
+
+    assert "**Why it was trusted** Context." in result
+    assert "## Why it was trusted" not in result
+    assert ".item-block" not in result

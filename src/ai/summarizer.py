@@ -364,6 +364,7 @@ class DailySummarizer:
         score_override: float | str | None = None,
         include_heading: bool = True,
         include_rule: bool = True,
+        block_headings: bool = False,
     ) -> str:
         """Format a single ContentItem into Markdown."""
         artifact = item.processing.artifacts.get(language) if item.processing else None
@@ -450,10 +451,36 @@ class DailySummarizer:
                 block_content = _escape_markdown(block.content)
                 if language == "zh":
                     # Corner brackets are correct CJK punctuation, so Chinese
-                    # keeps them. English does not, where they read as an
-                    # artifact of the upstream project rather than a choice.
+                    # keeps them inline. A heading is already structurally
+                    # marked, so the bracketed form is used only for the bold
+                    # run, not for a heading.
                     block_title = _pangu(block_title)
                     block_content = _pangu(block_content)
+
+                if block_headings:
+                    # An item page had no headings in its body at all, so a
+                    # screen reader user could not move between these blocks
+                    # and a search engine saw the page's best content as one
+                    # undifferentiated run of prose.
+                    #
+                    # The level sits one below whatever heading the item
+                    # itself has. On an item page the layout supplies the h1
+                    # and include_heading is False, so these are h2; in a
+                    # digest the item's own heading occupies heading_level, so
+                    # they would nest one deeper.
+                    level = heading_level + (1 if include_heading else 0)
+                    # A class off the block's id, which is stable, rather than
+                    # relying on the anchor kramdown derives from the heading
+                    # text, which a title rewrite would silently change.
+                    slug = re.sub(r"[^a-z0-9]+", "-", block.id.lower()).strip("-")
+                    lines.extend([
+                        "",
+                        f"{'#' * level} {block_title}",
+                        "{: .item-block" + (f" .item-block-{slug}" if slug else "") + "}",
+                        "",
+                        block_content,
+                    ])
+                elif language == "zh":
                     lines.extend(["", f"**「{block_title}」** {block_content}"])
                 else:
                     lines.extend(["", f"**{block_title}** {block_content}"])
@@ -501,6 +528,7 @@ class DailySummarizer:
             index=1,
             include_heading=False,
             include_rule=False,
+            block_headings=True,
         ).strip() + "\n"
 
     def _generate_empty_summary(self, date: str, total_fetched: int, labels: dict) -> str:
