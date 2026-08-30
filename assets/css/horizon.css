@@ -708,3 +708,16 @@ pre {
   color: var(--hz-accent);
   margin-bottom: .45em;
 }
+
+/* --- Readers who have asked their system for less movement get it. This site
+   carries only two 120ms colour fades, which is not the class of motion the
+   guideline exists for, so the guard is here for what someone adds later
+   without checking rather than for anything present today. --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
