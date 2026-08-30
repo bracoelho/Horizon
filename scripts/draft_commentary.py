@@ -145,21 +145,25 @@ async def run(angle_index: int) -> int:
     # instead of, and the grep matches every use. STYLE.md fails its own audit
     # thirteen times, three of them while explaining the rule. A person reading
     # the draft settles that in a second; a pattern never will.
+    # The note sits above the prose, because it is read once and then deleted.
+    # Below the last beat it needed scrolling past the whole piece to find,
+    # which is the wrong way round for something that exists to be acted on.
     remaining = _voice_findings(drafted)
     note = ""
     if remaining:
         note = (
-            "\n\n<!-- Voice check, for your eye rather than a gate.\n"
-            "Delete this block when you edit.\n\n"
+            "<!-- VOICE CHECK. Read this, then delete this whole block.\n\n"
             + "\n".join(f"  {f}" for f in remaining)
             + "\n\n\"rather than\" and \"instead of\" are only banned in their\n"
             "rhetorical use, so a plain comparison here is fine and this note\n"
-            "is wrong. \", not\" and \"not just\" are the flourish itself.\n-->"
+            "is wrong about it. \", not\" and \"not just\" are the flourish\n"
+            "itself, and the title is where they do the most damage.\n"
+            "-->\n\n"
         )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     path = OUT_DIR / f"{slug(title)}.md"
-    path.write_text(front + body + note + "\n", encoding="utf-8")
+    path.write_text(front + note + body + "\n", encoding="utf-8")
     Path("voice_notes.txt").write_text(str(len(remaining)), encoding="utf-8")
 
     print(f"Drafted {path}")
