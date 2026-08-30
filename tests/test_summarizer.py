@@ -638,3 +638,35 @@ def test_the_class_says_whether_the_heading_was_written_or_declared():
 
     assert "{: .item-block .item-block-written .item-block-background}" in body
     assert "{: .item-block .item-block-fixed .item-block-exposure}" in body
+
+
+def test_an_apostrophe_survives_to_the_page():
+    """Found on the owner's phone, in a real notification.
+
+    The escaper HTML-escaped with quote=True, so an apostrophe became an
+    entity, and the markdown escaper then backslashed its hash. A reader saw
+    the raw entity: twenty times on the edition of 2026-08-29 alone.
+
+    Output here is markdown, where quotes are ordinary characters. The
+    injection-relevant ones are still escaped, which the next test pins.
+    """
+    from src.ai.summarizer import _escape_markdown
+
+    assert _escape_markdown("OpenAI Cut Cursor's Model Access") == (
+        "OpenAI Cut Cursor's Model Access"
+    )
+    assert _escape_markdown('He said "no"') == 'He said "no"'
+    # A feed that already delivers an entity is normalised rather than layered.
+    assert _escape_markdown("the project&#x27;s website") == "the project's website"
+
+
+def test_the_escaper_still_defangs_markup():
+    """The reason the escaping exists at all, and it must survive the fix."""
+    from src.ai.summarizer import _escape_markdown
+
+    out = _escape_markdown("<script>alert(1)</script>")
+
+    assert "<script>" not in out
+    assert "&lt;script&gt;" in out
+    # And a round trip cannot smuggle it back through the unescape step.
+    assert "<script>" not in _escape_markdown("&lt;script&gt;alert(1)&lt;/script&gt;")

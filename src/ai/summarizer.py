@@ -18,8 +18,24 @@ _URL_SAFE_CHARS = ":/?#[]@!$&'*,;=~%+"
 
 
 def _escape_markdown(value: object) -> str:
-    """Render untrusted text literally while retaining its readable content."""
-    escaped = html.escape(str(value), quote=True)
+    """Render untrusted text literally while retaining its readable content.
+
+    Two things had to change here, and the second caused a visible defect.
+
+    `quote=True` escapes apostrophes and quotes for use inside an HTML
+    attribute. This output is markdown, where they are ordinary characters,
+    and the markdown escaper below then broke the entity: an apostrophe
+    became an entity whose hash the escaper then backslashed, and a reader
+    saw the entity. Twenty times on one published edition. `<`, `>` and `&`
+    are still escaped, which is the part that matters for untrusted text.
+
+    Unescaping first normalises the other direction: a feed that already
+    delivers `&#x27;` or `&amp;` gets decoded once and re-encoded correctly,
+    rather than accumulating layers. It round-trips safely, since
+    `&lt;script&gt;` decodes to `<script>` and is escaped straight back.
+    """
+    text = html.unescape(str(value))
+    escaped = html.escape(text, quote=False)
     escaped = _MARKDOWN_SPECIAL.sub(r"\\\1", escaped)
     return _MARKDOWN_BLOCK_START.sub(r"\1\\\2", escaped)
 
