@@ -413,7 +413,7 @@
         ]
       },
       {
-        "name": "Google News \u2014 AI & energy",
+        "name": "Google News — AI & energy",
         "url": "https://news.google.com/rss/search?q=AI%20AND%20%28utility%20OR%20%22power%20grid%22%20OR%20%22energy%20transition%22%20OR%20%22data%20center%20power%22%20OR%20electricity%29&hl=en-US&gl=US&ceid=US:en",
         "enabled": true,
         "category": "energy-infra",
@@ -435,7 +435,7 @@
         ]
       },
       {
-        "name": "IEEE Spectrum \u2014 AI",
+        "name": "IEEE Spectrum — AI",
         "url": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
         "enabled": true,
         "category": "media",
@@ -646,6 +646,7 @@
     "consider": 10,
     "max_publish": 6,
     "defend_concurrency": 4,
-    "use_batch": true
+    "use_batch": true,
+    "min_score": 6.0
   }
 }

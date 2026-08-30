@@ -203,3 +203,38 @@ def test_the_funnel_follows_the_order_the_pipeline_actually_ran(tmp_path):
     assert "222 analyzed" in line
     assert "the survivors" not in line
     assert "kept by the gate" not in line
+
+
+def test_the_score_floor_is_its_own_stage_and_does_not_inflate_the_shortlist(tmp_path):
+    """The floored items were ranked, so counting them as ranked out is wrong.
+
+    Without this the funnel reads "4 below the shortlist cut" on a run where
+    two items were ranked in and then dropped for scoring under the floor,
+    which sends whoever reads it looking at the ranker.
+    """
+    log = (
+        "📥 Fetched 103 items from all sources\n"
+        "⭐️ Selection: 103 gated to 19, 15 ranked, 5 rejected by floor, "
+        "2 below the score floor, 6 published\n"
+    )
+    _, _, totals, _, _, _ = _parse(tmp_path, log)
+    line = health.funnel(totals)
+
+    assert totals["below_score"] == 2
+    assert totals["published"] == 6
+    assert "2 under the score floor" in line
+    assert "2 below the shortlist cut" in line  # 15 ranked - (5 + 2 + 6)
+
+
+def test_a_log_written_before_the_score_floor_existed_still_parses(tmp_path):
+    """Old logs are exactly the ones somebody reads to understand a past run."""
+    log = (
+        "📥 Fetched 212 items from all sources\n"
+        "⭐️ Selection: 211 gated to 64, 15 ranked, 9 rejected by floor, 6 published\n"
+    )
+    _, _, totals, _, _, _ = _parse(tmp_path, log)
+
+    assert totals["published"] == 6
+    assert totals["floor_rejected"] == 9
+    assert totals["below_score"] == 0
+    assert "score floor" not in health.funnel(totals)

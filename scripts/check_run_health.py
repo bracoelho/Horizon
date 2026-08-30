@@ -62,9 +62,12 @@ BALANCED_RE = re.compile(r"Balanced digest selected (\d+)/(\d+) items")
 # Ranked selection replaces the threshold, topic-dedup and digest-cap stages,
 # so none of the regexes above fire when it runs. Parsing its one line keeps
 # the funnel honest under either selection path.
+# The score floor is optional in the pattern so logs written before it existed
+# still parse. A health check that stops reading old logs stops being usable on
+# exactly the runs somebody is going back to understand.
 SELECTION_RE = re.compile(
     r"Selection: (\d+) gated to (\d+), (\d+) ranked, (\d+) rejected by floor, "
-    r"(\d+) published"
+    r"(?:(\d+) below the score floor, )?(\d+) published"
 )
 ENRICHED_RE = re.compile(r"Enriched (\d+)/(\d+) items")
 # A selection stage that produces nothing logs at WARNING and carries on with a
@@ -117,7 +120,7 @@ def parse_log(path: Path):
     totals = {
         "fetched": None, "merged": None, "analyzed": None, "selected": None,
         "topic_dupes": None, "published": None, "pre_cap": None,
-        "gated": None, "ranked": None, "floor_rejected": None,
+        "gated": None, "ranked": None, "floor_rejected": None, "below_score": 0,
         "enriched": None, "enrich_attempted": None,
         "tokens": None, "tokens_in": None, "tokens_out": None,
     }
@@ -157,7 +160,8 @@ def parse_log(path: Path):
             totals["gated"] = int(m.group(2))
             totals["ranked"] = int(m.group(3))
             totals["floor_rejected"] = int(m.group(4))
-            totals["published"] = int(m.group(5))
+            totals["below_score"] = int(m.group(5)) if m.group(5) else 0
+            totals["published"] = int(m.group(6))
         elif m := ENRICHED_RE.search(line):
             totals["enriched"] = int(m.group(1))
             totals["enrich_attempted"] = int(m.group(2))
@@ -340,12 +344,18 @@ def funnel(totals) -> str:
     # missing. They were ranked below the shortlist the floor reads.
     if totals.get("ranked") is not None:
         steps.append(f"{totals['ranked']} ranked")
-        considered = (totals.get("floor_rejected") or 0) + (totals.get("published") or 0)
+        considered = (
+            (totals.get("floor_rejected") or 0)
+            + (totals.get("below_score") or 0)
+            + (totals.get("published") or 0)
+        )
         below = totals["ranked"] - considered
         if below > 0:
             steps.append(f"{below} below the shortlist cut")
     if totals.get("floor_rejected"):
         steps.append(f"{totals['floor_rejected']} rejected by the floor")
+    if totals.get("below_score"):
+        steps.append(f"{totals['below_score']} under the score floor")
     if totals["topic_dupes"]:
         steps.append(f"{totals['topic_dupes']} topic duplicates merged")
     # The digest cap is a stage like any other and hides the biggest drop of

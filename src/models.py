@@ -580,6 +580,14 @@ class SelectionConfig(BaseModel):
     max_publish: int = Field(default=6, gt=0)
     defend_concurrency: int = Field(default=4, gt=0)
     use_batch: bool = True
+    # A rank is comparative, so on a thin day the best of a weak set still
+    # ranks first. This is the one absolute statement: below it, an item does
+    # not publish however it ranked. Set to null to let ranking alone decide.
+    # Three of the ten items published after selection went live sat under the
+    # bar of the theme they published into, one of them by two full points,
+    # because enabling selection retired the per-theme thresholds without
+    # putting anything in their place.
+    min_score: Optional[float] = Field(default=6.0, ge=0, le=10)
 
 
 class ProcessingConfig(BaseModel):

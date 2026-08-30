@@ -973,6 +973,31 @@ class HorizonOrchestrator:
                 item.processing.classification.profile = candidate.theme
             selected.append(item)
 
+        # The floor. Ranking answers "which of today's items is worth reading",
+        # which is the right question and has no opinion about whether any of
+        # them clear a bar. Nothing published below this line.
+        floor = self.config.selection.min_score
+        below = 0
+        if floor is not None:
+            kept_above = []
+            for item in selected:
+                score = (
+                    item.processing.analysis.score
+                    if item.processing and item.processing.analysis
+                    else None
+                )
+                # An unscored item is unknown rather than weak, and dropping it
+                # here would silently lose anything the scoring pass missed.
+                if score is not None and score < floor:
+                    below += 1
+                    self.console.print(
+                        f"[dim]Below the score floor: {item.title[:60]} "
+                        f"scored {score} against {floor}[/dim]"
+                    )
+                    continue
+                kept_above.append(item)
+            selected = kept_above
+
         # Format kept stable: scripts/check_run_health.py parses this line to
         # build the funnel. Selection replaces the threshold and digest-cap
         # stages, so without it the footer would report no published count at
@@ -981,6 +1006,7 @@ class HorizonOrchestrator:
             f"{self.icons['filter']} Selection: {len(items)} gated to "
             f"{result.gate_kept}, {len(result.ranked_ids)} ranked, "
             f"{result.defend_rejected} rejected by floor, "
+            f"{below} below the score floor, "
             f"{len(selected)} published\n"
         )
         return selected, result
