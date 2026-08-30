@@ -682,8 +682,30 @@ pre {
   font-weight: 600 !important;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--hz-accent) !important;
+  color: var(--hz-text-muted) !important;
   margin: 2.2rem 0 .7rem;
+}
+
+/* A block heading is one of two things now. The profile declares the fixed
+   ones, which repeat across every item in a theme and should read as
+   furniture. The model writes the first one about this item, which makes it
+   a claim rather than a label, and the system gives the display serif to the
+   moments that hold a point of view.
+
+   Not split for line count. Measured at 375px, mono uppercase wraps equal to
+   or better than the serif at every real title length, because 0.78rem mono
+   against 1.15rem serif more than pays for the tracking. The reason is
+   legibility: uppercase with letter-spacing removes word shape, which is how
+   a reader recognises a word without reading it, and that costs little on
+   "Who is exposed" and a great deal on a sixty-five character claim. */
+.item-body .item-block-written {
+  font-family: var(--hz-display) !important;
+  font-size: 1.15rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--hz-text) !important;
+  line-height: 1.3;
 }
 /* The rule separates one block from the next, so it belongs on the blocks
    that follow one rather than on all of them minus the first. :first-of-type
