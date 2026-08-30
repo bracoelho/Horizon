@@ -7,14 +7,29 @@ published: false
    URL, so `grid-interconnection.md` publishes at `/commentary/grid-interconnection/`.
 2. Fill the front matter. `item_url` and `item_title` link back to what prompted
    it; `edition_url` links to the edition it appeared in.
-3. Write to the five-beat shape. Aim for 200-300 words: short enough to write in
-   a taxi, long enough to say something.
+3. Write to the four-beat shape below. Aim for 200-300 words: short enough to
+   write in a taxi, long enough to say something.
 4. Set `published: true`.
 5. Commit. GitHub's web editor does all of this from a phone.
+
+## The four beats
+
+1. **What happened.** The finding.
+2. **Why it matters.** The belief this overturns. The judgement beat, and what
+   stops the piece being a better summary.
+3. **What to do.** The team's action, then the director's question.
+4. **Where I would be wrong.** Priced both ways, see below.
 
 The shape exists because two audiences read this: the engineer wants to know
 what changes on Monday, the director wants to know what to ask on Thursday.
 Writing both is the whole point, and plenty of people can do one.
+
+**Beat three carries both, and must contain a question a director could repeat
+verbatim in a meeting.** It was two beats until 2026-08-30, "what it changes"
+and "the question to ask", and they said the same thing twice: once as an
+instruction, once as a question. The first published piece cut one of them
+without saying why, which was the right instinct on the wrong beat. The
+question is the memorable half and survives inside the action.
 
 Keep the voice first-person and specific. The radar already produces neutral
 summaries; if a piece reads like a better summary, it has failed.
