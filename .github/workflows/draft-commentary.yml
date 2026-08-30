@@ -45,13 +45,13 @@ jobs:
           COLUMNS: "200"
         run: uv run python scripts/draft_commentary.py --angle "${{ inputs.angle }}"
 
-      # Before the commit, so a draft that breaks the standard is never
-      # written into the repository. Tenure's own linter lives in the owner's
-      # design project and is not on this runner; this is the subset of the
-      # STYLE.md audit that can run here, and it catches what that linter does
-      # not: the first drafted piece passed lint-voice while breaking the
-      # negative-to-positive rule three times.
-      - name: Check the draft against the writing standard
+      # Reports, and does not block. The audit cannot tell a rhetorical
+      # "rather than" from a plain comparison, and STYLE.md only bans the
+      # first, so failing the job here refused correct writing and left the
+      # owner with nothing. What it finds now rides with the draft as a note
+      # for him to settle while he edits, which is where the judgement lives.
+      - name: Note anything the writing standard flags
+        continue-on-error: true
         run: uv run python scripts/check_voice.py "$(cat drafted_path.txt)"
 
       - name: Commit the draft

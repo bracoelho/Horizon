@@ -80,10 +80,18 @@ def main() -> int:
     else:
         edit = f"https://github.com/{repo}/edit/main/{path.read_text().strip()}"
         name = title.read_text().strip() if title.exists() else "the draft"
+        notes = Path("voice_notes.txt")
+        flagged = ""
+        if notes.exists() and notes.read_text().strip() not in ("", "0"):
+            n = notes.read_text().strip()
+            flagged = (
+                f"\n{esc(n)} thing(s) the voice check flagged, noted in the "
+                "file. Some are false alarms; your call."
+            )
         text = (
             f"📄 <b>Draft ready</b>\n"
             f"<b>{esc(name)}</b>\n"
-            f"From angle {esc(args.angle)}, held unpublished.\n\n"
+            f"From angle {esc(args.angle)}, held unpublished.{flagged}\n\n"
             f'→ <a href="{esc(edit)}">Edit and publish</a>\n\n'
             "<i>Change published to true and commit. It is live in a minute.</i>"
         )

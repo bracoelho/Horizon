@@ -103,7 +103,7 @@ async def run(angle_index: int) -> int:
             break
         print(f"Attempt {attempt} broke the standard: {'; '.join(findings)}")
         if attempt == 2:
-            print("Second attempt still breaks it. The gate will reject this.")
+            print("Second attempt still flags. Carrying the findings as a note.")
             break
         user += (
             "\n\n# Your previous attempt was rejected\n\n"
@@ -139,9 +139,28 @@ async def run(angle_index: int) -> int:
         "---",
         "",
     ])
+    # Whatever the audit still flags rides with the draft as an editor's note.
+    # It stopped being a build gate because it cannot tell a flourish from a
+    # comparison: STYLE.md bans "the rhetorical uses of" rather than and
+    # instead of, and the grep matches every use. STYLE.md fails its own audit
+    # thirteen times, three of them while explaining the rule. A person reading
+    # the draft settles that in a second; a pattern never will.
+    remaining = _voice_findings(drafted)
+    note = ""
+    if remaining:
+        note = (
+            "\n\n<!-- Voice check, for your eye rather than a gate.\n"
+            "Delete this block when you edit.\n\n"
+            + "\n".join(f"  {f}" for f in remaining)
+            + "\n\n\"rather than\" and \"instead of\" are only banned in their\n"
+            "rhetorical use, so a plain comparison here is fine and this note\n"
+            "is wrong. \", not\" and \"not just\" are the flourish itself.\n-->"
+        )
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     path = OUT_DIR / f"{slug(title)}.md"
-    path.write_text(front + body + "\n", encoding="utf-8")
+    path.write_text(front + body + note + "\n", encoding="utf-8")
+    Path("voice_notes.txt").write_text(str(len(remaining)), encoding="utf-8")
 
     print(f"Drafted {path}")
     print(f"::notice::Drafted '{title}' from angle {angle_index}. Held unpublished.")
