@@ -62,9 +62,13 @@ def _blank_comments(text: str) -> str:
 
 def check(path: Path) -> list:
     findings = []
-    body = _blank_comments(path.read_text(encoding="utf-8"))
-    for n, line in enumerate(body.splitlines(), 1):
-        if SKIP.search(line):
+    # The suppression marker is read from the raw line and the prose from the
+    # blanked one, because "<!-- lint-ignore -->" is itself a comment: blanking
+    # first would delete the very marker that exempts the line.
+    raw = path.read_text(encoding="utf-8").splitlines()
+    scanned = _blank_comments("\n".join(raw)).splitlines()
+    for n, (source, line) in enumerate(zip(raw, scanned), 1):
+        if SKIP.search(source):
             continue
         for name, pattern, remedy in CHECKS:
             m = pattern.search(line)

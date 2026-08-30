@@ -66,3 +66,13 @@ def test_a_line_teaching_a_banned_pattern_is_exempt(tmp_path):
     )
 
     assert findings == []
+
+
+def test_a_comment_is_not_audited_but_still_counts_its_lines(tmp_path):
+    """The audit's own note rides in as a comment and must not read itself."""
+    findings = _check(
+        tmp_path,
+        'Clean opening line.\n<!-- a rhetorical rather than b -->\nA title, not a claim.',
+    )
+
+    assert [f[0] for f in findings] == [3]
