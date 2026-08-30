@@ -249,13 +249,53 @@ def main() -> int:
         # Verifies the whole delivery path, secrets, network, formatting , 
         # without a pipeline run, which otherwise costs a couple of minutes
         # of model calls per attempt. Use after rotating credentials too.
-        message = (
-            "🧪 <b>Radar test message</b>\n"
-            f"Triggered {esc(run_type)}.\n\n"
-            "If you can read this, <code>TELEGRAM_BOT_TOKEN</code> and "
-            "<code>TELEGRAM_CHAT_ID</code> are set correctly and run "
-            "notifications will arrive here.\n\n"
-            '→ <a href="https://radar.bcoelho.com/">The radar</a>'
+        # The sample runs through the real commentary_lines path, temp file
+        # and all, so the test exercises parsing, escaping and Telegram's
+        # acceptance of the markup rather than a hand-written imitation of
+        # them. A rehearsal that skips the part most likely to break is not
+        # a rehearsal.
+        import tempfile
+
+        sample = {
+            "title": "Circuit-Discovery Claims Flip Under Analytic Variation",
+            "theme": "Reliability & Assurance",
+            "score": 7.0,
+            "url": "https://arxiv.org/abs/2608.13754",
+            "plain": (
+                "A pre-registered study ran 15,840 defensible analytic choices "
+                "over one model and one task. The Annex IV style claim derived "
+                "from the result flipped across 73.2% of specification pairs."
+            ),
+            "angles": [
+                {"heading": "Why circuit analysis is trusted as documentation evidence"},
+                {"heading": "Who is exposed"},
+                {"heading": "What reduces the risk"},
+            ],
+        }
+        with tempfile.NamedTemporaryFile(
+            "w", suffix=".json", delete=False, encoding="utf-8"
+        ) as fh:
+            json.dump(sample, fh)
+            sample_path = Path(fh.name)
+        try:
+            preview = commentary_lines("", sample_path)
+        finally:
+            sample_path.unlink(missing_ok=True)
+
+        message = "\n".join(
+            [
+                "🧪 <b>Radar test message</b>",
+                f"Triggered {esc(run_type)}.",
+                "",
+                "If you can read this, <code>TELEGRAM_BOT_TOKEN</code> and "
+                "<code>TELEGRAM_CHAT_ID</code> are set correctly and run "
+                "notifications will arrive here.",
+                "",
+                "Below is a <b>sample</b> of the commentary section a real run "
+                "now adds. The subject and angles are examples, not today's.",
+            ]
+            + preview
+            + ["", '→ <a href="https://radar.bcoelho.com/">The radar</a>']
         )
         if args.dry_run:
             print(message)
