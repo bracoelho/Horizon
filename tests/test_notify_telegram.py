@@ -135,3 +135,45 @@ def test_the_quiet_reason_names_the_stage_that_emptied_the_edition():
     )
     # No funnel at all still produces a sentence rather than an empty string.
     assert notify.why_nothing({}) == "nothing cleared selection"
+
+
+def test_ranked_path_quiet_run_explains_and_offers_no_stale_angles(tmp_path, monkeypatch):
+    """The ranked funnel has no "selected" key. Keying on it made the
+    2026-08-30 23:26 message print "None cleared threshold" and re-offer
+    Friday's angles. Quietness is about published, whatever the path."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "data").mkdir()
+    (tmp_path / "docs" / "_config.yml").write_text(
+        "url: https://x.test\nbaseurl: ''\n", encoding="utf-8")
+    (tmp_path / "data" / "commentary_proposal.json").write_text(json.dumps(
+        {"title": "Friday leftover", "angles": [{"claim": "old"}]}),
+        encoding="utf-8")
+    health = {"totals": {"fetched": 117, "gated": 48, "analyzed": 48,
+                         "ranked": 20, "floor_rejected": 10, "published": 0},
+              "errors": 1, "warnings": 17, "posts": [],
+              "finished_utc": "30 Aug 23:52"}
+
+    msg = notify.build_message(health, "scheduled")
+
+    assert "None" not in msg
+    assert "Quiet edition." in msg
+    assert "judged too thin" in msg
+    assert "Friday leftover" not in msg
+    assert "Nothing to write about" in msg
+
+
+def test_ranked_path_with_items_leads_with_published(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "_config.yml").write_text(
+        "url: https://x.test\nbaseurl: ''\n", encoding="utf-8")
+    health = {"totals": {"gated": 43, "analyzed": 43, "ranked": 19,
+                         "floor_rejected": 7, "published": 3},
+              "errors": 0, "posts": [], "finished_utc": "x"}
+
+    msg = notify.build_message(health, "scheduled")
+
+    assert "3 published" in msg
+    assert "None" not in msg
+    assert "cleared threshold" not in msg

@@ -1,0 +1,50 @@
+# The attribution instrument from PLAN-S1: replay a recorded day's rank
+# candidates through the ranker, repeatedly, with the live model. Runs in CI
+# because the API key lives here; a replay of a ~20-item rank costs cents.
+name: Replay Rank
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run id whose rank fixture to replay (from its Upload the rank fixture step)"
+        required: true
+      repeat:
+        description: "How many passes"
+        default: "3"
+      model:
+        description: "Override the rank model (optional, BACKLOG #45)"
+        required: false
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --frozen
+      - name: Fetch the fixture from the source run
+        uses: actions/download-artifact@v4
+        with:
+          name: rank-fixture
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: fixtures
+      - name: Replay
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COLUMNS: "200"
+        run: |
+          set -o pipefail
+          FIX=$(ls fixtures/rank_fixture-*.json | head -1)
+          MODEL_ARG=""
+          if [ -n "${{ inputs.model }}" ]; then MODEL_ARG="--model ${{ inputs.model }}"; fi
+          uv run python scripts/replay_rank.py --fixture "$FIX" \
+            --repeat "${{ inputs.repeat }}" $MODEL_ARG | tee replay.out
+          { echo '## Replay result'; echo '```'; cat replay.out; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

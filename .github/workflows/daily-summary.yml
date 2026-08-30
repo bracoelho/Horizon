@@ -4,7 +4,13 @@ on:
   schedule:
     # Once daily at 21:07 UTC = 06:07 in Tokyo, so the edition is waiting
     # at the start of the owner's day. Off-the-hour to dodge the scheduler pile-up.
-    - cron: '7 21 * * *'
+    # 18:37 UTC = 03:37 Tokyo. Moved from 21:07 on 2026-08-31 (#52): the
+    # owner's meetings start 09:00 JST, and with GitHub's 2-8h scheduler
+    # drift the old slot sometimes had not even finished by his 08:45
+    # review. Even +4h drift now completes before 08:00 JST. The 30h
+    # window anchors to run start, so the transition day only overlaps
+    # more; no gap, no window change.
+    - cron: '37 18 * * *'
   workflow_dispatch:       # allow manual trigger from the Actions tab
 
 jobs:
@@ -63,6 +69,17 @@ jobs:
           # has to cover the worst drift, not the typical drift. Costs a few
           # re-scored items a run, which is cheaper than a blind spot.
           uv run horizon --hours 30 2>&1 | tee horizon-run.log
+
+      # The replay harness's raw material (PLAN-S1): the exact candidates
+      # the ranker saw, uploaded so replay-rank.yml can re-run them.
+      - name: Upload the rank fixture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rank-fixture
+          path: data/rank_fixture-*.json
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: "Run health check (BACKLOG #5/#6 - distinguish quiet from broken)"
         env:

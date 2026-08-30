@@ -203,7 +203,17 @@ def build_message(health: dict, run_type: str) -> str:
     header += f" · {esc(run_type)}"
     lines = [header]
 
-    nothing_cleared = stats.get("selected") == 0 and not health.get("incomplete")
+    # The two selection paths report different keys: the threshold path has
+    # "selected", the ranked path has "published" and no "selected" at all.
+    # Keying quietness on "selected" alone made the 2026-08-30 23:26 message
+    # print a literal "None cleared threshold" and, worse, bypassed both the
+    # quiet explanation and the stale-angles guard, re-offering Friday's
+    # angles for the second time. Whatever the path, the reader's question is
+    # the same: did anything publish?
+    published_count = stats.get("published")
+    if published_count is None:
+        published_count = stats.get("selected")
+    nothing_cleared = published_count == 0 and not health.get("incomplete")
     if health.get("incomplete"):
         lines.append("🔴 <b>The run failed before the health check ran.</b> "
                      "No digest was produced.")
@@ -217,12 +227,10 @@ def build_message(health: dict, run_type: str) -> str:
         # Lead with what the message is about to list. "24 cleared threshold"
         # above a list of 17 items reads as seven items gone missing, when
         # topic dedup merged them.
-        published = stats.get("published")
-        head = f'{published} published · ' if published is not None else ""
-        lines.append(
-            f'{head}{stats.get("selected")} cleared threshold · '
-            f'{stats.get("analyzed")} analyzed'
-        )
+        head = f'{published_count} published'
+        if stats.get("selected") is not None:
+            head += f' · {stats.get("selected")} cleared threshold'
+        lines.append(f'{head} · {stats.get("analyzed")} analyzed')
     lines.append("")
 
     if errors:

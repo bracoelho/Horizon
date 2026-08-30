@@ -948,11 +948,28 @@ class HorizonOrchestrator:
             refreshed = {c.id: c for c in to_candidates(survivors)}
             # Preserve the gate's order and its theme decision, which the
             # rebuilt candidates do not carry.
-            return [
+            result = [
                 refreshed[c.id].with_theme(c.theme) if c.theme else refreshed[c.id]
                 for c in kept
                 if c.id in refreshed
             ]
+            # Observer write for the replay harness (PLAN-S1 step 1): the
+            # exact candidates the ranker is about to see, so a recorded day
+            # can be replayed through either ranker with identical input. A
+            # failure to record must never cost the run.
+            try:
+                fixture = Path("data") / (
+                    f"rank_fixture-{datetime.now().strftime('%Y%m%d-%H%M')}.json"
+                )
+                fixture.write_text(json.dumps(
+                    [{"id": c.id, "title": c.title, "summary": c.summary,
+                      "source": c.source, "url": c.url, "theme": c.theme}
+                     for c in result],
+                    ensure_ascii=False, indent=1), encoding="utf-8")
+                self.console.print(f"Rank fixture saved: {fixture}")
+            except OSError as exc:
+                self.console.print(f"[yellow]Fixture not saved: {exc}[/yellow]")
+            return result
 
         result = await run_selection(
             candidates,
