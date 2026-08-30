@@ -110,10 +110,20 @@ def commentary_lines(base: str, path: Path = Path("commentary_proposal.json")) -
     if p.get("plain"):
         out.append(f"<i>{esc(p['plain'])}</i>")
 
+    # Ranked best first. The reason each sits where it does is the part that
+    # lets a choice be made on a phone without opening anything.
     for n, angle in enumerate(p.get("angles") or [], start=1):
-        heading = esc(str(angle.get("heading") or "").strip())
-        if heading:
-            out.append(f"{n}. <b>{heading}</b>")
+        claim = esc(str(angle.get("claim") or "").strip())
+        if not claim:
+            continue
+        line = f"{n}. <b>{claim}</b>"
+        audience = esc(str(angle.get("audience") or "").strip())
+        if audience:
+            line += f"\n<i>For {audience}.</i>"
+        reason = esc(str(angle.get("rank_reason") or "").strip())
+        if reason:
+            line += f" {reason}"
+        out.append(line)
 
     if p.get("url"):
         out.append(f'\n→ <a href="{esc(p["url"])}">Read the source</a>')
@@ -267,9 +277,29 @@ def main() -> int:
                 "from the result flipped across 73.2% of specification pairs."
             ),
             "angles": [
-                {"heading": "Why circuit analysis is trusted as documentation evidence"},
-                {"heading": "Who is exposed"},
-                {"heading": "What reduces the risk"},
+                {
+                    "claim": "Interpretability output is a finding, not a record, "
+                             "so an Annex IV file resting on it rests on one "
+                             "analyst's choices.",
+                    "audience": "boards and regulated clients",
+                    "rank_reason": "Changes a filing decision and lands in the "
+                                   "sector you sell into.",
+                },
+                {
+                    "claim": "Ask any vendor offering interpretability as "
+                             "assurance to have two teams run it independently.",
+                    "audience": "procurement and vendor selection",
+                    "rank_reason": "Immediately usable, though narrower than "
+                                   "the first.",
+                },
+                {
+                    "claim": "The gap between evaluated and production behaviour "
+                             "now has a second gap beside it, between two "
+                             "analysts reading the same model.",
+                    "audience": "a technical audience",
+                    "rank_reason": "Continues your earlier writing, and observes "
+                                   "more than it decides.",
+                },
             ],
         }
         with tempfile.NamedTemporaryFile(

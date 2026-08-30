@@ -433,7 +433,7 @@ class HorizonOrchestrator:
                     )
 
                     if lang == self.config.ai.languages[0]:
-                        self._write_commentary_proposal(
+                        await self._write_commentary_proposal(
                             summarizer, important_items, lang, edition_url=(
                                 f"/{today[:4]}/{today[5:7]}/{today[8:10]}/"
                                 f"{run_time}-summary-{lang}.html"
@@ -1283,7 +1283,72 @@ class HorizonOrchestrator:
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
         await analyzer.analyze_batch(expanded)
 
-    def _write_commentary_proposal(
+    async def _commentary_angles(
+        self, *, title: str, theme: str, profile_id: str, body: str
+    ) -> List[dict]:
+        """Three ranked angles for the day's candidate, from one model call.
+
+        Worth the call. The first version reused the item's block headings and
+        stopped working the day those headings were fixed per theme, because
+        two of the three then read the same every day. A heading says what a
+        passage is about; an angle is a claim someone would defend. One cannot
+        stand in for the other.
+
+        The published commentary is the ledger. Reading its titles keeps the
+        proposal from offering back something already written, and needs no
+        store beyond the files themselves.
+
+        Returns an empty list on any failure. A missing proposal is a quiet
+        notification; a broken one would cost the digest.
+        """
+        from pathlib import Path
+
+        from .ai.prompting.commentary import (
+            ANGLE_SCHEMA,
+            angles_system,
+            angles_user,
+        )
+
+        already: List[str] = []
+        for path in sorted(Path("docs/_commentary").glob("*.md")):
+            if path.name in {"README.md", "template.md"}:
+                continue
+            for line in path.read_text(encoding="utf-8").splitlines()[:12]:
+                if line.startswith("title:"):
+                    already.append(line.split(":", 1)[1].strip().strip('"'))
+                    break
+
+        try:
+            client = create_ai_client(self.config.ai)
+            raw = await client.complete(
+                angles_system(),
+                angles_user(
+                    title=title,
+                    theme=theme,
+                    theme_question=self._theme_questions().get(profile_id, ""),
+                    body=body[:4000],
+                    already_written=already,
+                ),
+                schema=ANGLE_SCHEMA,
+            )
+            angles = json.loads(raw).get("angles") or []
+            return [
+                {
+                    "claim": str(a.get("claim", "")).strip(),
+                    "audience": str(a.get("audience", "")).strip(),
+                    "rank_reason": str(a.get("rank_reason", "")).strip(),
+                }
+                for a in angles
+                if str(a.get("claim", "")).strip()
+            ][:3]
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(
+                f"[yellow]{self.icons['warning']} Could not draft commentary "
+                f"angles: {exc}[/yellow]"
+            )
+            return []
+
+    async def _write_commentary_proposal(
         self,
         summarizer: DailySummarizer,
         items: List[ContentItem],
@@ -1336,18 +1401,15 @@ class HorizonOrchestrator:
             else ""
         )
 
-        angles = []
-        if artifact:
-            for block in artifact.blocks:
-                if block.primary:
-                    continue
-                angles.append({
-                    "heading": (
-                        self.profiles.block_titles.get(profile_id, {}).get(block.id)
-                        or block.title
-                    ),
-                    "note": " ".join(str(block.content).split())[:180],
-                })
+        angles = await self._commentary_angles(
+            title=artifact.title if artifact else pick.title,
+            theme=summarizer.profile_name(profile_id, lang),
+            profile_id=profile_id,
+            body="\n\n".join(
+                f"{b.title}: {' '.join(str(b.content).split())}"
+                for b in (artifact.blocks if artifact else [])
+            ) or (analysis.summary if analysis else ""),
+        )
 
         payload = {
             "title": artifact.title if artifact else pick.title,

@@ -29,9 +29,13 @@ PROPOSAL = {
     "url": "https://arxiv.org/abs/2608.13754",
     "plain": "A pre-registered study ran 15,840 defensible analytic choices.",
     "angles": [
-        {"heading": "Why circuit analysis is trusted as evidence", "note": "n"},
-        {"heading": "Who is exposed", "note": "n"},
-        {"heading": "What reduces the risk", "note": "n"},
+        {"claim": "Interpretability output is a finding, so an Annex IV file "
+                  "rests on one analyst's choices.",
+         "audience": "boards", "rank_reason": "Changes a filing decision."},
+        {"claim": "Ask a vendor to have two teams run it independently.",
+         "audience": "procurement", "rank_reason": "Usable, and narrower."},
+        {"claim": "A second gap sits beside the one you already named.",
+         "audience": "engineers", "rank_reason": "Observes more than it decides."},
     ],
 }
 
@@ -47,8 +51,12 @@ def test_the_section_carries_the_subject_and_its_angles(tmp_path):
 
     assert "Worth writing about" in out
     assert "Circuit-Discovery Claims Flip" in out
-    assert "1. <b>Why circuit analysis is trusted as evidence</b>" in out
-    assert "3. <b>What reduces the risk</b>" in out
+    # A claim, who it is for, and why it ranks there. Section headings were
+    # the first attempt and stopped working the day they were fixed per theme.
+    assert "1. <b>Interpretability output is a finding" in out
+    assert "<i>For boards.</i>" in out
+    assert "Changes a filing decision." in out
+    assert out.index("1. <b>") < out.index("3. <b>")
     assert "arxiv.org/abs/2608.13754" in out
 
 
