@@ -64,8 +64,11 @@ async def run(angle_index: int) -> int:
     )
     drafted = json.loads(raw)
     beats = drafted.get("beats") or []
-    if not beats:
-        print("The model returned no beats.")
+    # The schema cannot pin the count, so the caller checks it. Four is the
+    # standard; a piece with three has lost a beat and one with five has
+    # reinvented the one we merged.
+    if len(beats) != 4:
+        print(f"Expected four beats, got {len(beats)}. Not writing a draft.")
         return 1
 
     title = str(drafted.get("title") or proposal.get("title", "Untitled")).strip()

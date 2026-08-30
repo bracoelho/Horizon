@@ -19,10 +19,13 @@ ANGLE_SCHEMA = {
     "additionalProperties": False,
     "required": ["angles"],
     "properties": {
+        # No minItems or maxItems above 1: structured outputs reject them with
+        # "For 'array' type, 'minItems' values other than 0 or 1 are not
+        # supported". The count is asked for in the prompt and enforced by the
+        # caller, which is where a wrong count can be handled rather than
+        # turned into a 400 that loses the whole call.
         "angles": {
             "type": "array",
-            "minItems": 3,
-            "maxItems": 3,
             "items": {
                 "type": "object",
                 "additionalProperties": False,
@@ -104,8 +107,6 @@ DRAFT_SCHEMA = {
         "title": {"type": "string"},
         "beats": {
             "type": "array",
-            "minItems": 4,
-            "maxItems": 4,
             "items": {
                 "type": "object",
                 "additionalProperties": False,
