@@ -683,11 +683,17 @@ pre {
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--hz-accent) !important;
-  border-top: 1px solid var(--hz-border);
-  padding-top: 1.5rem;
   margin: 2.2rem 0 .7rem;
 }
-.item-body .item-block:first-of-type { border-top: 0; padding-top: 0; }
+/* The rule separates one block from the next, so it belongs on the blocks
+   that follow one rather than on all of them minus the first. :first-of-type
+   would have read "first of its tag", which is the same thing only while
+   every block is an h2, and the comment above describes exactly when that
+   stops being true. This form needs to know neither the tag nor the position. */
+.item-body .item-block ~ .item-block {
+  border-top: 1px solid var(--hz-border);
+  padding-top: 1.5rem;
+}
 
 /* Items published before that change render the block label as a bold run at
    the head of a paragraph. They are not rewritten, so this keeps the archive
