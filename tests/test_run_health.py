@@ -173,3 +173,33 @@ def test_the_selection_funnel_accounts_for_every_item(tmp_path):
     assert "3 below the shortlist cut" in line
     # The arithmetic the reader will do must work out.
     assert totals["ranked"] == 3 + totals["floor_rejected"] + totals["published"]
+
+
+def test_the_funnel_follows_the_order_the_pipeline_actually_ran(tmp_path):
+    """Ranking gates first and scores the survivors; thresholds score first.
+
+    A fixed print order would misreport whichever path it was not written for,
+    and the funnel's whole job is to reconcile with the page it sits on.
+    """
+    ranked = (
+        "📥 Fetched 212 items from all sources\n"
+        "🔗 Merged 1 cross-source duplicates → 211 unique items\n"
+        "🤖 Analyzed 64 items with AI\n"
+        "⭐️ Selection: 211 gated to 64, 15 ranked, 9 rejected by floor, 6 published\n"
+    )
+    _, _, totals, _, _, _ = _parse(tmp_path, ranked)
+    line = health.funnel(totals)
+    assert line.index("kept by the gate") < line.index("analyzed")
+    assert "64 analyzed (the survivors)" in line
+
+    threshold = (
+        "📥 Fetched 222 items from all sources\n"
+        "🤖 Analyzed 222 items with AI\n"
+        "⭐️ Selected 13 items with profile filters\n"
+        "⚖️ Balanced digest selected 13/13 items\n"
+    )
+    _, _, totals, _, _, _ = _parse(tmp_path, threshold)
+    line = health.funnel(totals)
+    assert "222 analyzed" in line
+    assert "the survivors" not in line
+    assert "kept by the gate" not in line

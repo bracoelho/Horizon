@@ -88,7 +88,7 @@ def test_ranking_maps_results_back_onto_pipeline_items(orchestrator, monkeypatch
 
     items = _items(5)
 
-    async def fake_select(candidates, client, themes, settings):
+    async def fake_select(candidates, client, themes, settings, after_gate=None):
         chosen = [
             Candidate(
                 id=c.id, title=c.title, summary="", source="", url="",
@@ -114,7 +114,7 @@ def test_ranking_maps_results_back_onto_pipeline_items(orchestrator, monkeypatch
 def test_ranking_drops_ids_that_do_not_map_back(orchestrator, monkeypatch) -> None:
     from src.selection.contract import Candidate, SelectionResult
 
-    async def fake_select(candidates, client, themes, settings):
+    async def fake_select(candidates, client, themes, settings, after_gate=None):
         return SelectionResult(
             selected=[Candidate(id="ghost", title="", summary="", source="", url="")]
         )
@@ -135,7 +135,7 @@ def test_ranking_records_the_theme_the_gate_chose(orchestrator, monkeypatch) -> 
         classification=ClassificationResult(profile="practice", method="ai_match")
     )
 
-    async def fake_select(candidates, client, themes, settings):
+    async def fake_select(candidates, client, themes, settings, after_gate=None):
         return SelectionResult(
             selected=[Candidate(
                 id="i0", title="", summary="", source="", url="",

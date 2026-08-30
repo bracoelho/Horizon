@@ -408,3 +408,50 @@ def test_ranker_stops_after_the_retry():
 
     assert len(calls) == 2
     assert sorted(c.id for c in result) == sorted(c.id for c in cands)
+
+
+class _KeepsTwo(_FakeClient):
+    """A gate that drops most of what it is given, like the real one."""
+
+    async def complete(self, system, user, *, model=None, schema=None, effort=None):
+        ids = [l.split("]")[0][1:] for l in user.splitlines() if l.startswith("[")]
+        if "rank" in system.lower() and "order them" in user.lower():
+            return json.dumps({"order": ids, "note": "n"})
+        if user.startswith("Title:"):
+            return json.dumps({"publish": True, "why": "w"})
+        return json.dumps({"verdicts": [
+            {"id": i, "keep": n < 2, "theme": "practice", "reason": ""}
+            for n, i in enumerate(ids)
+        ]})
+
+
+def test_after_gate_runs_on_the_survivors_only():
+    """The whole point of the reordering.
+
+    Scoring every fetched item so a cheap gate could discard three quarters of
+    them was the pipeline's largest avoidable cost. The hook has to see what
+    the gate kept, not what it was handed.
+    """
+    seen = {}
+
+    async def after_gate(kept):
+        seen["count"] = len(kept)
+        return kept
+
+    asyncio.run(select(_cands(6), _KeepsTwo(), THEMES,
+                       SelectionSettings(use_batch=False), after_gate=after_gate))
+
+    assert seen["count"] == 2, "the hook must see the survivors, not all six"
+
+
+def test_a_broken_after_gate_hook_cannot_corrupt_the_run():
+    """A hook that loses or invents items would silently change the counts."""
+
+    async def loses_half(kept):
+        return kept[:1]
+
+    result = asyncio.run(select(_cands(6), _FakeClient(), THEMES,
+                                SelectionSettings(use_batch=False),
+                                after_gate=loses_half))
+
+    assert result.gate_kept == 6

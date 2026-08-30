@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Awaitable, Callable, Dict, Optional, Protocol, Sequence
+from typing import Awaitable, Callable, Dict, List, Optional, Protocol, Sequence
 
 from .contract import BatchUnit, Candidate, SelectionResult
 from .defend import defend as defend_pass
@@ -55,8 +55,19 @@ async def select(
     client: "SelectionClient",
     themes: Dict[str, str],
     settings: Optional[SelectionSettings] = None,
+    after_gate: Optional[
+        Callable[[List[Candidate]], Awaitable[List[Candidate]]]
+    ] = None,
 ) -> SelectionResult:
-    """Run the full selection and return what survived, with the counts."""
+    """Run the full selection and return what survived, with the counts.
+
+    `after_gate` runs once, on the items the gate kept, and returns them
+    possibly enriched. It exists so the engine can do expensive per-item work
+    on the survivors rather than on everything: scoring every fetched item
+    before the cheap gate filtered them was costing roughly three times what
+    it needed to. The hook is a callback rather than an import so this module
+    still knows nothing about the pipeline around it.
+    """
     settings = settings or SelectionSettings()
     items = list(candidates)
     if not items:
@@ -98,6 +109,19 @@ async def select(
 
     if not kept:
         return SelectionResult(gate_kept=0, gate_dropped=len(items))
+
+    if after_gate is not None:
+        refreshed = await after_gate(kept)
+        # Defensive: a hook that loses or invents items would corrupt the
+        # counts reported downstream, so fall back rather than trust it.
+        if refreshed and len(refreshed) == len(kept):
+            kept = refreshed
+        else:
+            logger.warning(
+                "after_gate returned %s items for %d; keeping the originals",
+                len(refreshed) if refreshed else 0,
+                len(kept),
+            )
 
     # --- pass two: rank -----------------------------------------------------
     async def rank_complete(system: str, user: str) -> str:

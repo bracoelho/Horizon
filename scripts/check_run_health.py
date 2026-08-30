@@ -320,12 +320,20 @@ def funnel(totals) -> str:
         steps.append(f"{totals['fetched']} fetched")
     if totals["merged"]:
         steps.append(f"{totals['merged']} cross-source duplicates merged")
+    # Order follows the pipeline, and the pipeline's order depends on the path.
+    # Ranking gates first and scores only the survivors; the threshold path has
+    # to score everything before it can filter on a score. Printing a fixed
+    # order would misreport whichever path it was not written for.
+    gated_first = totals.get("gated") is not None
+    if gated_first:
+        steps.append(f"{totals['gated']} kept by the gate")
     if totals["analyzed"] is not None:
-        steps.append(f"{totals['analyzed']} analyzed")
+        steps.append(
+            f"{totals['analyzed']} analyzed"
+            + (" (the survivors)" if gated_first else "")
+        )
     if totals["selected"] is not None:
         steps.append(f"{totals['selected']} cleared threshold")
-    if totals.get("gated") is not None:
-        steps.append(f"{totals['gated']} kept by the gate")
     # The ranker and the shortlist cut were both missing, so the selection
     # funnel could not close: the 2026-08-22 run read "13 kept by the gate ->
     # 10 rejected by the floor -> 0 published", which implies three items went

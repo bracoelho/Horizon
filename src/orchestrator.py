@@ -283,19 +283,23 @@ class HorizonOrchestrator:
                     f"→ {len(merged_items)} unique items\n"
                 )
 
-            # 4. Analyze with AI
-            analyzed_items = await self.analyze_items(merged_items)
-            self.console.print(
-                f"{self.icons['ai']} Analyzed {len(analyzed_items)} items with AI\n"
-            )
-
-            # 5. Choose the edition. Ranking when selection is enabled, the
-            # original score threshold otherwise.
+            # 4 and 5, and the order between them depends on the path.
+            #
+            # Ranking gates first and analyses only the survivors. Scoring
+            # every fetched item and then letting a cheap gate discard three
+            # quarters of them was the pipeline's largest avoidable cost: on
+            # 2026-08-27 Sonnet scored 212 items so that Haiku could keep 64.
+            # The threshold path has no gate, so it still has to score
+            # everything before it can filter on the score.
             if self.config.selection.enabled:
                 important_items, _selection = await self.select_by_ranking(
-                    analyzed_items
+                    merged_items
                 )
             else:
+                analyzed_items = await self.analyze_items(merged_items)
+                self.console.print(
+                    f"{self.icons['ai']} Analyzed {len(analyzed_items)} items with AI\n"
+                )
                 filtering_result = await self.select_digest_items(
                     analyzed_items,
                 )
@@ -913,11 +917,40 @@ class HorizonOrchestrator:
         free of engine imports.
         """
         candidates = to_candidates(items)
+        by_id = {item.id: item for item in items}
+
+        async def analyse_survivors(kept):
+            """Score only what the gate kept, then hand the results back.
+
+            The gate reads titles and raw content, which `to_candidates`
+            already falls back to, so it never needed the analysis pass. Rank
+            and defend read better with a model-written summary, so the
+            scoring happens here rather than being dropped: after the cheap
+            filter, before the expensive comparison.
+            """
+            survivors = [by_id[c.id] for c in kept if c.id in by_id]
+            if not survivors:
+                return kept
+            await self.analyze_items(survivors)
+            self.console.print(
+                f"{self.icons['ai']} Analyzed {len(survivors)} items with AI "
+                f"(the gate's survivors, not all {len(items)})\n"
+            )
+            refreshed = {c.id: c for c in to_candidates(survivors)}
+            # Preserve the gate's order and its theme decision, which the
+            # rebuilt candidates do not carry.
+            return [
+                refreshed[c.id].with_theme(c.theme) if c.theme else refreshed[c.id]
+                for c in kept
+                if c.id in refreshed
+            ]
+
         result = await run_selection(
             candidates,
             create_ai_client(self.config.ai),
             self._theme_questions(),
             self._selection_settings(),
+            after_gate=analyse_survivors,
         )
 
         by_id = {item.id: item for item in items}
