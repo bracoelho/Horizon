@@ -548,8 +548,10 @@ def test_the_block_class_comes_from_the_id_not_the_title():
     """The id is stable; a title rewrite would silently move a text anchor."""
     body = DailySummarizer().render_item_body(_blocked_item(), "en")
 
-    assert "{: .item-block .item-block-background}" in body
-    assert "{: .item-block .item-block-exposure}" in body
+    # The id class, not the whole list: a heading also carries whether it was
+    # written or declared, and that set is allowed to grow.
+    assert ".item-block-background}" in body
+    assert ".item-block-exposure}" in body
 
 
 def test_the_digest_keeps_its_bold_runs():
@@ -612,3 +614,27 @@ def test_no_declaration_leaves_the_model_heading_alone():
     body = DailySummarizer().render_item_body(item, "en")
 
     assert "## Who this affects" in body
+
+
+def test_the_class_says_whether_the_heading_was_written_or_declared():
+    """The design keys on the distinction, not on a block id.
+
+    Keying on `.item-block-background` would already be wrong for one
+    profile: ai-creator's first block is `why_now`. It routes nothing today,
+    so that selector would have failed silently rather than loudly.
+    """
+    item = _make_item(3)
+    item.processing.artifacts["en"] = ContentArtifact(
+        language="en", title="T",
+        blocks=[
+            ContentBlock(id="summary", title="S", content="Opening.", primary=True),
+            ContentBlock(id="background", title="Why auto mode was trusted", content="Ctx."),
+            ContentBlock(id="exposure", title="ignored", content="Exp."),
+        ],
+    )
+    body = DailySummarizer(
+        block_titles={"tech-news": {"exposure": "Who is exposed"}}
+    ).render_item_body(item, "en")
+
+    assert "{: .item-block .item-block-written .item-block-background}" in body
+    assert "{: .item-block .item-block-fixed .item-block-exposure}" in body

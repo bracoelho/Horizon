@@ -484,10 +484,21 @@ class DailySummarizer:
                     # relying on the anchor kramdown derives from the heading
                     # text, which a title rewrite would silently change.
                     slug = re.sub(r"[^a-z0-9]+", "-", block.id.lower()).strip("-")
+                    # Two kinds of heading, and the difference is what the
+                    # design keys on. A written one is a claim the model made
+                    # about this item; a fixed one is a label the profile
+                    # declared. Carried as a class because the alternative,
+                    # keying on the block id, is an assumption that already
+                    # fails once: ai-creator's first block is `why_now`, not
+                    # `background`.
+                    kind = "fixed" if declared else "written"
+                    classes = f".item-block .item-block-{kind}"
+                    if slug:
+                        classes += f" .item-block-{slug}"
                     lines.extend([
                         "",
                         f"{'#' * level} {block_title}",
-                        "{: .item-block" + (f" .item-block-{slug}" if slug else "") + "}",
+                        "{: " + classes + "}",
                         "",
                         block_content,
                     ])
