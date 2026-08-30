@@ -47,9 +47,23 @@ CHECKS = [
 SKIP = re.compile(r"lint-ignore|data-lint=\"off\"")
 
 
+# An HTML comment never reaches a reader, so auditing one flags writing that
+# was never published. This is not hypothetical: the audit's own findings now
+# ride into a draft as a comment, and that comment explains the "rather than"
+# rule using the words "rather than", so the first draft under the new scheme
+# reported two findings that were its own note talking about itself.
+COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
+def _blank_comments(text: str) -> str:
+    """Replace comment bodies with blank lines, keeping line numbers true."""
+    return COMMENT.sub(lambda m: "\n" * m.group(0).count("\n"), text)
+
+
 def check(path: Path) -> list:
     findings = []
-    for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    body = _blank_comments(path.read_text(encoding="utf-8"))
+    for n, line in enumerate(body.splitlines(), 1):
         if SKIP.search(line):
             continue
         for name, pattern, remedy in CHECKS:
