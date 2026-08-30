@@ -168,12 +168,12 @@ def parse_log(path: Path):
             totals["published"] = int(m.group(6))
         elif m := ENRICHED_RE.search(line):
             totals["enriched"] = int(m.group(1))
+            totals["enrich_attempted"] = int(m.group(2))
         elif m := SCORE_DIST_RE.search(line):
             try:
                 totals["score_distribution"] = json.loads(m.group(1))
             except json.JSONDecodeError:
                 pass  # a malformed line is not worth failing a health report
-            totals["enrich_attempted"] = int(m.group(2))
         elif m := TOKENS_RE.search(line):
             totals["tokens"] = int(m.group(1))
             totals["tokens_in"] = int(m.group(2))
