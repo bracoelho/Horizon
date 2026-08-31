@@ -64,6 +64,18 @@ def reconcile(order: Sequence[str], group: Sequence[Candidate]) -> List[Candidat
             len(missing),
             len(group),
         )
+        # Two consecutive live runs failed with every id unmatched on the
+        # remainder chunk, and the response parsed as valid JSON, so the
+        # raw-on-parse-failure log never fired and nobody has ever seen what
+        # the model actually returns in this state. Show the evidence: what
+        # it sent against what was asked.
+        if not ranked:
+            logger.warning(
+                "Ranker returned %d id(s), none matching. Returned sample: %r; expected sample: %r",
+                len(order),
+                list(order)[:5],
+                [c.id for c in group[:3]],
+            )
     return ranked + missing
 
 

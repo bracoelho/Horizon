@@ -455,3 +455,21 @@ def test_a_broken_after_gate_hook_cannot_corrupt_the_run():
                                 after_gate=loses_half))
 
     assert result.gate_kept == 6
+
+
+def test_total_mismatch_logs_what_the_model_actually_returned(caplog):
+    """Two live runs failed with valid JSON whose ids matched nothing, and
+    no log ever showed the returned ids. Now the evidence prints itself."""
+    import logging
+    from src.selection.contract import Candidate
+    from src.selection.rank import reconcile
+
+    group = [Candidate(id=f"rss:x:{n}", title="t", summary="", source="", url="")
+             for n in range(3)]
+    with caplog.at_level(logging.WARNING):
+        out = reconcile(["1", "2", "3"], group)
+
+    assert [c.id for c in out] == [c.id for c in group]
+    joined = " ".join(r.getMessage() for r in caplog.records)
+    assert "none matching" in joined
+    assert "'1'" in joined and "rss:x:0" in joined
