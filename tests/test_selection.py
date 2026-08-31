@@ -466,10 +466,61 @@ def test_total_mismatch_logs_what_the_model_actually_returned(caplog):
 
     group = [Candidate(id=f"rss:x:{n}", title="t", summary="", source="", url="")
              for n in range(3)]
+    # Alien ids that neither match fully nor as a suffix, so the
+    # total-mismatch diagnosis path is what fires (suffix rescue is
+    # covered by its own tests below).
     with caplog.at_level(logging.WARNING):
-        out = reconcile(["1", "2", "3"], group)
+        out = reconcile(["zz-a", "zz-b", "zz-c"], group)
 
     assert [c.id for c in out] == [c.id for c in group]
     joined = " ".join(r.getMessage() for r in caplog.records)
     assert "none matching" in joined
-    assert "'1'" in joined and "rss:x:0" in joined
+    assert "zz-a" in joined and "rss:x:0" in joined
+
+
+def test_prefix_stripped_ids_are_rescued_by_unambiguous_suffix():
+    """Replay 33343845452: the model returns `f68699...` for
+    `google_news:article:f68699...`, valid JSON, every pass. A trailing
+    segment naming exactly one candidate is that candidate."""
+    from src.selection.contract import Candidate
+    from src.selection.rank import reconcile
+
+    group = [
+        Candidate(id="google_news:article:aaa111", title="A", summary="", source="", url=""),
+        Candidate(id="google_news:article:bbb222", title="B", summary="", source="", url=""),
+        Candidate(id="hackernews:ccc333", title="C", summary="", source="", url=""),
+    ]
+
+    out = reconcile(["bbb222", "ccc333", "aaa111"], group)
+
+    assert [c.id.rsplit(":", 1)[-1] for c in out] == ["bbb222", "ccc333", "aaa111"]
+
+
+def test_an_ambiguous_suffix_is_never_guessed():
+    from src.selection.contract import Candidate
+    from src.selection.rank import reconcile
+
+    group = [
+        Candidate(id="rss:feed1:dup", title="A", summary="", source="", url=""),
+        Candidate(id="rss:feed2:dup", title="B", summary="", source="", url=""),
+    ]
+
+    out = reconcile(["dup"], group)
+
+    # Both appended unranked in original order; neither claimed by the guess.
+    assert [c.id for c in out] == ["rss:feed1:dup", "rss:feed2:dup"]
+
+
+def test_full_ids_still_win_over_suffix_interpretation():
+    from src.selection.contract import Candidate
+    from src.selection.rank import reconcile
+
+    group = [
+        Candidate(id="x:tail", title="A", summary="", source="", url=""),
+        Candidate(id="tail", title="B", summary="", source="", url=""),
+    ]
+
+    out = reconcile(["tail"], group)
+
+    # "tail" is a real full id here, so it must mean that candidate.
+    assert out[0].id == "tail"

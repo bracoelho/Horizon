@@ -48,16 +48,36 @@ def reconcile(order: Sequence[str], group: Sequence[Candidate]) -> List[Candidat
     stage degrades to "unranked" rather than to "silently lost items".
     """
     by_id = {c.id: c for c in group}
+    # The model strips namespace prefixes from long ids: replay 33343845452
+    # caught it returning `f686992522aa0a24` for
+    # `google_news:article:f686992522aa0a24`, deterministically, every pass,
+    # which is what collapsed the Google News-heavy chunk on two consecutive
+    # live nights while parsing as perfectly valid JSON. A trailing segment
+    # that names exactly one candidate is that candidate; an ambiguous one
+    # stays unmatched rather than guessed.
+    by_suffix: Dict[str, Candidate] = {}
+    for c in group:
+        tail = c.id.rsplit(":", 1)[-1]
+        by_suffix[tail] = None if tail in by_suffix else c
+    rescued = 0
     ranked: List[Candidate] = []
     seen = set()
     for item_id in order:
         candidate = by_id.get(item_id)
-        if candidate is None or item_id in seen:
+        if candidate is None:
+            candidate = by_suffix.get(item_id)
+            if candidate is not None:
+                rescued += 1
+        if candidate is None or candidate.id in seen:
             continue
-        seen.add(item_id)
+        seen.add(candidate.id)
         ranked.append(candidate)
+    if rescued:
+        logger.info(
+            "Rescued %d prefix-stripped id(s) by unambiguous suffix", rescued
+        )
 
-    missing = [c for c in group if c.id not in seen]
+    missing = [c for c in group if c.id not in seen]  # seen holds full ids
     if missing:
         logger.warning(
             "Ranker omitted %d of %d ids; appending them unranked",
