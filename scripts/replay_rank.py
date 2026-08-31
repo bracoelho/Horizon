@@ -30,6 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.models import AIConfig  # noqa: E402
 from src.selection.contract import Candidate  # noqa: E402
 from src.selection import rank as rank_mod  # noqa: E402
+from src.selection.prompts import RANK_SCHEMA  # noqa: E402
 
 
 class WarningCounter(logging.Handler):
@@ -76,10 +77,22 @@ def head_agreement(heads: list[list[str]]) -> float:
 
 
 async def one_pass(candidates, client, args, counter):
+    # Replicate the live pipeline's call exactly: model override, the rank
+    # schema, and the effort setting. The first baseline ran the bare
+    # completer and collapsed every chunk, which measured the harness gap
+    # instead of the ranker; attribution demands the identical call.
+    async def rank_complete(system: str, user: str) -> str:
+        return await client.complete(
+            system, user,
+            model=args.model or "claude-sonnet-5",
+            schema=RANK_SCHEMA,
+            effort=args.effort,
+        )
+
     started = time.monotonic()
     ordered = await rank_mod.rank(
         candidates,
-        client.complete,
+        rank_complete,
         chunk_size=args.chunk_size,
         carry=args.carry,
     )
@@ -93,6 +106,8 @@ async def main() -> int:
     ap.add_argument("--consider", type=int, default=10)
     ap.add_argument("--chunk-size", type=int, default=25)
     ap.add_argument("--carry", type=int, default=10)
+    ap.add_argument("--effort", default="high",
+                    help="rank effort, matching selection.rank_effort")
     ap.add_argument("--model", default=None,
                     help="override the rank model (BACKLOG #45 experiments)")
     args = ap.parse_args()
@@ -111,9 +126,13 @@ async def main() -> int:
                       temperature=1.0)
     client = create_ai_client(config)
 
+    # A stream handler as well as the counter: the first baseline swallowed
+    # every warning into the counter, so the returned-ids diagnosis never
+    # reached the CI log.
+    logging.basicConfig(level=logging.WARNING,
+                        format="%(levelname)s %(message)s")
     counter = WarningCounter()
     logging.getLogger().addHandler(counter)
-    logging.getLogger().setLevel(logging.WARNING)
 
     heads: list[list[str]] = []
     for n in range(1, args.repeat + 1):
