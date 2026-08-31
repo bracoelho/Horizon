@@ -518,5 +518,35 @@
   "degraded": 0,
   "warnings": 17,
   "zero_sources": []
+ },
+ {
+  "run_id": "33343124168",
+  "event": "workflow_dispatch",
+  "utc": "2026-08-31T00:02:45Z",
+  "funnel": {
+   "fetched": 118,
+   "gated": 47,
+   "analyzed": 47,
+   "ranked": 20,
+   "floor_rejected": 10,
+   "below_score": 0,
+   "published": 0,
+   "tokens": 245605
+  },
+  "score_distribution": {
+   "1": 6,
+   "2": 7,
+   "3": 7,
+   "4": 10,
+   "5": 3,
+   "6": 11,
+   "7": 3
+  },
+  "published_by_theme": {},
+  "published_scores": [],
+  "errors": 1,
+  "degraded": 0,
+  "warnings": 13,
+  "zero_sources": []
  }
 ]
