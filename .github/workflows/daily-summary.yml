@@ -134,6 +134,45 @@ jobs:
           git commit -m "Today's commentary candidate and metrics row"
           git push
 
+      # Completion-triggered review (#44's fire half, decided 2026-09-01):
+      # the Morning Review routine starts the moment the run ends, green or
+      # red, which no clock can promise under scheduler drift. Fire-only
+      # token; a failed fire never fails the build.
+      - name: Fire the morning review routine
+        if: always()
+        env:
+          FIRE_URL: ${{ secrets.ROUTINE_FIRE_URL }}
+          FIRE_TOKEN: ${{ secrets.ROUTINE_FIRE_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ -z "$FIRE_URL" ] || [ -z "$FIRE_TOKEN" ]; then
+            echo "Fire trigger not configured; skipping."; exit 0
+          fi
+          python3 - <<'PY' || echo "Fire failed; the 08:00 schedule still covers the review."
+          import json, os, urllib.request
+          funnel = {}
+          try:
+              funnel = json.load(open("health_summary.json")).get("totals", {})
+          except Exception:
+              pass
+          text = (f"This run just completed with status {os.environ['JOB_STATUS']}. "
+                  f"Funnel: {json.dumps(funnel)}. Run: {os.environ['RUN_URL']}. "
+                  "Review it now instead of waiting for the schedule.")
+          req = urllib.request.Request(
+              os.environ["FIRE_URL"],
+              data=json.dumps({"text": text[:60000]}).encode(),
+              headers={
+                  "Authorization": f"Bearer {os.environ['FIRE_TOKEN']}",
+                  "anthropic-version": "2023-06-01",
+                  "anthropic-beta": "experimental-cc-routine-2026-04-01",
+                  "Content-Type": "application/json",
+              })
+          with urllib.request.urlopen(req, timeout=30) as resp:
+              body = json.load(resp)
+          print("Review session started:", body.get("claude_code_session_url", "?"))
+          PY
+
       # After the deploy so the link in the message actually resolves.
       # always() so a run that died earlier still notifies.
       - name: Notify via Telegram
