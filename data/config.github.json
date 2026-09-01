@@ -647,6 +647,8 @@
     "max_publish": 6,
     "defend_concurrency": 4,
     "use_batch": true,
-    "min_score": 7.0
+    "min_score": 7.0,
+    "rank_mode": "listwise",
+    "rank_set_size": 7
   }
 }
