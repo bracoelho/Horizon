@@ -177,3 +177,44 @@ def test_ranked_path_with_items_leads_with_published(tmp_path, monkeypatch):
     assert "3 published" in msg
     assert "None" not in msg
     assert "cleared threshold" not in msg
+
+
+def test_item_pages_maps_source_links_to_radar_pages(tmp_path):
+    """The map is read back from what the run wrote, never derived.
+
+    Deriving a slug from the title produced URLs the site never served (the
+    filename carries date, run time, index and language). The front-matter
+    link is the join key.
+    """
+    items = tmp_path / "_items"
+    items.mkdir()
+    (items / "2026-09-01-2135-01-miso-rules-en.md").write_text(
+        '---\nlayout: item\nlink: "https://example.com/story"\n---\nbody\n',
+        encoding="utf-8",
+    )
+    pages = notify.item_pages("https://radar.example", items_dir=items)
+
+    assert pages == {
+        "https://example.com/story":
+            "https://radar.example/item/2026-09-01-2135-01-miso-rules-en/"
+    }
+
+
+def test_the_section_links_the_radars_own_summary_when_a_page_exists(tmp_path):
+    """The owner reads our summary before choosing an angle.
+
+    The line resolves through the written pages and drops out entirely when
+    no page matches, rather than shipping a guessed URL.
+    """
+    pages = {PROPOSAL["url"]: "https://radar.example/item/x-en/"}
+    out = "\n".join(
+        notify.commentary_lines(
+            "https://radar.example", _write(tmp_path, PROPOSAL), pages=pages
+        )
+    )
+    assert 'href="https://radar.example/item/x-en/">Our summary on the radar' in out
+
+    out_no = "\n".join(
+        notify.commentary_lines("https://radar.example", _write(tmp_path, PROPOSAL))
+    )
+    assert "Our summary on the radar" not in out_no

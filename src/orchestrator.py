@@ -1393,6 +1393,27 @@ class HorizonOrchestrator:
             )
             return []
 
+    @staticmethod
+    def _published_item_url(pick) -> str:
+        """The page this run wrote for the item, read back from disk.
+
+        Deriving the slug from the title again produced a URL the site never
+        served: the filename carries the date, run time, index and the view
+        title's slug, none of which can be reconstructed here. The written
+        file is the fact; an item with no page gets an empty string rather
+        than a guess.
+        """
+        target = None
+        for f in sorted(Path("docs/_items").glob("*.md"), reverse=True):
+            try:
+                head = f.read_text(encoding="utf-8")[:2000]
+            except OSError:
+                continue
+            if f"link: {json.dumps(str(pick.url))}" in head:
+                target = f"/item/{f.stem}/"
+                break
+        return target or ""
+
     async def _write_commentary_proposal(
         self,
         summarizer: DailySummarizer,
@@ -1461,7 +1482,7 @@ class HorizonOrchestrator:
             "theme": summarizer.profile_name(profile_id, lang),
             "score": analysis.score if analysis else None,
             "url": str(pick.url),
-            "item_url": f"/item/{self._item_slug(pick.title, '')}/",
+            "item_url": self._published_item_url(pick),
             "edition_url": edition_url,
             "plain": " ".join(
                 str(

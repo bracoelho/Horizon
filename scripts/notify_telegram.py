@@ -82,10 +82,40 @@ def parse_items(post_path: Path) -> list[dict]:
     return items
 
 
+def item_pages(base: str, items_dir: Path = Path("docs/_items")) -> dict:
+    """Map each published item's source link to its page on the radar.
+
+    The run writes one document per item before this script runs, with the
+    source link in the front matter and the permalink derived from the
+    filename. Reading those back is the only mapping that cannot drift from
+    what the site actually serves; deriving a slug here would repeat the bug
+    this replaced. Newer files win when a link repeats across runs.
+    """
+    pages: dict = {}
+    if not base or not items_dir.is_dir():
+        return pages
+    for f in sorted(items_dir.glob("*.md")):
+        try:
+            head = f.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        for line in head.splitlines()[:25]:
+            if m := re.match(r"^link:\s*(.+)$", line):
+                raw = m.group(1).strip()
+                try:
+                    link = json.loads(raw)
+                except ValueError:
+                    link = raw.strip('"')
+                pages[link] = f"{base}/item/{f.stem}/"
+                break
+    return pages
+
+
 def commentary_lines(
     base: str,
     path: Path = Path("data/commentary_proposal.json"),
     stale: bool = False,
+    pages: dict | None = None,
     reason: str = "",  # appended when a caller has something the headline lacks
 ) -> list:
     """The day's candidate to write about, assembled by the run.
@@ -150,6 +180,12 @@ def commentary_lines(
 
     if p.get("url"):
         out.append(f'\n→ <a href="{esc(p["url"])}">Read the source</a>')
+    # The owner reads the radar's own summary before choosing an angle, and
+    # the source link alone made him hunt for it. Resolved from the written
+    # item pages, never derived, so a missing page drops the line rather
+    # than shipping a guess.
+    if ours := (pages or {}).get(str(p.get("url") or "")):
+        out.append(f'→ <a href="{esc(ours)}">Our summary on the radar</a>')
 
     # Two taps from here to a draft: the form renders `angle` as a dropdown on
     # mobile web, so choosing needs no typing and no server listening for a
@@ -259,22 +295,25 @@ def build_message(health: dict, run_type: str) -> str:
     # Trust the run's own count over the digest file: if nothing cleared, don't
     # list whatever the page happens to contain. The two only disagree when the
     # page is stale, but a message contradicting itself is worse than a terse one.
+    pages = item_pages(base)
     for post in posts:
         items = [] if nothing_cleared else parse_items(Path(post))
         link = post_url(post, base)
         for item in items[:MAX_ITEMS_SHOWN]:
             host = urllib.parse.urlparse(item["url"]).netloc.removeprefix("www.")
+            ours = pages.get(item["url"], "")
+            tail = f' · <a href="{ours}">our summary</a>' if ours else ""
             lines.append(
                 f'⭐ <b>{esc(item["score"])}</b> '
                 f'<a href="{esc(item["url"])}">{esc(item["title"])}</a>'
-                f"\n<i>{esc(host)}</i>"
+                f"\n<i>{esc(host)}</i>{tail}"
             )
         if len(items) > MAX_ITEMS_SHOWN:
             lines.append(f"…and {len(items) - MAX_ITEMS_SHOWN} more")
         if link:
             lines.append(f'\n→ <a href="{link}">Read the full digest</a>')
 
-    lines += commentary_lines(base, stale=nothing_cleared)
+    lines += commentary_lines(base, stale=nothing_cleared, pages=pages)
 
     message = "\n".join(lines)
     if len(message) > TELEGRAM_LIMIT:
