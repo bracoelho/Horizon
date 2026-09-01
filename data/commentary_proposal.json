@@ -1,26 +1,26 @@
 {
-  "title": "Quantization-Triggered Backdoors Bypass Full-Precision Model Safety Checks",
-  "theme": "Reliability & Assurance",
+  "title": "MISO proposes distinct reliability rules for large and computational loads",
+  "theme": "Critical Infrastructure",
   "score": 8.0,
-  "url": "https://arxiv.org/abs/2608.27512",
-  "item_url": "/item/quantization-triggered-backdoors-in-language-models-cross-quantizer-tr/",
-  "edition_url": "/2026/08/31/2311-summary-en.html",
-  "plain": "Researchers built a three-stage adversarial fine-tuning framework that embeds latent malicious payloads into models which pass standard source-precision safety checks, but activate targeted misbehavior once compressed with INT8 or 4-bit post-training quantization. In a tactical machine translation scenario, a backdoore",
+  "url": "https://www.utilitydive.com/news/large-load-reliability-requirements-miso-ferc/829278/",
+  "item_url": "/item/large-loads-face-reliability-requirements-under-miso-proposal/",
+  "edition_url": "/2026/09/01/2135-summary-en.html",
+  "plain": "The Midcontinent Independent System Operator (MISO) has filed a proposal, pending Federal Energy Regulatory Commission approval, that creates separate regulatory classifications for large loads and for a new subcategory called computational loads. MISO defines large loads as those above 50 megawatts and computational l",
   "angles": [
     {
-      "claim": "Any safety sign-off that names a model version without naming its quantization configuration is not a valid sign-off and should be rejected on Thursday.",
-      "audience": "Director asking what to demand from vendors and internal teams before accepting a certification",
-      "rank_reason": "Directly changes what gets asked in governance review and closes a control gap that many regulated deployments currently treat as satisfied"
+      "claim": "Once a 25 megawatt IT threshold sets who faces curtailment, every data center contract signed before FERC rules on it is a bet on terms not yet written.",
+      "audience": "Directors negotiating data center site and power agreements",
+      "rank_reason": "Directly changes a decision being made now, since capacity reservations and contract clauses drafted today may not match whatever obligations FERC ultimately approves."
     },
     {
-      "claim": "Engineers should add a quantized-artifact regression suite to CI before edge deployment, since the FP16 checkpoint and the shipped INT8 or 4-bit model are functionally different products.",
-      "audience": "Engineer deciding what changes in the deployment pipeline on Monday",
-      "rank_reason": "Reaches the same production systems as the top angle but is a build step rather than an accountability rule, so it changes fewer decisions outside engineering"
+      "claim": "A megawatt threshold drawn to catch data centers will also catch hydrogen plants and battery factories that happen to run dense compute for controls.",
+      "audience": "Engineers scoping interconnection for industrial and computational loads",
+      "rank_reason": "Reaches the sector broadly and forces a concrete Monday task, checking whether existing or planned loads cross 25 megawatts of IT equipment, but the consequence is definitional rather than operational until FERC rules."
     },
     {
-      "claim": "Buying a third-party fine-tuned checkpoint transfers a hidden liability, because the seller's safety claim covers a precision you will not actually run in production.",
-      "audience": "Director or procurement lead evaluating external model suppliers",
-      "rank_reason": "Extends the article's finding into a supply-chain contract question it does not raise, but is more speculative and harder to act on immediately than the certification and CI angles"
+      "claim": "MISO is building a reliability category with no obligations attached yet, so the filing is a placeholder for rules that will be negotiated after the classification exists.",
+      "audience": "Regulatory affairs teams tracking FERC proceedings",
+      "rank_reason": "Ranks last because it restates the article's own stated gap rather than adding a claim the author would need to defend beyond what MISO already disclosed."
     }
   ]
 }
