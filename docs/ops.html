@@ -87,6 +87,22 @@ edition's published health footer.</p>
 distribution is recorded from 30&nbsp;August onward; earlier runs kept only what
 published. The clustering is the finding that started the judging rebuild.</p>
 
+<h2>Score spread, run by run</h2>
+<div class="panel"><svg id="strip" width="960" height="260"></svg>
+  <div class="legend">
+    <span><i style="background:var(--graphite);border-radius:50%"></i>analyzed, sized by count</span>
+    <span><i style="background:var(--accent);border-radius:50%"></i>published</span>
+    <span><i style="background:none;border-radius:0;height:.3rem;border-bottom:1px dashed var(--accent)"></i>publish floor</span>
+  </div>
+</div>
+<p class="note">Each column is one run; each grey dot is a score the analyzer gave,
+sized by how many items received it. Claret dots are what published, and they sit
+above the floor by construction. Full distributions are recorded from
+30&nbsp;August; earlier columns show published scores only, which is why the
+history looks narrower than the scorer ever was. This chart is the instrument for
+the wide-scale rebuild: it is done when the upper half of the scale separates into
+distinct values instead of ties at the same integers.</p>
+
 <h2>Recent runs</h2>
 <div class="panel"><table id="runs"><thead><tr>
   <th>Run (UTC)</th><th>Fetched</th><th>Analyzed</th><th>Published</th>
@@ -205,6 +221,36 @@ published. The clustering is the finding that started the judging rebuild.</p>
       out += `<rect x="${x.toFixed(1)}" y="${(H - bottom - h).toFixed(1)}" width="${Math.max(bw * 0.6, 2).toFixed(1)}" height="${h.toFixed(1)}" fill="${css("--accent")}"><title>${k}: ${counts[k]}</title></rect>`;
       out += `<text x="${(x + bw * 0.3).toFixed(1)}" y="${H - 8}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${k}</text>`;
       out += `<text x="${(x + bw * 0.3).toFixed(1)}" y="${(H - bottom - h - 4).toFixed(1)}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${counts[k]}</text>`;
+    });
+    svg.innerHTML = out;
+  }
+
+  // score strip: one column per run, the analyzed distribution as sized
+  // dots, published scores in claret on top, the floor as a dashed line
+  {
+    const svg = document.getElementById("strip");
+    const W = 960, H = 260, pad = 30, bottom = 26, top = 14;
+    const n = runs.length, bw = (W - pad) / n;
+    const sy = s => top + (10 - s) / 9 * (H - bottom - top);
+    let out = "";
+    for (let s = 1; s <= 10; s++)
+      out += `<text x="2" y="${(sy(s) + 3).toFixed(1)}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono">${s}</text>`;
+    const floorY = sy(7).toFixed(1);
+    out += `<line x1="${pad}" y1="${floorY}" x2="${W}" y2="${floorY}" stroke="${css("--accent")}" stroke-dasharray="4 4" opacity="0.5"><title>publish floor: 7.0 since 30 Aug</title></line>`;
+    runs.forEach((r, i) => {
+      const x = pad + i * bw + bw / 2;
+      Object.entries(r.score_distribution || {}).forEach(([s, c]) => {
+        const v = parseFloat(s);
+        if (!(v >= 1 && v <= 10) || !c) return;
+        const rad = Math.min(2 + Math.sqrt(c) * 1.7, bw * 0.45, top - 1);
+        out += `<circle cx="${x.toFixed(1)}" cy="${sy(v).toFixed(1)}" r="${rad.toFixed(1)}" fill="${css("--graphite")}" opacity="0.55"><title>${day(r.utc)} score ${s}: ${c} item(s)</title></circle>`;
+      });
+      (r.published_scores || []).forEach(s => {
+        if (!(s >= 1 && s <= 10)) return;
+        out += `<circle cx="${(x + bw * 0.22).toFixed(1)}" cy="${sy(s).toFixed(1)}" r="${Math.min(3.2, bw * 0.35).toFixed(1)}" fill="${css("--accent")}"><title>${day(r.utc)} published at ${s.toFixed(1)}</title></circle>`;
+      });
+      if (i % Math.ceil(n / 8) === 0)
+        out += `<text x="${x.toFixed(1)}" y="${H - 8}" fill="${css("--graphite")}" font-size="10" font-family="Spline Sans Mono" text-anchor="middle">${r.utc.slice(5, 10)}</text>`;
     });
     svg.innerHTML = out;
   }
