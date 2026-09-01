@@ -31,9 +31,9 @@ from different vendors, departments and budgets into the same systems this
 year, and inside any real organisation, partially conflicting objectives are
 the everyday condition.
 
-**What to do.** Think about the protype of functional teams, all have "a contract" on who does what, "rules of engagement", and a leader to escalate and differences and make decisions. Agentic system are no different.
-In case you are thinking this is just a "research topic", I assure you it is not. I've experienced myself this pattern at my projects. I observed that until ensuring a written the coordination contract, nominated a coordinator and decision-maker including details a mechanism of how agents communicate, spent time solving the mistakes of coordination myself. After the "contract" on the same day two agents them caught each
+**What to do.** Think about the prototype of functional teams: all have "a contract" on who does what, "rules of engagement", and a leader who settles differences and makes decisions. Agentic systems are no different.
+In case you are thinking this is just a "research topic", I assure you it is not. I have experienced this pattern myself in my projects. Until I ensured a written coordination contract, nominated a coordinator and decision-maker, and detailed the mechanism for how agents communicate, I spent my time solving the mistakes of coordination myself. After the "contract", on the same day, two agents caught each
 other's boundary errors and brought both to me for the decision. The
-question you should ask: How are my agentic systems today ? Do my design guidelines, "checklists" and review process stand on this topic? 
+question you should ask: How are my agentic systems today? Where do my design guidelines, "checklists" and review process stand on this topic?
 
-**Where I would be wrong.**. This article is done to showcase and study the behaviour. However, consider the thought experience: What if one of my agents goes into dark mode against the contract and goes into a spree of expenditure and damage, specially the ones you have hosted in your own datacenter? I think it is worth to schedule a stress test in any case.
+**Where I would be wrong.** This article was done to showcase and study the behaviour. However, consider the thought experiment: what if one of my agents goes dark against the contract, into a spree of expenditure and damage, especially the ones you host in your own datacenter? I think it is worth scheduling a stress test in any case.
