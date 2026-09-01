@@ -25,6 +25,13 @@ collections:
   items:
     output: true
     permalink: /item/:name/
+  # The Firsthand Playbook: operational artifacts of Bruno's own, from
+  # experiment to framework. Individual entries commonly override this
+  # permalink to keep a URL stable across the move into this collection
+  # (agent-contract.md keeps /agent-contract/, not /playbook/agent-contract/).
+  playbook:
+    output: true
+    permalink: /playbook/:name/
 
 # The reading order of the themes, and the question each one answers. Held here
 # rather than derived from the profiles, because the site needs the order even
@@ -57,6 +64,11 @@ defaults:
       type: "commentary"
     values:
       layout: "commentary"
+  - scope:
+      path: ""
+      type: "playbook"
+    values:
+      layout: "default"
   - scope:
       path: ""
       type: "items"

@@ -2,7 +2,9 @@
 layout: default
 title: "The One-Page Agent Coordination Contract"
 permalink: /agent-contract/
+date: 2026-09-01
 published: true
+summary: "The coordination contract that governs this radar's own AI sessions, as a copyable seven-section template."
 ---
 
 # The one-page agent coordination contract
