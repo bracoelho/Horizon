@@ -37,4 +37,4 @@ other's boundary errors and brought both to me for the decision.
 Consider the following thought experiment: What if one of my agents goes dark against the contract, into a spree of expenditure and damage?
 The question you should ask: How are my agentic systems today? Where do my design guidelines, "checklists", my review process and stress tests stand on this topic?
 
-**Where I would be wrong.** This article was done to showcase and study the behaviour. Your case might not match. However, waiting for a production incident before acting buys the same lesson at incident cost when it is available today for [a page of governance](https://www.weforum.org/publications/ai-agents-in-action-a-playbook-for-trusted-adoption-authorization-and-scaling/).
+**Where I would be wrong.** This article was done to showcase and study the behaviour. Your case might not match. However, waiting for a production incident before acting buys the same lesson at incident cost when it is available today for [a page of governance](/agent-contract/).
