@@ -33,7 +33,8 @@ the everyday condition.
 
 **What to do.** Think about the prototype of functional teams: all have "a contract" on who does what, "rules of engagement", and a leader who settles differences and makes decisions. Agentic systems are no different.
 In case you are thinking this is just a "research topic", I assure you it is not. I have experienced this pattern myself in my projects. Until I ensured a written coordination contract, nominated a coordinator and decision-maker, and detailed the mechanism for how agents communicate, I spent my time solving the mistakes of coordination myself. After the "contract", on the same day, two agents caught each
-other's boundary errors and brought both to me for the decision. The
-question you should ask: How are my agentic systems today? Where do my design guidelines, "checklists" and review process stand on this topic?
+other's boundary errors and brought both to me for the decision. 
+Consider the following thought experiment: What if one of my agents goes dark against the contract, into a spree of expenditure and damage?
+The question you should ask: How are my agentic systems today? Where do my design guidelines, "checklists", my review process and stress tests stand on this topic?
 
-**Where I would be wrong.** This article was done to showcase and study the behaviour. However, consider the thought experiment: what if one of my agents goes dark against the contract, into a spree of expenditure and damage, especially the ones you host in your own datacenter? I think it is worth scheduling a stress test in any case.
+**Where I would be wrong.** This article was done to showcase and study the behaviour. In your case might not match. Hoever, waiting for a production incident before acting is the same lesson at incident cost when it is available today for a page of governance (ADD THE LINK PLEASE)
