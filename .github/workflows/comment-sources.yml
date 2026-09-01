@@ -1,0 +1,62 @@
+name: Comment Sources Reminder
+
+# One-shot companion to the owner's 2026-09-03 LinkedIn post: five
+# minutes before the scheduled publish, Telegram delivers the two
+# paste-ready source blocks for the first comments. The cron would
+# recur yearly, so the job guards on the year and the workflow is
+# deleted after use. workflow_dispatch exists for the self-test.
+on:
+  schedule:
+    - cron: '25 8 3 9 *'   # 08:25 UTC = 17:25 JST, 3 September
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Send as a test (prefixes TEST)"
+        default: "yes"
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send the source blocks
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          IS_TEST: ${{ github.event_name == 'workflow_dispatch' && 'yes' || 'no' }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, urllib.request, datetime
+          if os.environ["IS_TEST"] != "yes" and datetime.date.today().year != 2026:
+              sys.exit(0)
+          prefix = "TEST - " if os.environ["IS_TEST"] == "yes" else ""
+          blocks = [
+              prefix + "Your post goes live at 17:30. Paste the next two messages as its first two comments.",
+              """Sources, one per line of the list (1/2):
+
+          1. Medical devices, PCCP final: https://www.federalregister.gov/documents/2024/12/04/2024-28361/marketing-submission-recommendations-for-a-predetermined-change-control-plan-for-artificial
+          2. Automotive, UN R157 extended: https://unece.org/sustainable-development/press/un-regulation-extends-automated-driving-130-kmh-certain-conditions
+          3. Aviation, Autoland certified: https://www.garmin.com/en-US/blog/aviation/garmin-autoland-achieves-easa-and-faa-certification-on-daher-tbm-940/ and ED-324 in ballot: https://www.eurocae.net/working-group/wg-114/
+          4. Pharma, AIM-MASH dual qualification: https://www.pathai.com/news/pathais-aim-mash-ai-assist-becomes-first-ai-powered-pathology-tool-to-receive-fda-qualification-for-mash-clinical-trials
+          5. Rail, EN 50716: https://www.qa-systems.com/blog/from-en-50128-to-en-50716-railway-software-compliance/""",
+              """Sources (2/2):
+
+          6. Telecom, first Level 4: https://www.ericsson.com/en/news/2025/6/tdc-net-and-ericsson-achieves-industry-first-certification-from-tm-forum-of-level-4-autonomy
+          7. Nuclear, IAEA considerations: https://www.iaea.org/publications/15866/considerations-for-deploying-artificial-intelligence-applications-in-the-nuclear-power-industry
+          8. Utilities, the NIST profile is still a concept note: https://www.nist.gov/programs-projects/concept-note-ai-rmf-profile-trustworthy-ai-critical-infrastructure
+          9. Space: operators' own mission assurance; happy to share reading on request.
+
+          Method: public sources, agentic research, independently link-checked; every line re-verified 2 September 2026.""",
+          ]
+          import textwrap
+          for text in blocks:
+              body = json.dumps({"chat_id": os.environ["CHAT"],
+                                 "text": textwrap.dedent(text),
+                                 "disable_web_page_preview": True}).encode()
+              req = urllib.request.Request(
+                  f"https://api.telegram.org/bot{os.environ['TOKEN']}/sendMessage",
+                  data=body, headers={"Content-Type": "application/json"})
+              resp = json.load(urllib.request.urlopen(req, timeout=20))
+              if not resp.get("ok"):
+                  print("Telegram refused:", resp); sys.exit(1)
+          print("Sent", len(blocks), "messages.")
+          PY
