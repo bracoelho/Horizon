@@ -31,20 +31,9 @@ from different vendors, departments and budgets into the same systems this
 year, and inside any real organisation, partially conflicting objectives are
 the everyday condition.
 
-**What to do.** Give every multi-agent deployment an authority structure
-before it gets shared write access: a named arbiter for goal conflicts, and
-an escalation path to a human that is cheaper for the agent than fighting.
-The pattern scales down far enough to test at home. My own AI sessions run
-under a written coordination contract with one decision-maker and
-message-only boundaries, and on its first evening two of them caught each
+**What to do.** Think about the protype of functional teams, all have "a contract" on who does what, "rules of engagement", and a leader to escalate and differences and make decisions. Agentic system are no different.
+In case you are thinking this is just a "research topic", I assure you it is not. I've experienced myself this pattern at my projects. I observed that until ensuring a written the coordination contract, nominated a coordinator and decision-maker including details a mechanism of how agents communicate, spent time solving the mistakes of coordination myself. After the "contract" on the same day two agents them caught each
 other's boundary errors and brought both to me for the decision. The
-question a director should ask: "When two of our agents' objectives
-collide, who arbitrates, and is that written anywhere?"
+question you should ask: How are my agentic systems today ? Do my design guidelines, "checklists" and review process stand on this topic? 
 
-**Where I would be wrong.** This is one lab experiment, adversarial by
-design; production agents rarely receive goals this cleanly opposed, and
-some agents in the study resolved the conflict correctly by asking. Treating
-the result as proof that multi-agent architectures fail would overprice it.
-In the other direction, waiting for a production incident before writing
-the arbitration rule prices the same lesson at incident cost when it is
-available today for a page of governance.
+**Where I would be wrong.**. This article is done to showcase and study the behaviour. However, consider the thought experience: What if one of my agents goes into dark mode against the contract and goes into a spree of expenditure and damage, specially the ones you have hosted in your own datacenter? I think it is worth to schedule a stress test in any case.
