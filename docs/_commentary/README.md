@@ -82,3 +82,12 @@ no account of what it costs to run, assure or maintain. The credibility comes
 from having lived both the strategy and the delivery, so let that show.
 
 Understatement carries further than superlatives with this audience.
+
+## The doctrine (owner, 2026-09-01)
+
+Define the audience segment before writing a word. Then raise that
+segment's governance level, calmly: no "act by tomorrow" alarm, no
+change-the-world sweep. The reader governs things; the piece hands them
+one notch more governance over one real risk. A "Matters to:" line near
+the top names the segment and the horizon, so the reader knows in five
+seconds whether the piece is for them.
