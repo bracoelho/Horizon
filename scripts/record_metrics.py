@@ -50,7 +50,8 @@ def published_items(items_dir: Path) -> list[dict]:
     out = []
     for path in sorted(items_dir.glob("*.md")):
         fm = read_front_matter(path)
-        row = {"theme": fm.get("theme", "")}
+        row = {"theme": fm.get("theme", ""),
+               "source": fm.get("source", "")}
         try:
             row["score"] = float(fm.get("score", ""))
         except ValueError:
@@ -87,6 +88,11 @@ def build_row(health: dict, items: list[dict]) -> dict:
         "published_scores": [
             i["score"] for i in items if i["score"] is not None
         ],
+        # Schema v2 (SPEC-CONTROL-ROOM §3): per-item detail feeds the
+        # judgment map and the reader-side lens; per_feed feeds the source
+        # ledger. Old rows lack these and every view must degrade to that.
+        "items": items,
+        "per_feed": health.get("per_feed"),
         "errors": health.get("errors", 0),
         "degraded": health.get("degraded", 0),
         "warnings": health.get("warnings", 0),

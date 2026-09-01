@@ -83,3 +83,18 @@ def test_a_missing_health_summary_records_nothing_and_exits_green(tmp_path, monk
                                      "--series", str(tmp_path / "runs.json")])
     assert rm.main() == 0
     assert not (tmp_path / "runs.json").exists()
+
+
+def test_schema_v2_items_carry_source_and_per_feed_rides_along(tmp_path):
+    items = _item(tmp_path, "a.md", "practice", "7.0")
+    (items / "a.md").write_text(
+        '---\ntheme: practice\nscore: 7.0\nsource: "openai.com"\n---\nb\n',
+        encoding="utf-8")
+    health = {"totals": {"published": 1},
+              "per_feed": {"OpenAI News": [3, False]}}
+
+    row = rm.build_row(health, rm.published_items(items))
+
+    assert row["items"] == [{"theme": "practice", "source": "openai.com",
+                             "score": 7.0}]
+    assert row["per_feed"] == {"OpenAI News": [3, False]}

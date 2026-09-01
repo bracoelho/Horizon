@@ -647,6 +647,7 @@ def main() -> int:
     Path("health_summary.json").write_text(json.dumps({
         "totals": totals,
         "per_source": per_source,
+        "per_feed": per_feed,
         "zero_sources": sorted(n for n, c in per_source.items() if c == 0),
         "errors": fatal_count,
         "degraded": sum(c for _, c in degrading),

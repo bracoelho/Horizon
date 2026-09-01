@@ -118,7 +118,129 @@
   "degraded": 0,
   "warnings": 0,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.LG",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.CL",
+    "score": 8.0
+   },
+   {
+    "theme": "horizon-research",
+    "source": "arXiv cs.CL",
+    "score": 8.0
+   },
+   {
+    "theme": "horizon-research",
+    "source": "arXiv cs.LG",
+    "score": 8.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -157,7 +279,74 @@
   "degraded": 0,
   "warnings": 12,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "critical-infrastructure",
+    "source": "Latitude Media",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "business-markets",
+    "source": "rvz",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.LG",
+    "score": 8.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "Hugging Face Blog",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -182,7 +371,14 @@
   "degraded": 0,
   "warnings": 24,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "vga805",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -214,7 +410,44 @@
   "degraded": 0,
   "warnings": 12,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "toebee",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "ibobev",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -259,7 +492,14 @@
   "degraded": 0,
   "warnings": 11,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "practice",
+    "source": "matklad",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -312,7 +552,49 @@
   "degraded": 0,
   "warnings": 12,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.LG",
+    "score": 8.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -350,7 +632,69 @@
   "degraded": 0,
   "warnings": 0,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.LG",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "The Verge - AI",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Latitude Media",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   },
+   {
+    "theme": "business-markets",
+    "source": "bmulholland",
+    "score": 8.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "Hugging Face Blog",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -381,7 +725,29 @@
   "degraded": 0,
   "warnings": 16,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "MIT Technology Review - AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.SE",
+    "score": 5.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "business-markets",
+    "source": "Bloomberg",
+    "score": 8.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -409,7 +775,19 @@
   "degraded": 0,
   "warnings": 16,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "Simon Willison",
+    "score": 8.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 8.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -436,7 +814,14 @@
   "degraded": 0,
   "warnings": 14,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "business-markets",
+    "source": "jbegley",
+    "score": 7.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -465,7 +850,24 @@
   "degraded": 0,
   "warnings": 12,
   "zero_sources": [],
-  "note": "backfilled from the published health footer; no score distribution existed yet"
+  "note": "backfilled from the published health footer; no score distribution existed yet",
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "Simon Willison",
+    "score": 6.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "r/MachineLearning",
+    "score": 6.0
+   },
+   {
+    "theme": "business-markets",
+    "source": "forkast.news",
+    "score": 6.0
+   }
+  ]
  },
  {
   "run_id": "",
@@ -584,6 +986,18 @@
   "errors": 0,
   "degraded": 0,
   "warnings": 13,
-  "zero_sources": []
+  "zero_sources": [],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.LG",
+    "score": 8.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 8.0
+   }
+  ]
  }
 ]
