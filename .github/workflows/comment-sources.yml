@@ -34,7 +34,7 @@ jobs:
               """Sources, one per line of the list (1/2):
 
           1. Medical devices, PCCP final: https://www.federalregister.gov/documents/2024/12/04/2024-28361/marketing-submission-recommendations-for-a-predetermined-change-control-plan-for-artificial
-          2. Automotive, UN R157 extended: https://unece.org/sustainable-development/press/un-regulation-extends-automated-driving-130-kmh-certain-conditions
+          2. Automotive, Level 3 certified under UN R157: https://www.tuv.com/press/en/press-releases/automated-lane-keeping-system.html
           3. Aviation, Autoland certified: https://www.garmin.com/en-US/blog/aviation/garmin-autoland-achieves-easa-and-faa-certification-on-daher-tbm-940/ and ED-324 in ballot: https://www.eurocae.net/working-group/wg-114/
           4. Pharma, AIM-MASH dual qualification: https://www.pathai.com/news/pathais-aim-mash-ai-assist-becomes-first-ai-powered-pathology-tool-to-receive-fda-qualification-for-mash-clinical-trials
           5. Rail, EN 50716: https://www.qa-systems.com/blog/from-en-50128-to-en-50716-railway-software-compliance/""",
