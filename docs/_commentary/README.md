@@ -88,6 +88,7 @@ Understatement carries further than superlatives with this audience.
 Define the audience segment before writing a word. Then raise that
 segment's governance level, calmly: no "act by tomorrow" alarm, no
 change-the-world sweep. The reader governs things; the piece hands them
-one notch more governance over one real risk. A "Matters to:" line near
-the top names the segment and the horizon, so the reader knows in five
-seconds whether the piece is for them.
+one notch more governance over one real risk. A "Who should read this:" line near
+the top (the owner's chosen wording, 2026-09-01) names the segment and
+the horizon, so the reader knows in five seconds whether the piece is
+for them.
