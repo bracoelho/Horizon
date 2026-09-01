@@ -37,7 +37,7 @@ an escalation path to a human that is cheaper for the agent than fighting.
 The pattern scales down far enough to test at home. My own AI sessions run
 under a written coordination contract with one decision-maker and
 message-only boundaries, and on its first evening two of them caught each
-other's boundary errors and escalated to me instead of acting. The
+other's boundary errors and brought both to me for the decision. The
 question a director should ask: "When two of our agents' objectives
 collide, who arbitrates, and is that written anywhere?"
 
