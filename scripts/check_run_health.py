@@ -74,6 +74,8 @@ ENRICHED_RE = re.compile(r"Enriched (\d+)/(\d+) items")
 # whole history and nothing recorded the shape, so every judging change was
 # unmeasurable. See BACKLOG #39/#41.
 SCORE_DIST_RE = re.compile(r"Score distribution: (\{.*\})")
+# S1's tournament reports its own health each run.
+SETWISE_RE = re.compile(r"Setwise: (\d+) picks, (\d+) retried, (\d+) fell back")
 # A selection stage that produces nothing logs at WARNING and carries on with a
 # fallback, so the 2026-08-20 run published one item and reported success. The
 # fallbacks are right, because losing a stage should not lose the day's items,
@@ -82,6 +84,12 @@ SCORE_DIST_RE = re.compile(r"Score distribution: (\{.*\})")
 # a model being sloppy, and failing the build on that would make the red X
 # meaningless again.
 COLLAPSE_PATTERNS = (
+    (# No capture groups on purpose: the pipeline already applied the
+    # half-or-more test before printing this line, so the two-group
+    # equality guard below must not second-guess it.
+    re.compile(r"Setwise collapse: \d+ of \d+ picks fell back"),
+     "The setwise ranker collapsed: half or more of its picks fell back to "
+     "arbitrary group order."),
     # Two groups on purpose: the guard below only treats this as a collapse
     # when the counts match. A gate that missed a handful of items still ran,
     # and failing the build on that is how a red X stops being read.
@@ -174,6 +182,12 @@ def parse_log(path: Path):
                 totals["score_distribution"] = json.loads(m.group(1))
             except json.JSONDecodeError:
                 pass  # a malformed line is not worth failing a health report
+        elif m := SETWISE_RE.search(line):
+            totals["setwise"] = {
+                "picks": int(m.group(1)),
+                "retried": int(m.group(2)),
+                "fallbacks": int(m.group(3)),
+            }
         elif m := TOKENS_RE.search(line):
             totals["tokens"] = int(m.group(1))
             totals["tokens_in"] = int(m.group(2))

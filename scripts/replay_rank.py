@@ -90,12 +90,32 @@ async def one_pass(candidates, client, args, counter):
         )
 
     started = time.monotonic()
-    ordered = await rank_mod.rank(
-        candidates,
-        rank_complete,
-        chunk_size=args.chunk_size,
-        carry=args.carry,
-    )
+    if args.mode == "setwise":
+        from src.selection.setwise import PickStats, setwise_rank
+
+        async def structured(system, user, schema):
+            return await client.complete(
+                system, user,
+                model=args.model or "claude-sonnet-5",
+                schema=schema,
+                effort=args.effort,
+            )
+
+        stats = PickStats()
+        ordered = await setwise_rank(
+            candidates, structured, set_size=7,
+            need=args.consider + 5, stats=stats,
+        )
+        print(f"  setwise: {stats.picks} picks, {stats.retried} retried, "
+              f"{stats.fallbacks} fell back")
+        counter.chunks_failed += stats.fallbacks
+    else:
+        ordered = await rank_mod.rank(
+            candidates,
+            rank_complete,
+            chunk_size=args.chunk_size,
+            carry=args.carry,
+        )
     return ordered, time.monotonic() - started
 
 
@@ -106,6 +126,9 @@ async def main() -> int:
     ap.add_argument("--consider", type=int, default=10)
     ap.add_argument("--chunk-size", type=int, default=25)
     ap.add_argument("--carry", type=int, default=10)
+    ap.add_argument("--mode", default="listwise",
+                    choices=["listwise", "setwise"],
+                    help="which ranker to replay")
     ap.add_argument("--effort", default="high",
                     help="rank effort, matching selection.rank_effort")
     ap.add_argument("--model", default=None,

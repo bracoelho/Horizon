@@ -238,3 +238,27 @@ def test_a_log_written_before_the_score_floor_existed_still_parses(tmp_path):
     assert totals["floor_rejected"] == 9
     assert totals["below_score"] == 0
     assert "score floor" not in health.funnel(totals)
+
+
+def test_setwise_stats_land_in_totals_and_partial_fallback_stays_green(tmp_path):
+    log = (
+        "📥 Fetched 100 items from all sources\n"
+        "Setwise: 40 picks, 2 retried, 1 fell back\n"
+        "⭐️ Selection: 100 gated to 40, 20 ranked, 5 rejected by floor, "
+        "0 below the score floor, 3 published\n"
+    )
+    _, _, totals, errors, _, collapsed = _parse(tmp_path, log)
+
+    assert totals["setwise"] == {"picks": 40, "retried": 2, "fallbacks": 1}
+    assert collapsed == []
+
+
+def test_setwise_collapse_goes_red(tmp_path):
+    log = (
+        "📥 Fetched 100 items from all sources\n"
+        "[09/01/26 10:00:00] WARNING  Setwise collapse: 20 of 40 picks fell back\n"
+    )
+    *_, collapsed = _parse(tmp_path, log)
+
+    assert len(collapsed) == 1
+    assert "setwise ranker collapsed" in collapsed[0][1]

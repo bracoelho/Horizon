@@ -82,6 +82,7 @@ def build_row(health: dict, items: list[dict]) -> dict:
             if totals.get(k) is not None
         },
         "score_distribution": totals.get("score_distribution") or {},
+        "setwise": totals.get("setwise"),
         "published_by_theme": themes,
         "published_scores": [
             i["score"] for i in items if i["score"] is not None

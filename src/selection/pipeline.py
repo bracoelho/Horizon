@@ -13,6 +13,7 @@ from .gate import build_requests as build_gate_requests
 from .gate import collect as collect_gate
 from .prompts import DEFEND_SCHEMA, GATE_SCHEMA, RANK_SCHEMA
 from .rank import rank as rank_pass
+from .setwise import PickStats, setwise_rank
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,8 @@ class SelectionSettings:
     gate_batch_size: int = 40
     rank_chunk_size: int = 25
     rank_carry: int = 10
+    rank_mode: str = "listwise"
+    rank_set_size: int = 7
     consider: int = 10
     max_publish: int = 6
     defend_concurrency: int = 4
@@ -133,12 +136,42 @@ async def select(
             effort=settings.rank_effort,
         )
 
-    ranked = await rank_pass(
-        kept,
-        rank_complete,
-        chunk_size=settings.rank_chunk_size,
-        carry=settings.rank_carry,
-    )
+    if settings.rank_mode == "setwise":
+        # S1: per-call schema (an enum of the set's ids) needs a structured
+        # completer; the listwise path keeps its fixed schema untouched.
+        async def setwise_complete(system: str, user: str, schema) -> str:
+            return await client.complete(
+                system,
+                user,
+                model=settings.rank_model,
+                schema=schema,
+                effort=settings.rank_effort,
+            )
+
+        pick_stats = PickStats()
+        ranked = await setwise_rank(
+            kept,
+            setwise_complete,
+            set_size=settings.rank_set_size,
+            need=settings.consider + 5,
+            stats=pick_stats,
+        )
+        logger.info(
+            "Setwise: %d picks, %d retried, %d fell back",
+            pick_stats.picks, pick_stats.retried, pick_stats.fallbacks,
+        )
+        if pick_stats.fallbacks and pick_stats.fallbacks * 2 >= pick_stats.picks:
+            logger.warning(
+                "Setwise collapse: %d of %d picks fell back",
+                pick_stats.fallbacks, pick_stats.picks,
+            )
+    else:
+        ranked = await rank_pass(
+            kept,
+            rank_complete,
+            chunk_size=settings.rank_chunk_size,
+            carry=settings.rank_carry,
+        )
 
     # --- pass three: defend -------------------------------------------------
     async def defend_complete(system: str, user: str) -> str:
@@ -159,6 +192,15 @@ async def select(
         concurrency=settings.defend_concurrency,
     )
     rejected = sum(1 for v in defend_verdicts if not v.publish)
+    # Instrument the strictest judge (2026-09-01): defend cut 7 of 10 on the
+    # first clean night and nothing recorded why, making "strict" and
+    # "right" indistinguishable. One line per refusal, reason included.
+    for v in defend_verdicts:
+        if not v.publish:
+            logger.info(
+                "Defend refused %s: %s", v.id,
+                (v.why or "no reason returned")[:160],
+            )
     logger.info(
         "Ranked %d, considered %d, published %d",
         len(ranked),

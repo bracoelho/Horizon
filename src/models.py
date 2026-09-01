@@ -576,6 +576,11 @@ class SelectionConfig(BaseModel):
     gate_batch_size: int = Field(default=40, gt=0)
     rank_chunk_size: int = Field(default=25, gt=1)
     rank_carry: int = Field(default=10, gt=0)
+    # S1: "setwise" asks many small closed questions (enum of the set's ids)
+    # instead of one full-order JSON. "listwise" is the incumbent. The switch
+    # exists so rollback is a config flip; the listwise path retires with S2.
+    rank_mode: str = Field(default="listwise", pattern="^(listwise|setwise)$")
+    rank_set_size: int = Field(default=7, gt=1)
     consider: int = Field(default=10, gt=0)
     max_publish: int = Field(default=6, gt=0)
     defend_concurrency: int = Field(default=4, gt=0)

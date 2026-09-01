@@ -898,6 +898,8 @@ class HorizonOrchestrator:
             gate_batch_size=config.gate_batch_size,
             rank_chunk_size=config.rank_chunk_size,
             rank_carry=config.rank_carry,
+            rank_mode=config.rank_mode,
+            rank_set_size=config.rank_set_size,
             consider=config.consider,
             max_publish=config.max_publish,
             defend_concurrency=config.defend_concurrency,

@@ -12,6 +12,11 @@ on:
       repeat:
         description: "How many passes"
         default: "3"
+      mode:
+        description: "Which ranker"
+        type: choice
+        options: ["listwise", "setwise"]
+        default: "listwise"
       model:
         description: "Override the rank model (optional, BACKLOG #45)"
         required: false
@@ -46,5 +51,5 @@ jobs:
           MODEL_ARG=""
           if [ -n "${{ inputs.model }}" ]; then MODEL_ARG="--model ${{ inputs.model }}"; fi
           uv run python scripts/replay_rank.py --fixture "$FIX" \
-            --repeat "${{ inputs.repeat }}" $MODEL_ARG | tee replay.out
+            --repeat "${{ inputs.repeat }}" --mode "${{ inputs.mode }}" $MODEL_ARG | tee replay.out
           { echo '## Replay result'; echo '```'; cat replay.out; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

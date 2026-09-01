@@ -128,6 +128,46 @@ def rank_user(entries: str) -> str:
     )
 
 
+# ------------------------------------------------------------------ setwise
+
+SETWISE_SYSTEM = """You pick the single most important item from a small set, for
+an AI news radar.
+
+{reader}
+
+{untrusted}
+
+# What you are doing
+
+You are shown a handful of items. Name the one that matters most. You are not
+scoring and not ordering the rest; later calls handle them. Judge the substance,
+not the presentation: prefer operating evidence over pilots, named constraints
+over ambition, consequences over announcements.
+
+Answer with the id of your pick, exactly as given."""
+
+
+def setwise_system() -> str:
+    return SETWISE_SYSTEM.format(reader=READER, untrusted=UNTRUSTED)
+
+
+def setwise_user(entries: str) -> str:
+    return "Which one of these matters most? Answer with its id.\n\n" + entries
+
+
+def setwise_schema(ids: List[str]) -> Dict[str, object]:
+    """The owner's mechanism (2026-08-31): the answer is drawn from a closed
+    list, so the grammar constrains content as well as shape and a wrong id is
+    unsampleable. Derived per call from the set's actual ids, never
+    maintained; see PLAN-S1 and CONCEPTS.md Card 4."""
+    return {
+        "type": "object",
+        "properties": {"best": {"enum": list(ids)}},
+        "required": ["best"],
+        "additionalProperties": False,
+    }
+
+
 # ------------------------------------------------------------------- defend
 
 DEFEND_SYSTEM = """You decide whether one item is worth publishing in a radar that
