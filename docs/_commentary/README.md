@@ -92,3 +92,9 @@ one notch more governance over one real risk. A "Who should read this:" line nea
 the top (the owner's chosen wording, 2026-09-01) names the segment and
 the horizon, so the reader knows in five seconds whether the piece is
 for them.
+
+The default segment (owner, 2026-09-02): the AI engineering function in
+the utilities sector and its critical-infrastructure neighbours. The
+energy business units and the operational units are welcome readers and
+never the target: when a piece could speak to either, it speaks to the
+person accountable for AI systems.

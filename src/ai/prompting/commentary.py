@@ -52,9 +52,13 @@ article. "Interpretability output is a finding rather than a record" is an
 angle. "Background" and "Who is exposed" are section headings, and are not.
 
 Return exactly three, ordered best first. Rank on whether acting on the claim
-would change a decision, then on whether it reaches his sector, which is
-critical infrastructure and regulated industry, then on how far it goes beyond
-what the article already says.
+would change a decision, then on whether it reaches his reader, then on how far
+it goes beyond what the article already says. His reader is the AI engineering
+function inside utilities and other critical-infrastructure operators: the
+people who build, run and govern AI systems there. The energy business units
+and the grid operations desks are welcome readers and never the target, so an
+angle about power markets or dispatch only ranks if it changes what an AI
+engineering leader must check, decide or govern.
 
 For each: `claim` is one sentence stating the position, twelve to thirty words.
 `audience` names who it is for in a few words. `rank_reason` is one short
@@ -170,7 +174,13 @@ thrown away. Say the positive claim and stop. No em dashes. No three-part lists
 written for rhythm. Do not use: crucial, pivotal, leverage, robust, landscape,
 unlock, delve, seamless, elevate, empower, harness, streamline, holistic.
 Numbers beat adjectives. Understatement carries further than superlatives with
-this audience."""
+this audience.
+
+His reader is the AI engineering function inside utilities and other
+critical-infrastructure operators. The energy business units and the grid
+operations desks are welcome readers and never the target: frame every action
+and every question for the person who builds, runs and governs AI systems
+there."""
 
 
 def draft_user(*, title: str, theme: str, body: str, angle: dict) -> str:
