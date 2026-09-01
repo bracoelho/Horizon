@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 title: "Agent Teams Without an Arbiter Turn on Each Other"
 date: 2026-09-01 05:00:00 +0000
 theme: Reliability & Assurance
