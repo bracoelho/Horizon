@@ -156,9 +156,13 @@ async def select(
             need=settings.consider + 5,
             stats=pick_stats,
         )
-        logger.info(
-            "Setwise: %d picks, %d retried, %d fell back",
-            pick_stats.picks, pick_stats.retried, pick_stats.fallbacks,
+        # Printed to stdout, not logged: the CLI's default level is WARNING,
+        # so an INFO line never reaches CI's log and the health check recorded
+        # setwise: null on the mode's first live night (2026-09-02). The
+        # funnel's own numbers survive for the same reason: they print.
+        print(
+            f"Setwise: {pick_stats.picks} picks, {pick_stats.retried} "
+            f"retried, {pick_stats.fallbacks} fell back"
         )
         if pick_stats.fallbacks and pick_stats.fallbacks * 2 >= pick_stats.picks:
             logger.warning(
