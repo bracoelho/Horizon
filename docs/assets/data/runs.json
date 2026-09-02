@@ -1276,5 +1276,25 @@
   "zero_sources": [
    "OSS Insight"
   ]
+ },
+ {
+  "run_id": "33683924770",
+  "event": "schedule",
+  "utc": "2026-09-02T21:15:03Z",
+  "funnel": {
+   "fetched": 5,
+   "analyzed": 5,
+   "selected": 0
+  },
+  "score_distribution": {},
+  "setwise": null,
+  "published_by_theme": {},
+  "published_scores": [],
+  "items": [],
+  "per_feed": null,
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 0,
+  "zero_sources": []
  }
 ]
