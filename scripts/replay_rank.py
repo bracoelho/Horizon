@@ -11,6 +11,26 @@ omission counts parsed from the ranker's own warnings, and token cost.
 Across repeats: pairwise agreement of the heads (how stable is the order
 when nothing changed but sampling), which is the baseline any challenger
 has to beat.
+
+Cost rules for every experiment run through this harness (BACKLOG #67,
+owner-set 2026-09-02, after a week where experiments cost as much as
+production):
+
+1. Declare the price first. One line before the run: expected calls x
+   expected tokens per call = expected total. Record actual next to
+   expected in the experiment note. The cheapest tokens are the ones a
+   smaller-but-sufficient design never sends.
+2. Experiments are patient: prefer the Batch API (half price) for any
+   replay or exam, since nobody is waiting on a single verdict. The
+   production gate already runs on batch; replays have even less excuse
+   not to.
+3. Experiments are repetitive: the instructions and fixture context
+   repeat across calls with only the candidate set changing, which is
+   the shape prompt caching discounts. Structure prompts shared-prefix-
+   first so the repeated part is cacheable.
+
+The 2026-08-29 setwise exams (336 calls, full price, synchronous) are
+the before picture these rules exist to end.
 """
 
 from __future__ import annotations
