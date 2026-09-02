@@ -648,7 +648,7 @@
     "defend_concurrency": 4,
     "use_batch": true,
     "min_score": 7.0,
-    "rank_mode": "listwise",
+    "rank_mode": "setwise",
     "rank_set_size": 7
   }
 }
