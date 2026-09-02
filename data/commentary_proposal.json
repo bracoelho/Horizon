@@ -1,26 +1,26 @@
 {
-  "title": "MISO proposes distinct reliability rules for large and computational loads",
+  "title": "Federal order and FEOC guidance threaten to stall US battery storage builds",
   "theme": "Critical Infrastructure",
-  "score": 8.0,
-  "url": "https://www.utilitydive.com/news/large-load-reliability-requirements-miso-ferc/829278/",
-  "item_url": "/item/large-loads-face-reliability-requirements-under-miso-proposal/",
-  "edition_url": "/2026/09/01/2135-summary-en.html",
-  "plain": "The Midcontinent Independent System Operator (MISO) has filed a proposal, pending Federal Energy Regulatory Commission approval, that creates separate regulatory classifications for large loads and for a new subcategory called computational loads. MISO defines large loads as those above 50 megawatts and computational l",
+  "score": 7.0,
+  "url": "https://www.utilitydive.com/news/trump-grid-order-likely-to-cause-energy-storage-delays-cancellations-bloo/829306/",
+  "item_url": "/item/2026-09-02-2111-01-federal-order-and-feoc-guidance-threaten-to-stall-us-en/",
+  "edition_url": "/2026/09/02/2111-summary-en.html",
+  "plain": "BloombergNEF analysis, cited by Utility Dive, concludes that an August 26 executive order together with earlier executive actions and the Treasury Department's foreign entity of concern (FEOC) guidance is likely to cause delays and cancellations across U.S. energy storage projects. The analyst identifies battery and in",
   "angles": [
     {
-      "claim": "Once a 25 megawatt IT threshold sets who faces curtailment, every data center contract signed before FERC rules on it is a bet on terms not yet written.",
-      "audience": "Directors negotiating data center site and power agreements",
-      "rank_reason": "Directly changes a decision being made now, since capacity reservations and contract clauses drafted today may not match whatever obligations FERC ultimately approves."
+      "claim": "AI engineering teams should audit whether any forecasting, dispatch, or asset-health models were trained on assumptions about storage capacity now at risk of schedule slippage.",
+      "audience": "AI engineering leads in utilities and grid operators",
+      "rank_reason": "It changes a concrete governance action for AI teams by forcing model input validation, though it requires connecting supply chain risk to model assumptions the article does not make explicit."
     },
     {
-      "claim": "A megawatt threshold drawn to catch data centers will also catch hydrogen plants and battery factories that happen to run dense compute for controls.",
-      "audience": "Engineers scoping interconnection for industrial and computational loads",
-      "rank_reason": "Reaches the sector broadly and forces a concrete Monday task, checking whether existing or planned loads cross 25 megawatts of IT equipment, but the consequence is definitional rather than operational until FERC rules."
+      "claim": "Bulk-power equipment restrictions on inverters and transformers mean AI systems controlling or forecasting grid equipment must now carry provenance checks as a governance input, not just a procurement one.",
+      "audience": "AI governance and platform leads at critical infrastructure operators",
+      "rank_reason": "It reaches the target reader directly by turning a procurement rule into an AI governance requirement, ranked second because the link to specific AI system controls is inferred rather than stated."
     },
     {
-      "claim": "MISO is building a reliability category with no obligations attached yet, so the filing is a placeholder for rules that will be negotiated after the classification exists.",
-      "audience": "Regulatory affairs teams tracking FERC proceedings",
-      "rank_reason": "Ranks last because it restates the article's own stated gap rather than adding a claim the author would need to defend beyond what MISO already disclosed."
+      "claim": "Directors should ask whether resource adequacy models used for interconnection filings have been updated to reflect FEOC-driven delays, since stale models will misstate near-term reliability margins.",
+      "audience": "Directors and technology executives overseeing planning models",
+      "rank_reason": "Useful for the Thursday-question reader but ranks third since it stays closest to what the article already recommends for regulatory affairs teams."
     }
   ]
 }
