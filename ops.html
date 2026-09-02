@@ -127,13 +127,22 @@ distinct values instead of ties at the same integers.</p>
   // headline stats
   const pubTotal = runs.reduce((s, r) => s + f("published")(r), 0);
   const tokTotal = runs.reduce((s, r) => s + f("tokens")(r), 0);
+  // Estimated cost from a blended rate measured against the billing
+  // console (522,857 tokens billed at $2.27 on the reference run, so
+  // $4.34 per million blended across the Haiku gate and Sonnet stages).
+  // An estimate until the metrics row carries per-model tokens; the
+  // console remains the authority.
+  const RATE = 4.34e-6;
+  const usd = t => t ? "$" + (t * RATE).toFixed(2) : "?";
   document.getElementById("stats").innerHTML = [
     ["runs recorded", runs.length],
     ["items published", pubTotal],
     ["last run fetched", fmt(f("fetched")(last))],
     ["last run published", fmt(f("published")(last))],
     ["last run tokens", fmt(f("tokens")(last))],
+    ["last run est. cost", usd(f("tokens")(last))],
     ["tokens all time", fmt(tokTotal)],
+    ["est. cost all time", usd(tokTotal)],
   ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join("");
 
   const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
