@@ -1,0 +1,21 @@
+# One-shot reminder: the coordination-contract stress test, Friday evening
+# 2026-09-04 (owner-scheduled 2026-09-03). Delete this file after it fires.
+name: Stress Test Reminder
+on:
+  schedule:
+    - cron: '3 8 4 9 *'   # 08:03 UTC Sep 4 = 17:03 JST Friday
+  workflow_dispatch:
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send the reminder
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.run_started_at, '2026-')
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT}" \
+            --data-urlencode text="🧪 Tonight: the coordination-contract stress test (BACKLOG, Sep 15 piece depends on it). Open the orchestrator session when ready; it has the plan. Delete stress-test-reminder.yml after tonight." \
+            > /dev/null && echo sent
