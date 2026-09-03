@@ -29,6 +29,7 @@ import html
 import json
 import re
 import sys
+import time
 import urllib.request
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -50,10 +51,15 @@ def sitemap_entries(url: str) -> list[tuple[str, str]]:
 def page_meta(url: str) -> dict:
     """Title and published date from the page; falls back gracefully."""
     out = {"url": url, "title": None, "published": None, "description": None}
-    try:
-        h = fetch(url)
-    except Exception as e:  # noqa: BLE001
-        out["error"] = str(e)[:120]
+    h = None
+    for attempt in range(3):
+        try:
+            h = fetch(url)
+            break
+        except Exception as e:  # noqa: BLE001
+            out["error"] = str(e)[:120]
+            time.sleep(2 * (attempt + 1))
+    if h is None:
         return out
     m = re.search(r"<title>([^<]*)</title>", h, re.I)
     if m:
@@ -82,9 +88,10 @@ def page_meta(url: str) -> dict:
     if not out["published"]:
         # Static sites without JSON-LD (the Alignment Science blog) print the
         # date in prose; the first full date on the page is the publish date.
-        m = re.search(r"\b(January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2}), (20\d{2})\b", h)
+        m = re.search(r"\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.? (\d{1,2}), (20\d{2})\b", h)
         if m:
-            out["published"] = f"{m.group(1)} {int(m.group(2)):02d}, {m.group(3)}"
+            mon = {"Sept": "Sep"}.get(m.group(1), m.group(1))
+            out["published"] = f"{mon} {int(m.group(2)):02d}, {m.group(3)}"
     return out
 
 
@@ -141,8 +148,12 @@ def main() -> int:
         ap.error("one of --sitemap or --index is required")
     if a.sitemap:
         entries = [(u, d) for u, d in sitemap_entries(a.sitemap) if any(s in u for s in a.include)]
-        entries = [(u, d) for u, d in entries if d and a.since <= d[:10] <= a.until]
-        print(f"{len(entries)} sitemap entries in {a.since}..{a.until} under {a.include}", file=sys.stderr)
+        # lastmod is modification, not publication: a June post edited in
+        # September carries a September lastmod. So the sitemap only sets a
+        # lower bound (nothing modified before `since` can have been published
+        # after it); the page's own datePublished decides the upper bound.
+        entries = [(u, d) for u, d in entries if d and d[:10] >= a.since]
+        print(f"{len(entries)} sitemap entries modified since {a.since} under {a.include}; publish dates read from pages", file=sys.stderr)
     else:
         entries = index_entries(a.index, a.include)
         entries = [(u, d) for u, d in entries if not d or a.since[:7] <= d[:7] <= a.until[:7]]
@@ -171,7 +182,8 @@ def main() -> int:
             continue
         items.append((pub, m))
     items.sort(key=lambda t: t[0], reverse=True)
-    print(f"{len(items)} items kept, {dropped} dropped (no title/date or published outside the range)", file=sys.stderr)
+    errors = sum(1 for m in metas if m.get("error"))
+    print(f"{len(items)} items kept, {dropped} dropped (no title/date or published outside the range), {errors} fetch errors", file=sys.stderr)
 
     def esc(s: str) -> str:
         return html.escape(s or "", quote=False)
