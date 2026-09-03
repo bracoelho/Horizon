@@ -2,10 +2,8 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # Once daily at 21:07 UTC = 06:07 in Tokyo, so the edition is waiting
-    # at the start of the owner's day. Off-the-hour to dodge the scheduler pile-up.
-    # 18:37 UTC = 03:37 Tokyo. Moved from 21:07 on 2026-08-31 (#52): the
-    # owner's meetings start 09:00 JST, and with GitHub's 2-8h scheduler
+    # Once daily, off the hour to dodge the scheduler pile-up. 18:37 UTC =
+    # 03:37 Tokyo. Moved from 21:07 on 2026-08-31 (#52): the
     # drift the old slot sometimes had not even finished by his 08:45
     # review. Even +4h drift now completes before 08:00 JST. The 30h
     # window anchors to run start, so the transition day only overlaps
