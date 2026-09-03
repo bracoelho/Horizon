@@ -701,7 +701,7 @@
     "consider": 40,
     "max_publish": 24,
     "defend_concurrency": 4,
-    "use_batch": true,
+    "use_batch": false,
     "min_score": 7.0,
     "rank_mode": "setwise",
     "rank_set_size": 7
