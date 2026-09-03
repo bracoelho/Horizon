@@ -11,11 +11,18 @@
 <description>Introducing the Conceptual Reasoning Index</description>
 </item>
 <item>
-<title>Anthropic Fellows Program for AI safety research: applications open for November 2026</title>
-<link>https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/</link>
-<guid isPermaLink="true">https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/</guid>
-<pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
-<description>Anthropic Fellows Program for AI safety research: applications open for November 2026</description>
+<title>Training a Misaligned Reward Seeker</title>
+<link>https://alignment.anthropic.com/2026/reward-seeker/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/reward-seeker/</guid>
+<pubDate>Sat, 01 Aug 2026 00:00:00 +0000</pubDate>
+<description>Training a Misaligned Reward Seeker</description>
+</item>
+<item>
+<title>Automated Researchers Can Mitigate Well-Characterized Alignment Failures</title>
+<link>https://alignment.anthropic.com/2026/automated-alignment-researchers/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/automated-alignment-researchers/</guid>
+<pubDate>Sat, 01 Aug 2026 00:00:00 +0000</pubDate>
+<description>Automated Researchers Can Mitigate Well-Characterized Alignment Failures</description>
 </item>
 <item>
 <title>Modular Pretraining Enables Access Control</title>
@@ -25,17 +32,17 @@
 <description>Modular Pretraining Enables Access Control</description>
 </item>
 <item>
+<title>Agentic Misalignment in Summer 2026</title>
+<link>https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</guid>
+<pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
+<description>Agentic Misalignment in Summer 2026</description>
+</item>
+<item>
 <title>Diffuse AI Control on Fuzzy Tasks</title>
 <link>https://alignment.anthropic.com/2026/diffuse-ai-control/</link>
 <guid isPermaLink="true">https://alignment.anthropic.com/2026/diffuse-ai-control/</guid>
 <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
 <description>Diffuse AI Control on Fuzzy Tasks</description>
-</item>
-<item>
-<title>Agentic Misalignment in Summer 2026</title>
-<link>https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</link>
-<guid isPermaLink="true">https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</guid>
-<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-<description>Agentic Misalignment in Summer 2026</description>
 </item>
 </channel></rss>

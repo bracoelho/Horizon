@@ -94,9 +94,20 @@ def index_entries(url: str, includes: list[str]) -> list[tuple[str, str]]:
 
     h = fetch(url, limit=2_000_000)
     seen: dict[str, str] = {}
-    for href in re.findall(r'href="([^"#]+)"', h):
+    # Walk the page in order; a month heading ("August 2026") dates every
+    # link that follows it until the next heading. The first of the month
+    # is recorded as a lastmod proxy, used when the page itself has no date.
+    months = {m: i for i, m in enumerate(
+        ["January", "February", "March", "April", "May", "June", "July",
+         "August", "September", "October", "November", "December"], 1)}
+    current = ""
+    for tok in re.finditer(r'\b(January|February|March|April|May|June|July|August|September|October|November|December) (20\d{2})\b|href="([^"#]+)"', h):
+        if tok.group(1):
+            current = f"{tok.group(2)}-{months[tok.group(1)]:02d}-01"
+            continue
+        href = tok.group(3)
         if any(s in href for s in includes):
-            seen.setdefault(urljoin(url, href), "")
+            seen.setdefault(urljoin(url, href), current)
     return list(seen.items())
 
 
@@ -134,7 +145,8 @@ def main() -> int:
         print(f"{len(entries)} sitemap entries in {a.since}..{a.until} under {a.include}", file=sys.stderr)
     else:
         entries = index_entries(a.index, a.include)
-        print(f"{len(entries)} index links under {a.include}; dates read from each page", file=sys.stderr)
+        entries = [(u, d) for u, d in entries if not d or a.since[:7] <= d[:7] <= a.until[:7]]
+        print(f"{len(entries)} index links under {a.include} (month headings as date proxy); page dates preferred", file=sys.stderr)
     source_link = a.sitemap or a.index
 
     with cf.ThreadPoolExecutor(max_workers=a.workers) as ex:
@@ -144,7 +156,13 @@ def main() -> int:
     items = []
     dropped = 0
     for m in metas:
-        pub = parse_date(m.get("published")) or parse_date(lastmod.get(m["url"]))
+        pub = parse_date(m.get("published"))
+        proxy = parse_date(lastmod.get(m["url"]))
+        if a.index and proxy and (not pub or pub.strftime("%Y-%m") != proxy.strftime("%Y-%m")):
+            # Index mode: the month heading outranks a stray date in the page
+            # text (a citation, a footnote), which is what the text fallback finds.
+            pub = proxy
+        pub = pub or proxy
         if not m.get("title") or not pub:
             dropped += 1
             continue
