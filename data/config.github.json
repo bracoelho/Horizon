@@ -302,6 +302,19 @@
         ]
       },
       {
+        "name": "Claude Blog (RSSHub mirror)",
+        "url": "https://rsshub.bestblogs.dev/claude/blog",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
         "name": "Google AI Blog",
         "url": "https://blog.google/technology/ai/rss/",
         "enabled": true,
