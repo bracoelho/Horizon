@@ -1,26 +1,26 @@
 {
-  "title": "CISA withdraws six free cybersecurity assessments for critical infrastructure",
+  "title": "CISA ends six free cybersecurity assessments amid budget cuts",
   "theme": "Critical Infrastructure",
   "score": 7.0,
   "url": "https://www.utilitydive.com/news/cisa-scraps-6-free-cybersecurity-assessments-for-critical-infrastructure-op/829570/",
-  "item_url": "/item/2026-09-03-2111-01-cisa-withdraws-six-free-cybersecurity-assessments-for-critical-infrast-en/",
-  "edition_url": "/2026/09/03/2111-summary-en.html",
-  "plain": "The Cybersecurity and Infrastructure Security Agency (CISA) has eliminated six free cybersecurity assessment services that critical infrastructure operators relied on, citing budget cuts. Tatyana Bolton, executive director of the OT Cyber Coalition, said the cuts have forced CISA into a position where it can no longer ",
+  "item_url": "/item/2026-09-03-2134-01-cisa-ends-six-free-cybersecurity-assessments-amid-budget-cuts-en/",
+  "edition_url": "/2026/09/03/2134-summary-en.html",
+  "plain": "The Cybersecurity and Infrastructure Security Agency (CISA) has discontinued six free cybersecurity assessments that critical infrastructure operators previously used to evaluate operational technology (OT) security. Tatyana Bolton, executive director of the OT Cyber Coalition, attributed the cuts to severe budget redu",
   "angles": [
     {
-      "claim": "AI security assessments for OT environments now default to vendor tools, so procurement and validation of those tools becomes an AI governance task, not a security team side project.",
-      "audience": "AI engineering leads and CISOs at utilities and other critical-infrastructure operators",
-      "rank_reason": "Directly changes what AI engineering leaders must check before Thursday, since they now own vetting the AI-driven scanning and assessment tools replacing CISA's role."
+      "claim": "AI engineering teams inside smaller utilities now inherit an OT baselining task CISA used to do for free, with no budget line for it.",
+      "audience": "AI and OT engineering leads at small and mid-size utilities and water systems",
+      "rank_reason": "It forces an immediate governance decision, who pays and who schedules the replacement assessment, so it changes a Monday task list, not just awareness."
     },
     {
-      "claim": "Any AI system CISA used to help validate through free assessments is now unvalidated until the operator commissions an equivalent review itself.",
-      "audience": "AI engineering and platform teams running or exposing OT-adjacent AI systems",
-      "rank_reason": "Reaches the target reader and is actionable on Monday, but it is a narrower inference the article does not state outright, so it goes further than the source without full support."
+      "claim": "Any AI system an operator connects to OT should now assume its baseline security posture is self-reported, not federally verified, until a paid substitute is booked.",
+      "audience": "AI governance leads and CISOs at critical infrastructure operators",
+      "rank_reason": "It reaches the target reader by tying the funding cut directly to AI deployment risk, but it extends the article's claim further than the reporting supports since no AI-specific gap is documented."
     },
     {
-      "claim": "Operators building AI-based anomaly detection for OT should not assume federal review will ever validate the model, so validation has to be built into the vendor contract now.",
-      "audience": "AI engineering leaders negotiating vendor and integration contracts for OT AI tools",
-      "rank_reason": "Useful and forward-looking but more speculative about contract terms than the first two, and slightly further from what the article actually documents."
+      "claim": "Directors should ask this Thursday which of the six discontinued assessments their AI vendors' OT integrations depended on for their own security claims.",
+      "audience": "Directors and boards overseeing AI deployment in critical infrastructure",
+      "rank_reason": "Useful boardroom question but weaker because the six assessments are unnamed, so the claim cannot be verified or acted on precisely yet."
     }
   ]
 }
