@@ -1,0 +1,64 @@
+name: Born-blind Backfill
+
+# BACKLOG #64: one dispatched sweep over the thesis-tier first-party sources
+# for the period before the radar's first working run (2026-08-16). Uses
+# data/config.backfill.json (those sources only; two static archive feeds
+# built from the sites' sitemaps by scripts/build_backfill_feed.py) and a
+# separate data directory so nothing touches the nightly state. There is
+# deliberately NO Pages deploy: the digest and item pages the run writes
+# are uploaded as an artifact for the owner to review before anything
+# publishes as a marked backfill edition.
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "Window in hours (default reaches back to 1 June 2026)"
+        default: "2300"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.11.26"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run the backfill sweep
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COLUMNS: "200"
+        run: |
+          set -o pipefail
+          mkdir -p data-backfill
+          cp data/presets.json data-backfill/ 2>/dev/null || true
+          uv run horizon --hours "${{ inputs.hours }}" -d data-backfill -c data/config.backfill.json 2>&1 | tee backfill-run.log
+
+      - name: Health report (step summary only)
+        if: always()
+        run: |
+          python scripts/check_run_health.py backfill-run.log --window-hours "${{ inputs.hours }}" || true
+
+      - name: Upload the review bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backfill-review
+          path: |
+            backfill-run.log
+            docs/_posts/
+            docs/_items/
+            data-backfill/summaries/
+            data-backfill/rank_fixture-*.json
+          if-no-files-found: warn

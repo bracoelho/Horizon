@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>Claude Blog archive (born-blind backfill)</title>
+<link>https://claude.com/sitemap.xml</link>
+<description>Born-blind backfill feed built from the sitemap, 2026-06-01 to 2026-08-16. Bodies come from the page at fetch time.</description>
+<item>
+<title>Claude Tag now reads even more of the room</title>
+<link>https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room</link>
+<guid isPermaLink="true">https://claude.com/blog/claude-tag-now-reads-even-more-of-the-room</guid>
+<pubDate>Thu, 13 Aug 2026 00:00:00 +0000</pubDate>
+<description>Claude has more context to decide when to proactively collaborate in Slack (and when not to) </description>
+</item>
+<item>
+<title>Claude Cowork comes to the Chrome side panel</title>
+<link>https://claude.com/blog/cowork-chrome-side-panel</link>
+<guid isPermaLink="true">https://claude.com/blog/cowork-chrome-side-panel</guid>
+<pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+<description>The Claude in Chrome side panel is now a Claude Cowork session. Your conversations, skills, and connectors carry between the browser and the Claude apps.</description>
+</item>
+<item>
+<title>Auto mode is now the default in Claude Code for Pro, Max, and Team plans</title>
+<link>https://claude.com/blog/auto-mode-default-in-claude-code</link>
+<guid isPermaLink="true">https://claude.com/blog/auto-mode-default-in-claude-code</guid>
+<pubDate>Fri, 07 Aug 2026 00:00:00 +0000</pubDate>
+<description>Claude Code will soon run auto mode by default for Pro, Max, and Team plans, enabling longer-running autonomous work, and catching more dangerous commands.</description>
+</item>
+<item>
+<title>Running auto mode in production</title>
+<link>https://claude.com/blog/auto-mode-in-production</link>
+<guid isPermaLink="true">https://claude.com/blog/auto-mode-in-production</guid>
+<pubDate>Fri, 07 Aug 2026 00:00:00 +0000</pubDate>
+<description>How customers like Nuro, Gusto, and Garner Health use auto mode to drive safer, longer running coding workflows. </description>
+</item>
+<item>
+<title>Millennium and Anthropic are building a digital risk analyst with Claude</title>
+<link>https://claude.com/blog/millennium-and-anthropic-are-building-a-digital-risk-analyst-with-claude</link>
+<guid isPermaLink="true">https://claude.com/blog/millennium-and-anthropic-are-building-a-digital-risk-analyst-with-claude</guid>
+<pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+<description>Anthropic is working with Millennium to co-develop a digital risk analyst to surface new risk insights and form opinions on risk exposure across asset classes.</description>
+</item>
+<item>
+<title>Self-hosted environments for Claude Code</title>
+<link>https://claude.com/blog/run-claude-code-sessions-on-your-own-compute</link>
+<guid isPermaLink="true">https://claude.com/blog/run-claude-code-sessions-on-your-own-compute</guid>
+<pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+<description>Self-hosted environments are in public beta. Run Claude Code sessions on your own infrastructure, inside your network and next to your internal services.</description>
+</item>
+<item>
+<title>Inference hooks: inline data loss prevention for Claude Enterprise</title>
+<link>https://claude.com/blog/claude-enterprise-inference-hooks</link>
+<guid isPermaLink="true">https://claude.com/blog/claude-enterprise-inference-hooks</guid>
+<pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+<description>Inference hooks lets your compliance team inspect and enforce policy on every prompt and tool call response before they reach Claude — across Claude Enterprise surfaces including chat, Claude Code, Claude Cowork, and more. </description>
+</item>
+<item>
+<title>A guide to cost visibility and control in Claude</title>
+<link>https://claude.com/blog/a-guide-to-cost-visibility-and-control-in-claude</link>
+<guid isPermaLink="true">https://claude.com/blog/a-guide-to-cost-visibility-and-control-in-claude</guid>
+<pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
+<description>How IT admins can see and manage Claude costs, including spend caps, model controls, usage analytics, and API features like prompt caching and batch processing.</description>
+</item>
+<item>
+<title>MCP 2026-07-28 spec: stateless core, coming to Claude</title>
+<link>https://claude.com/blog/bringing-mcp-2026-07-28-to-claude</link>
+<guid isPermaLink="true">https://claude.com/blog/bringing-mcp-2026-07-28-to-claude</guid>
+<pubDate>Tue, 28 Jul 2026 00:00:00 +0000</pubDate>
+<description>The MCP 2026-07-28 spec is live, moving the Model Context Protocol to a stateless core with standardized extensions and hardened auth. Support is rolling out across Claude products soon. See what&amp;#39;s new and how MCP is advancing in Claude.</description>
+</item>
+<item>
+<title>How the product designer who built Claude Design uses it</title>
+<link>https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them</link>
+<guid isPermaLink="true">https://claude.com/blog/how-the-product-designer-who-built-claude-design-uses-it-to-explore-ideas-before-building-them</guid>
+<pubDate>Fri, 24 Jul 2026 00:00:00 +0000</pubDate>
+<description>Nate Parrott, a product designer at Anthropic, shares how he uses Claude Design (in beta) to explore, iterate on, and share visual ideas early, from product prototypes to slide decks and animations.</description>
+</item>
+<item>
+<title>Four role-based certifications for the people who put Claude to work for customers</title>
+<link>https://claude.com/blog/four-role-based-claude-certifications</link>
+<guid isPermaLink="true">https://claude.com/blog/four-role-based-claude-certifications</guid>
+<pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
+<description>We&amp;#39;re expanding the Claude Certification Program with three new role-based certifications that span the full team a customer needs to deploy AI.</description>
+</item>
+<item>
+<title>Think through hard problems in voice mode</title>
+<link>https://claude.com/blog/think-through-hard-problems-in-voice-mode</link>
+<guid isPermaLink="true">https://claude.com/blog/think-through-hard-problems-in-voice-mode</guid>
+<pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
+<description>Starting today, voice mode runs on Anthropic&amp;#39;s Claude Opus, Claude Sonnet, and Claude Haiku, reaches the tools you’ve connected, and speaks many more languages.</description>
+</item>
+<item>
+<title>How Rakuten builds agents overnight with Claude Fable 5</title>
+<link>https://claude.com/blog/working-at-the-frontier-rakuten</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-rakuten</guid>
+<pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+<description>Why Rakuten thinks Claude Fable 5 is a step change in model intelligence, transforming how long-running work is done. </description>
+</item>
+<item>
+<title>How Cursor knew Claude Fable 5 was ready for the hardest 1% of problems</title>
+<link>https://claude.com/blog/working-at-the-frontier-cursor</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-cursor</guid>
+<pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
+<description>How Anthropic&amp;#39;s Claude Fable 5 beat CursorBench and expanded what&amp;#39;s possible for Cursor and agentic coding.</description>
+</item>
+<item>
+<title>How Anthropic runs large-scale code migrations with Claude Code</title>
+<link>https://claude.com/blog/ai-code-migration</link>
+<guid isPermaLink="true">https://claude.com/blog/ai-code-migration</guid>
+<pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+<description>How Anthropic runs large-scale AI code migrations with Claude Code: a six-step process and an open-source starter kit, from Bun&amp;#39;s million-line Zig-to-Rust port.</description>
+</item>
+<item>
+<title>Working with Claude Fable 5 in Claude Cowork</title>
+<link>https://claude.com/blog/working-with-claude-fable-5-in-claude-cowork</link>
+<guid isPermaLink="true">https://claude.com/blog/working-with-claude-fable-5-in-claude-cowork</guid>
+<pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+<description>Anthropic&amp;#39;s Claude Fable 5 can carry long, complex work on its own. Here&amp;#39;s how to get the most out of it in Claude Cowork.</description>
+</item>
+<item>
+<title>Base44 uses Claude Fable 5 for its hardest engineering work</title>
+<link>https://claude.com/blog/working-at-the-frontier-why-base44-trusts-claude-fable-5-with-their-most-challenging-engineering-work</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-why-base44-trusts-claude-fable-5-with-their-most-challenging-engineering-work</guid>
+<pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+<description>Why Base44 trusts Anthropic&amp;#39;s Claude Fable 5 with its most complex product and engineering tasks. </description>
+</item>
+<item>
+<title>Working at the frontier: How Hebbia builds AI for financial diligence that can't miss a detail</title>
+<link>https://claude.com/blog/working-at-the-frontier-how-hebbia-builds-ai-for-financial-diligence-that-cant-miss-a-detail</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-how-hebbia-builds-ai-for-financial-diligence-that-cant-miss-a-detail</guid>
+<pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+<description>How Anthropic&amp;#39;s Claude Fable 5 beat Hebbia&amp;#39;s finance-specific model evaluations, achieving their biggest accuracy gain yet.</description>
+</item>
+<item>
+<title>Working at the frontier: How Cognition trusts Claude Fable 5 to work through the night</title>
+<link>https://claude.com/blog/working-at-the-frontier-how-cognition-trusts-claude-fable-5-to-work-through-the-night</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-how-cognition-trusts-claude-fable-5-to-work-through-the-night</guid>
+<pubDate>Fri, 10 Jul 2026 00:00:00 +0000</pubDate>
+<description>Cognition tested Claude Fable 5 in Devin, its AI software engineer. It&amp;#39;s the first model its team trusts to run unattended for eight hours and deliver production-ready code.</description>
+</item>
+<item>
+<title>Using Claude Cowork in marketing operations to automate reporting and campaign building</title>
+<link>https://claude.com/blog/how-anthropics-marketing-operations-team-uses-claude-cowork-to-automate-reporting-and-campaign-builds</link>
+<guid isPermaLink="true">https://claude.com/blog/how-anthropics-marketing-operations-team-uses-claude-cowork-to-automate-reporting-and-campaign-builds</guid>
+<pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+<description>How the marketing operations team at Anthropic uses Claude Cowork to automate marketing reporting and marketing campaign builds.</description>
+</item>
+<item>
+<title>Working at the frontier: How Thomson Reuters builds AI for high- stakes professional work</title>
+<link>https://claude.com/blog/working-at-the-frontier-how-thomson-reuters-builds-ai-for-high--stakes-professional-work</link>
+<guid isPermaLink="true">https://claude.com/blog/working-at-the-frontier-how-thomson-reuters-builds-ai-for-high--stakes-professional-work</guid>
+<pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+<description>Why the team at Thomson Reuters considers Claude Fable 5 a critical evolution in what’s possible with AI for knowledge work.‍</description>
+</item>
+<item>
+<title>Bringing Claude Code and Claude Cowork to government</title>
+<link>https://claude.com/blog/bringing-claude-code-and-claude-cowork-to-government</link>
+<guid isPermaLink="true">https://claude.com/blog/bringing-claude-code-and-claude-cowork-to-government</guid>
+<pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+<description>Claude Code and Claude Cowork from Anthropic are now available in public beta in Claude for Government Desktop</description>
+</item>
+<item>
+<title>Claude Cowork on web and mobile: hand off work anywhere</title>
+<link>https://claude.com/blog/cowork-web-mobile</link>
+<guid isPermaLink="true">https://claude.com/blog/cowork-web-mobile</guid>
+<pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+<description>Claude Cowork from Anthropic is rolling out to web and mobile. Hand Claude a task, close the laptop, and the work keeps going, while every decision still comes to you.</description>
+</item>
+<item>
+<title>How people are using Claude Cowork</title>
+<link>https://claude.com/blog/how-people-are-using-claude-cowork</link>
+<guid isPermaLink="true">https://claude.com/blog/how-people-are-using-claude-cowork</guid>
+<pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+<description>How are knowledge workers using AI? Anthropic&amp;#39;s analysis of Claude Cowork sessions reveals the everyday tasks people delegate most—and what it means. </description>
+</item>
+<item>
+<title>A field guide to Claude Fable 5: Finding your unknowns</title>
+<link>https://claude.com/blog/a-field-guide-to-claude-fable-finding-your-unknowns</link>
+<guid isPermaLink="true">https://claude.com/blog/a-field-guide-to-claude-fable-finding-your-unknowns</guid>
+<pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+<description>Practical patterns for agentic coding with Claude Fable: how to find your unknowns before, during, and after implementation, from the team at Anthropic.</description>
+</item>
+<item>
+<title>New analytics and cost controls are available for Claude Enterprise</title>
+<link>https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend</link>
+<guid isPermaLink="true">https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend</guid>
+<pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+<description>Richer admin analytics, model-level entitlements, and spend alerts for Claude Enterprise so admins can track adoption, manage cost, and set guardrails that fit their org. </description>
+</item>
+<item>
+<title>Claude in Microsoft Foundry is now generally available</title>
+<link>https://claude.com/blog/claude-in-microsoft-foundry</link>
+<guid isPermaLink="true">https://claude.com/blog/claude-in-microsoft-foundry</guid>
+<pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+<description>Starting today, Claude models are generally available in Microsoft Foundry, hosted on Azure.</description>
+</item>
+<item>
+<title>Introducing the Claude apps gateway for Amazon Bedrock and Google Cloud</title>
+<link>https://claude.com/blog/introducing-the-claude-apps-gateway</link>
+<guid isPermaLink="true">https://claude.com/blog/introducing-the-claude-apps-gateway</guid>
+<pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+<description>Connect Claude Code to Amazon Bedrock and Google Cloud with the new Claude apps gateway: corporate SSO login, centrally enforced policy, role-based access, per-user cost attribution, and spend caps—all from one stateless container on your infrastructure.</description>
+</item>
+<item>
+<title>Agent identity: a new access model for autonomous, team-wide AI</title>
+<link>https://claude.com/blog/agent-identity-access-model</link>
+<guid isPermaLink="true">https://claude.com/blog/agent-identity-access-model</guid>
+<pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+<description>How Claude Tag’s agent identity access model works, and best practices for configuring it in your team’s workspace.</description>
+</item>
+<item>
+<title>Lessons from Anthropic on building effective human-agent teams</title>
+<link>https://claude.com/blog/building-effective-human-agent-teams</link>
+<guid isPermaLink="true">https://claude.com/blog/building-effective-human-agent-teams</guid>
+<pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+<description>The way we work with AI is evolving from a single-player to a multiplayer experience, where humans and agents work together as a team to achieve shared goals. The Anthropic team shares examples of this new way of working in action.</description>
+</item>
+<item>
+<title>Claude Desktop on AWS, Google Cloud, and Microsoft Foundry</title>
+<link>https://claude.com/blog/the-full-claude-desktop-experience-on-aws-google-cloud-and-microsoft-foundry</link>
+<guid isPermaLink="true">https://claude.com/blog/the-full-claude-desktop-experience-on-aws-google-cloud-and-microsoft-foundry</guid>
+<pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+<description>Deploy the full Claude desktop experience - chat, Claude Cowork, and Claude Code - using inference on AWS, Google Cloud and Microsoft Foundry. Available today in beta.</description>
+</item>
+<item>
+<title>Claude Code now supports artifacts</title>
+<link>https://claude.com/blog/artifacts-in-claude-code</link>
+<guid isPermaLink="true">https://claude.com/blog/artifacts-in-claude-code</guid>
+<pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+<description>Preview your in-progress work in Claude Code as a live, interactive artifact—built from your full session context and shareable with your team.</description>
+</item>
+<item>
+<title>Steering Claude Code: when to use CLAUDE.md, skills, hooks, and subagents</title>
+<link>https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more</link>
+<guid isPermaLink="true">https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more</guid>
+<pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+<description>Seven ways to steer Claude Code—CLAUDE.md files, rules, skills, subagents, hooks, and more—and when to use each, based on context cost and authority.</description>
+</item>
+<item>
+<title>Claude Design now stays on brand for daily work</title>
+<link>https://claude.com/blog/claude-design-stays-on-brand-for-daily-work</link>
+<guid isPermaLink="true">https://claude.com/blog/claude-design-stays-on-brand-for-daily-work</guid>
+<pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+<description>Claude Design now sticks to your design system across projects, works fluidly with Claude Code, lets you edit directly on the canvas, and connects to more tools you already use. It has a new home in the sidebar on the Claude desktop app; you can also find it at claude.ai/design.</description>
+</item>
+<item>
+<title>Meet the winners of our Claude Opus 4.8 Build Day hackathon</title>
+<link>https://claude.com/blog/meet-the-winners-of-our-claude-opus-4-8-build-day-hackathon</link>
+<guid isPermaLink="true">https://claude.com/blog/meet-the-winners-of-our-claude-opus-4-8-build-day-hackathon</guid>
+<pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+<description>From reconstructing Tang Dynasty architecture to polling a synthetic San Francisco, see what the winners of our latest hackathon built with Claude Opus 4.8 in a day.</description>
+</item>
+<item>
+<title>Workload Identity Federation (WIF) is now generally available on the Claude Platform.</title>
+<link>https://claude.com/blog/workload-identity-federation</link>
+<guid isPermaLink="true">https://claude.com/blog/workload-identity-federation</guid>
+<pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+<description>WIF replaces static API keys with short-lived, scoped credentials issued at request time. WIF is compatible with any OIDC-compliant identity provider and covers all Claude API endpoints</description>
+</item>
+<item>
+<title>Meet the winners of the Built with Opus 4.7 Claude Code hackathon</title>
+<link>https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon</link>
+<guid isPermaLink="true">https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon</guid>
+<pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+<description>We chatted with the winners of our Built with Opus 4.7 hackathon about their projects, tackling medical training, electronics repair, computer science education, interactive play, home repair, and factory maintenance. </description>
+</item>
+<item>
+<title>The evolution of agentic surfaces: building with Claude Managed Agents</title>
+<link>https://claude.com/blog/building-with-claude-managed-agents</link>
+<guid isPermaLink="true">https://claude.com/blog/building-with-claude-managed-agents</guid>
+<pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+<description>Claude Managed Agents allows teams to build and deploy agents in production environments reliably at scale. Here’s why and how teams are using it. </description>
+</item>
+<item>
+<title>New in Claude Managed Agents: run agents on a schedule and store environment variables in vaults</title>
+<link>https://claude.com/blog/whats-new-in-claude-managed-agents</link>
+<guid isPermaLink="true">https://claude.com/blog/whats-new-in-claude-managed-agents</guid>
+<pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+<description>Claude Managed Agents now supports scheduled deployments and vaults: run agents on a cron schedule and securely authenticate CLI tools and other services. </description>
+</item>
+<item>
+<title>Claude support for Apple's Foundation Models framework</title>
+<link>https://claude.com/blog/claude-for-foundation-models</link>
+<guid isPermaLink="true">https://claude.com/blog/claude-for-foundation-models</guid>
+<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+<description>A new Swift package connects Apple&amp;#39;s Foundation Models framework to Claude. Hand off complex reasoning from on-device models with typed Swift outputs.</description>
+</item>
+<item>
+<title>Connector Observability and In-App Directory Submission</title>
+<link>https://claude.com/blog/observability-for-developers-building-connectors</link>
+<guid isPermaLink="true">https://claude.com/blog/observability-for-developers-building-connectors</guid>
+<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+<description>Monitor connector performance across Claude, diagnose errors and latency, and submit your MCP server to the directory in-app. Public beta now live.</description>
+</item>
+<item>
+<title>Beobachtbarkeit des Konnektors und Einreichung im In-App-Verzeichnis</title>
+<link>https://claude.com/de/blog/observability-for-developers-building-connectors</link>
+<guid isPermaLink="true">https://claude.com/de/blog/observability-for-developers-building-connectors</guid>
+<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+<description>Überwachen Sie die Leistung des Konnektors in Claude, diagnostizieren Sie Fehler und Latenz und senden Sie Ihren MCP-Server an das In-App-Verzeichnis. Die öffentliche Betaversion ist jetzt verfügbar.</description>
+</item>
+<item>
+<title>Observabilité des connecteurs et soumission au répertoire intégré à l'application</title>
+<link>https://claude.com/fr/blog/observability-for-developers-building-connectors</link>
+<guid isPermaLink="true">https://claude.com/fr/blog/observability-for-developers-building-connectors</guid>
+<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+<description>Surveillez les performances du connecteur sur Claude, diagnostiquez les erreurs et la latence, et soumettez votre serveur MCP au répertoire intégré à l&amp;#39;application. La bêta publique est désormais disponible.</description>
+</item>
+<item>
+<title>How one Anthropic seller rebuilt his team's workflows with Claude Code</title>
+<link>https://claude.com/blog/how-anthropic-uses-claude-gtm-engineering</link>
+<guid isPermaLink="true">https://claude.com/blog/how-anthropic-uses-claude-gtm-engineering</guid>
+<pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+<description>How one Anthropic account executive turned GTM product manager used Claude Code to save 10-15 hours per week on email and pre-call research. </description>
+</item>
+<item>
+<title>The Claude Cowork product guide</title>
+<link>https://claude.com/blog/the-claude-cowork-product-guide</link>
+<guid isPermaLink="true">https://claude.com/blog/the-claude-cowork-product-guide</guid>
+<pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+<description>The Anthropic team shares how to get started with AnthriClaude Cowork, from setting up the tool to kicking off your first task.</description>
+</item>
+<item>
+<title>Best practices for getting started with Claude Cowork</title>
+<link>https://claude.com/blog/best-practices-for-getting-started-with-claude-cowork</link>
+<guid isPermaLink="true">https://claude.com/blog/best-practices-for-getting-started-with-claude-cowork</guid>
+<pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+<description>When to use Claude Cowork instead of Claude Code or chat, how to decide what workflows to delegate, and concrete steps to get started.</description>
+</item>
+<item>
+<title>Lessons from building Claude Code: How we use skills</title>
+<link>https://claude.com/blog/lessons-from-building-claude-code-how-we-use-skills</link>
+<guid isPermaLink="true">https://claude.com/blog/lessons-from-building-claude-code-how-we-use-skills</guid>
+<pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+<description>What we learned building and scaling hundreds of skills internally at Anthropic.</description>
+</item>
+<item>
+<title>Running an AI-native engineering org</title>
+<link>https://claude.com/blog/running-an-ai-native-engineering-org</link>
+<guid isPermaLink="true">https://claude.com/blog/running-an-ai-native-engineering-org</guid>
+<pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+<description>How the Claude Code engineering team’s processes and structure changed once agentic coding became the default way of working.</description>
+</item>
+</channel></rss>

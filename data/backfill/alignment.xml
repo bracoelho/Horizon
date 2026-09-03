@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>Anthropic Alignment Science blog archive (born-blind backfill)</title>
+<link>https://alignment.anthropic.com/</link>
+<description>Born-blind backfill feed built from the sitemap, 2026-06-01 to 2026-08-16. Bodies come from the page at fetch time.</description>
+<item>
+<title>Introducing the Conceptual Reasoning Index</title>
+<link>https://alignment.anthropic.com/2026/conceptual-reasoning-index/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/conceptual-reasoning-index/</guid>
+<pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+<description>Introducing the Conceptual Reasoning Index</description>
+</item>
+<item>
+<title>Anthropic Fellows Program for AI safety research: applications open for November 2026</title>
+<link>https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/</guid>
+<pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+<description>Anthropic Fellows Program for AI safety research: applications open for November 2026</description>
+</item>
+<item>
+<title>Modular Pretraining Enables Access Control</title>
+<link>https://alignment.anthropic.com/2026/modular-pretraining/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/modular-pretraining/</guid>
+<pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+<description>Modular Pretraining Enables Access Control</description>
+</item>
+<item>
+<title>Diffuse AI Control on Fuzzy Tasks</title>
+<link>https://alignment.anthropic.com/2026/diffuse-ai-control/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/diffuse-ai-control/</guid>
+<pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+<description>Diffuse AI Control on Fuzzy Tasks</description>
+</item>
+<item>
+<title>Agentic Misalignment in Summer 2026</title>
+<link>https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</link>
+<guid isPermaLink="true">https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/</guid>
+<pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+<description>Agentic Misalignment in Summer 2026</description>
+</item>
+</channel></rss>

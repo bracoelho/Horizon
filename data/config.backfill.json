@@ -1,0 +1,709 @@
+{
+  "ai": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "api_key_env": "ANTHROPIC_API_KEY",
+    "temperature": 1.0,
+    "max_tokens": 4096,
+    "throttle_sec": 0,
+    "analysis_concurrency": 2,
+    "enrichment_concurrency": 1,
+    "languages": [
+      "en"
+    ]
+  },
+  "processing": {
+    "profiles_dir": "profiles",
+    "default_profile": "practice",
+    "profile_settings": {
+      "business-markets": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      },
+      "practice": {
+        "threshold": 6.5,
+        "topic_dedup": true
+      },
+      "horizon-research": {
+        "threshold": 8.0,
+        "topic_dedup": true
+      },
+      "critical-infrastructure": {
+        "threshold": 6.5,
+        "topic_dedup": true
+      },
+      "reliability-assurance": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      }
+    }
+  },
+  "display": {
+    "icon_style": "emoji"
+  },
+  "email": {
+    "enabled": false,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "imap_server": "imap.gmail.com",
+    "imap_port": 993,
+    "email_address": "placeholder@example.com",
+    "sender_name": "News Radar",
+    "subscribe_keyword": "SUBSCRIBE",
+    "unsubscribe_keyword": "UNSUBSCRIBE"
+  },
+  "sources": {
+    "github": [
+      {
+        "type": "repo_releases",
+        "owner": "anthropics",
+        "repo": "claude-code",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "anthropics",
+        "repo": "skills",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "openai",
+        "repo": "codex",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "google-gemini",
+        "repo": "gemini-cli",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "github",
+        "repo": "copilot-cli",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "QwenLM",
+        "repo": "qwen-code",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "langchain-ai",
+        "repo": "langchain",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "vllm-project",
+        "repo": "vllm",
+        "enabled": false,
+        "category": "llm-inference",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "ollama",
+        "repo": "ollama",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      },
+      {
+        "type": "repo_releases",
+        "owner": "huggingface",
+        "repo": "transformers",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "business-markets"
+        ]
+      }
+    ],
+    "hackernews": {
+      "enabled": false,
+      "fetch_top_stories": 30,
+      "min_score": 40,
+      "category": "tech",
+      "profile": [
+        "business-markets",
+        "practice",
+        "horizon-research",
+        "reliability-assurance",
+        "critical-infrastructure"
+      ]
+    },
+    "rss": [
+      {
+        "name": "arXiv cs.AI",
+        "url": "https://rss.arxiv.org/rss/cs.AI",
+        "enabled": false,
+        "category": "research",
+        "profile": [
+          "horizon-research",
+          "practice",
+          "reliability-assurance"
+        ],
+        "max_items": 20
+      },
+      {
+        "name": "arXiv cs.CL",
+        "url": "https://rss.arxiv.org/rss/cs.CL",
+        "enabled": false,
+        "category": "research",
+        "profile": [
+          "horizon-research",
+          "practice",
+          "reliability-assurance"
+        ],
+        "max_items": 20
+      },
+      {
+        "name": "arXiv cs.LG",
+        "url": "https://rss.arxiv.org/rss/cs.LG",
+        "enabled": false,
+        "category": "research",
+        "profile": [
+          "horizon-research",
+          "practice",
+          "reliability-assurance"
+        ],
+        "max_items": 20
+      },
+      {
+        "name": "Hugging Face Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "horizon-research"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "Google DeepMind Blog",
+        "url": "https://deepmind.google/blog/rss.xml",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "horizon-research",
+          "business-markets",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "MIT Technology Review - AI",
+        "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+        "enabled": false,
+        "category": "media",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice",
+          "horizon-research"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "The Verge - AI",
+        "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+        "enabled": false,
+        "category": "media",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "OpenAI News",
+        "url": "https://openai.com/news/rss.xml",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Anthropic News (RSSHub mirror)",
+        "url": "https://rsshub.bestblogs.dev/anthropic/news",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Claude Blog (RSSHub mirror)",
+        "url": "https://rsshub.bestblogs.dev/claude/blog",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Google AI Blog",
+        "url": "https://blog.google/technology/ai/rss/",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Google Developers Blog",
+        "url": "https://developers.googleblog.com/feeds/posts/default",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "DeepSeek News (RSSHub mirror)",
+        "url": "https://rsshub.bestblogs.dev/deepseek/news",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Qwen Blog (DEAD - abandoned Sep 2025, no successor feed found)",
+        "url": "https://qwenlm.github.io/blog/index.xml",
+        "enabled": false,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
+        "name": "Cursor Changelog",
+        "url": "https://cursor.com/changelog/rss.xml",
+        "enabled": false,
+        "category": "ai-tools",
+        "profile": [
+          "practice"
+        ]
+      },
+      {
+        "name": "smol.ai AINews",
+        "url": "https://news.smol.ai/rss.xml",
+        "enabled": false,
+        "category": "newsletters",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "TLDR AI",
+        "url": "https://tldr.tech/api/rss/ai",
+        "enabled": false,
+        "category": "newsletters",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "Latitude Media",
+        "url": "https://www.latitudemedia.com/feed",
+        "enabled": false,
+        "category": "energy-infra",
+        "profile": [
+          "critical-infrastructure",
+          "business-markets",
+          "practice"
+        ]
+      },
+      {
+        "name": "Utility Dive",
+        "url": "https://www.utilitydive.com/feeds/news/",
+        "enabled": false,
+        "category": "energy-infra",
+        "profile": [
+          "critical-infrastructure",
+          "business-markets",
+          "reliability-assurance"
+        ]
+      },
+      {
+        "name": "Google News — AI & energy",
+        "url": "https://news.google.com/rss/search?q=AI%20AND%20%28utility%20OR%20%22power%20grid%22%20OR%20%22energy%20transition%22%20OR%20%22data%20center%20power%22%20OR%20electricity%29&hl=en-US&gl=US&ceid=US:en",
+        "enabled": false,
+        "category": "energy-infra",
+        "profile": [
+          "critical-infrastructure",
+          "business-markets",
+          "reliability-assurance"
+        ]
+      },
+      {
+        "name": "NIST News",
+        "url": "https://www.nist.gov/news-events/news/rss.xml",
+        "enabled": false,
+        "category": "standards",
+        "profile": [
+          "reliability-assurance",
+          "critical-infrastructure",
+          "business-markets"
+        ]
+      },
+      {
+        "name": "IEEE Spectrum — AI",
+        "url": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
+        "enabled": false,
+        "category": "media",
+        "profile": [
+          "reliability-assurance",
+          "critical-infrastructure",
+          "practice",
+          "horizon-research"
+        ]
+      },
+      {
+        "name": "arXiv cs.SE",
+        "url": "https://rss.arxiv.org/rss/cs.SE",
+        "enabled": false,
+        "category": "research",
+        "profile": [
+          "reliability-assurance",
+          "practice",
+          "horizon-research"
+        ],
+        "max_items": 20
+      },
+      {
+        "name": "Claude Blog archive (born-blind backfill)",
+        "url": "https://raw.githubusercontent.com/bracoelho/Horizon/main/data/backfill/claude-blog.xml",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "Anthropic archive (born-blind backfill)",
+        "url": "https://raw.githubusercontent.com/bracoelho/Horizon/main/data/backfill/anthropic.xml",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ],
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "Anthropic Alignment Science blog archive (born-blind backfill)",
+        "url": "https://raw.githubusercontent.com/bracoelho/Horizon/main/data/backfill/alignment.xml",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ],
+        "content_extractor": "trafilatura"
+      }
+    ],
+    "reddit": {
+      "enabled": false,
+      "fetch_comments": 5,
+      "subreddits": [
+        {
+          "subreddit": "MachineLearning",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 50,
+          "category": "ai-ml",
+          "profile": [
+            "business-markets",
+            "practice",
+            "horizon-research",
+            "reliability-assurance"
+          ]
+        },
+        {
+          "subreddit": "LocalLLaMA",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 30,
+          "category": "ai-ml",
+          "profile": [
+            "business-markets",
+            "practice",
+            "horizon-research",
+            "reliability-assurance"
+          ]
+        },
+        {
+          "subreddit": "artificial",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 30,
+          "category": "ai-ml",
+          "profile": [
+            "business-markets",
+            "practice",
+            "horizon-research",
+            "reliability-assurance"
+          ]
+        }
+      ],
+      "users": []
+    },
+    "twitter": {
+      "enabled": false,
+      "users": [
+        "karpathy",
+        "sama",
+        "AnthropicAI",
+        "OpenAI",
+        "GoogleDeepMind",
+        "ylecun",
+        "_akhaliq"
+      ],
+      "fetch_limit": 100,
+      "category": "social",
+      "fetch_reply_text": false,
+      "max_replies_per_tweet": 3,
+      "max_tweets_to_expand": 10,
+      "reply_min_likes": 5,
+      "profile": [
+        "business-markets",
+        "practice",
+        "horizon-research",
+        "reliability-assurance"
+      ]
+    },
+    "ossinsight": {
+      "enabled": false,
+      "period": "past_24_hours",
+      "languages": [
+        "All",
+        "Python",
+        "TypeScript"
+      ],
+      "keywords": [
+        "ai",
+        "llm",
+        "agent",
+        "rag",
+        "gpt",
+        "diffusion",
+        "transformer"
+      ],
+      "min_stars": 3,
+      "max_items": 30,
+      "category": "oss-trending",
+      "profile": [
+        "practice",
+        "horizon-research"
+      ]
+    },
+    "telegram": {
+      "enabled": false,
+      "channels": []
+    },
+    "gdelt": {
+      "enabled": false,
+      "query": "Anthropic OR OpenAI OR xAI OR Grok OR DeepSeek OR Qwen OR \"Mistral AI\" OR \"Meta AI\" OR \"Moonshot AI\" OR \"Google Gemini\"",
+      "mode": "ArtList",
+      "max_records": 75,
+      "category": "vendor-watch",
+      "profile": [
+        "business-markets",
+        "reliability-assurance",
+        "practice"
+      ]
+    },
+    "google_news": {
+      "enabled": false,
+      "query": "Anthropic OR OpenAI OR xAI OR Grok OR DeepSeek OR Qwen OR \"Mistral AI\" OR \"Meta AI\" OR \"Moonshot AI\" OR \"Google Gemini\"",
+      "language": "en",
+      "country": "US",
+      "max_results": 50,
+      "category": "vendor-watch",
+      "profile": [
+        "business-markets",
+        "reliability-assurance",
+        "practice",
+        "critical-infrastructure"
+      ]
+    }
+  },
+  "collection": {
+    "time_window_hours": 12
+  },
+  "digest": {
+    "max_items": 24,
+    "profile_order": [
+      "reliability-assurance",
+      "critical-infrastructure",
+      "business-markets",
+      "practice",
+      "horizon-research"
+    ],
+    "category_groups": {},
+    "default_group": "other",
+    "default_group_limit": null,
+    "profile_limits": {
+      "critical-infrastructure": 6,
+      "reliability-assurance": 6,
+      "business-markets": 5,
+      "practice": 4,
+      "horizon-research": 3
+    },
+    "synthesis_enabled": false,
+    "synthesis_model": "claude-opus-5"
+  },
+  "webhook": {
+    "enabled": false,
+    "url_env": "HORIZON_WEBHOOK_URL",
+    "delivery": "summary",
+    "overview_position": "first",
+    "platform": "generic",
+    "layout": "markdown",
+    "fallback_layout": "markdown",
+    "languages": [
+      "en"
+    ],
+    "request_body": {
+      "text": "#{message_title}\n#{summary}"
+    },
+    "headers": ""
+  },
+  "selection": {
+    "enabled": true,
+    "gate_model": "claude-haiku-4-5",
+    "rank_model": "claude-sonnet-5",
+    "defend_model": "claude-sonnet-5",
+    "gate_effort": "low",
+    "rank_effort": "high",
+    "defend_effort": "high",
+    "gate_batch_size": 40,
+    "rank_chunk_size": 25,
+    "rank_carry": 10,
+    "consider": 40,
+    "max_publish": 24,
+    "defend_concurrency": 4,
+    "use_batch": true,
+    "min_score": 7.0,
+    "rank_mode": "setwise",
+    "rank_set_size": 7
+  }
+}
