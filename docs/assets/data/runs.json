@@ -1296,5 +1296,150 @@
   "degraded": 0,
   "warnings": 0,
   "zero_sources": []
+ },
+ {
+  "run_id": "33804768396",
+  "event": "workflow_dispatch",
+  "utc": "2026-09-03T21:11:24Z",
+  "funnel": {
+   "fetched": 207,
+   "gated": 127,
+   "analyzed": 127,
+   "ranked": 127,
+   "floor_rejected": 8,
+   "below_score": 1,
+   "published": 1,
+   "enriched": 1,
+   "tokens": 693843
+  },
+  "score_distribution": {
+   "0": 1,
+   "1": 6,
+   "2": 17,
+   "3": 37,
+   "4": 28,
+   "5": 17,
+   "6": 14,
+   "7": 6,
+   "8": 1
+  },
+  "setwise": {
+   "picks": 93,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "critical-infrastructure": 1
+  },
+  "published_scores": [
+   7.0
+  ],
+  "items": [
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "DeepSeek News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    1,
+    false
+   ],
+   "Google DeepMind Blog": [
+    3,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    13,
+    false
+   ],
+   "Hugging Face Blog": [
+    4,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    0,
+    false
+   ],
+   "Latitude Media": [
+    3,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    0,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    3,
+    false
+   ],
+   "Simon Willison": [
+    2,
+    false
+   ],
+   "TLDR AI": [
+    1,
+    false
+   ],
+   "The Verge - AI": [
+    10,
+    false
+   ],
+   "Utility Dive": [
+    3,
+    false
+   ],
+   "arXiv cs.AI": [
+    20,
+    false
+   ],
+   "arXiv cs.CL": [
+    20,
+    false
+   ],
+   "arXiv cs.LG": [
+    20,
+    false
+   ],
+   "arXiv cs.SE": [
+    20,
+    false
+   ],
+   "smol.ai AINews": [
+    0,
+    true
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 14,
+  "zero_sources": [
+   "OSS Insight"
+  ]
  }
 ]
