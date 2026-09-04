@@ -183,6 +183,25 @@ This item already ranked near the top of its day. That earned it a full read, no
 a place in the edition. You are the absolute floor: ranking says which items lead,
 you say whether any of them clear the bar at all.
 
+# What this radar is for
+
+It covers AI and agentic AI, and what they still need to be trusted in
+mission-critical and safety-critical systems. Before anything else, say what
+this item has to do with that:
+
+- `about-ai`: the item is about an AI system, its behaviour, its evaluation,
+  its governance, or the rules that will bind it.
+- `constraint-on-ai`: the item is about the sector, and it changes what an AI
+  system deployed there can do, must satisfy, or runs on. Power for data
+  centres and a rule that AI must comply with both qualify.
+- `neither`: the item is real news for this reader's sector and has nothing to
+  do with AI. A cyber programme, a supply chain, a tariff, judged on its own.
+
+`neither` is a rejection, whatever else the item has going for it. Say so in
+`why` and name what the item is about instead. Do not reach for a connection
+the item does not make: if the AI angle has to be supplied by you, it is
+`neither`.
+
 Publish it only if you can state a specific consequence for this reader. If the
 best you can say is that it is interesting, or that it is about an important
 topic, that is a rejection.
@@ -192,11 +211,18 @@ edition of two items that matter is worth more than one of six that do not."""
 
 DEFEND_SCHEMA: Dict[str, object] = {
     "type": "object",
+    # `ai_nexus` is first on purpose: constrained decoding emits the fields in
+    # schema order, so the model settles what the item has to do with AI before
+    # it reaches the publish verdict, rather than justifying a verdict already
+    # written. Added 2026-09-04 (NEWS-Radar BACKLOG #78) after two nights
+    # published an item with no AI content and three commentary drafts built on
+    # such items died under a factual attack.
     "properties": {
+        "ai_nexus": {"enum": ["about-ai", "constraint-on-ai", "neither"]},
         "publish": {"type": "boolean"},
         "why": {"type": "string"},
     },
-    "required": ["publish", "why"],
+    "required": ["ai_nexus", "publish", "why"],
     "additionalProperties": False,
 }
 
@@ -211,8 +237,8 @@ def defend_system(theme_question: str) -> str:
 def defend_user(title: str, source: str, url: str, content: str) -> str:
     return (
         f"Title: {title}\nSource: {source}\nURL: {url}\n\nContent:\n{content}\n\n"
-        "Does this clear the bar? State the specific consequence, or say plainly "
-        "that there is not one."
+        "What does this have to do with AI? Then: does it clear the bar? State "
+        "the specific consequence, or say plainly that there is not one."
     )
 
 

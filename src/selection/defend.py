@@ -78,10 +78,25 @@ async def defend(
         if "publish" not in payload:
             logger.warning("Defend returned no verdict for %s", candidate.id)
             return DefendVerdict(candidate.id, False, "no verdict returned")
+        nexus = str(payload.get("ai_nexus", "")).strip().lower()
+        why = str(payload.get("why", ""))[:600]
+        if nexus == "neither":
+            # The charter check (NEWS-Radar BACKLOG #78). Logged at warning, not
+            # info, because the CLI defaults to warning and a decision nobody
+            # can see is the defect this project keeps re-learning.
+            logger.warning(
+                "Defend refused %s: no AI nexus (%s)", candidate.id, candidate.title
+            )
+            return DefendVerdict(candidate.id, False, f"no AI nexus: {why}", nexus)
+        if not nexus:
+            # Unknown, never refused: an unanswered field must not empty an
+            # edition, the same rule the score floor follows for unscored items.
+            logger.warning("Defend returned no AI nexus for %s", candidate.id)
         return DefendVerdict(
             id=candidate.id,
             publish=bool(payload.get("publish")),
-            why=str(payload.get("why", ""))[:600],
+            why=why,
+            ai_nexus=nexus,
         )
 
     verdicts = await asyncio.gather(*(judge(c) for c in shortlist))

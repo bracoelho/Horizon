@@ -229,6 +229,43 @@ def test_defend_rejects_when_no_verdict_is_returned() -> None:
     assert selected == []
 
 
+def test_defend_refuses_an_item_with_no_ai_nexus() -> None:
+    """The charter check: a real sector story with no AI in it is refused,
+    however good its consequence (BACKLOG #78, after two such items published
+    alone on consecutive nights)."""
+
+    async def complete(system: str, user: str) -> str:
+        return json.dumps(
+            {"ai_nexus": "neither", "publish": True, "why": "an operator would act"}
+        )
+
+    selected, verdicts = asyncio.run(defend(_cands(3), complete, THEMES))
+    assert selected == []
+    assert all(not v.publish for v in verdicts)
+    assert all(v.why.startswith("no AI nexus:") for v in verdicts)
+    assert all(v.ai_nexus == "neither" for v in verdicts)
+
+
+def test_defend_publishes_when_the_item_constrains_ai() -> None:
+    async def complete(system: str, user: str) -> str:
+        return json.dumps(
+            {"ai_nexus": "constraint-on-ai", "publish": True, "why": "interconnection"}
+        )
+
+    selected, _ = asyncio.run(defend(_cands(2), complete, THEMES))
+    assert len(selected) == 2
+
+
+def test_defend_keeps_its_verdict_when_the_nexus_is_missing() -> None:
+    """Unknown is not refused: an unanswered field must never empty an edition,
+    the rule the score floor already follows for unscored items."""
+    selected, verdicts = asyncio.run(
+        defend(_cands(2), _defender(lambda t: True), THEMES)
+    )
+    assert len(selected) == 2
+    assert all(v.ai_nexus == "" for v in verdicts)
+
+
 def test_defend_can_publish_nothing_on_a_quiet_day() -> None:
     selected, _ = asyncio.run(defend(_cands(5), _defender(lambda t: False), THEMES))
     assert selected == []

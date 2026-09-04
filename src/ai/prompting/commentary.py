@@ -51,7 +51,7 @@ An angle is a claim he would defend in a boardroom, not a description of the
 article. "Interpretability output is a finding rather than a record" is an
 angle. "Background" and "Who is exposed" are section headings, and are not.
 
-Return exactly three, ordered best first. Rank on whether acting on the claim
+Rank on whether acting on the claim
 would change a decision, then on whether it reaches his reader, then on how far
 it goes beyond what the article already says. His reader is the AI engineering
 function inside utilities and other critical-infrastructure operators: the
@@ -59,6 +59,19 @@ people who build, run and govern AI systems there. The energy business units
 and the grid operations desks are welcome readers and never the target, so an
 angle about power markets or dispatch only ranks if it changes what an AI
 engineering leader must check, decide or govern.
+
+An angle must stand on what the source says. If the connection between this
+item and AI has to be supplied by you, the angle does not qualify and you do not
+propose it. `rank_reason` is never the place to confess a gap: a reason that
+would say the claim goes beyond what the article supports, or that the AI link
+is not documented, means the angle is disqualified rather than ranked last.
+Three drafts written from such angles were withdrawn in three days, each after a
+factual attack found the bridge invented.
+
+Return up to three, best first. Fewer is the right answer when fewer qualify,
+and an empty list is the right answer when the item carries no angle that stands
+on its own source. A short honest list costs nothing; an invented one costs the
+author his credibility.
 
 For each: `claim` is one sentence stating the position, twelve to thirty words.
 `audience` names who it is for in a few words. `rank_reason` is one short
@@ -100,7 +113,8 @@ has not said.
 
 # Your task
 
-Three angles, ordered best first, as JSON matching the schema."""
+Up to three angles, ordered best first, as JSON matching the schema. Fewer, or
+none, when fewer or none stand on the source."""
 
 
 DRAFT_SCHEMA = {

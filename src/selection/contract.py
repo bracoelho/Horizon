@@ -57,6 +57,11 @@ class DefendVerdict:
     id: str
     publish: bool
     why: str = ""
+    # "about-ai", "constraint-on-ai", "neither", or "" when the model did not
+    # answer (older responses, or a parse that lost the field). Empty means
+    # unknown and never means refused: a stage that cannot judge must not
+    # silently drop the day's items.
+    ai_nexus: str = ""
 
 
 @dataclass(frozen=True)
