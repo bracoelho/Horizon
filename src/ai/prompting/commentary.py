@@ -64,7 +64,7 @@ An angle must stand on what the source says. If the connection between this
 item and AI has to be supplied by you, the angle does not qualify and you do not
 propose it. `rank_reason` is never the place to confess a gap: a reason that
 would say the claim goes beyond what the article supports, or that the AI link
-is not documented, means the angle is disqualified rather than ranked last.
+is not documented, disqualifies the angle. It does not rank last; it is dropped.
 Three drafts written from such angles were withdrawn in three days, each after a
 factual attack found the bridge invented.
 

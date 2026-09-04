@@ -213,8 +213,8 @@ DEFEND_SCHEMA: Dict[str, object] = {
     "type": "object",
     # `ai_nexus` is first on purpose: constrained decoding emits the fields in
     # schema order, so the model settles what the item has to do with AI before
-    # it reaches the publish verdict, rather than justifying a verdict already
-    # written. Added 2026-09-04 (NEWS-Radar BACKLOG #78) after two nights
+    # it reaches the publish verdict, so the nexus is settled before a verdict can
+    # be justified backwards. Added 2026-09-04 (NEWS-Radar BACKLOG #78) after two nights
     # published an item with no AI content and three commentary drafts built on
     # such items died under a factual attack.
     "properties": {
