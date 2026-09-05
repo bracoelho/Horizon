@@ -341,9 +341,9 @@
         ]
       },
       {
-        "name": "DeepSeek News (RSSHub mirror)",
+        "name": "DeepSeek News (RSSHub mirror) (DEAD - route serves API docs, every date Invalid Date)",
         "url": "https://rsshub.bestblogs.dev/deepseek/news",
-        "enabled": true,
+        "enabled": false,
         "category": "research-labs",
         "profile": [
           "business-markets",
@@ -376,9 +376,9 @@
         ]
       },
       {
-        "name": "smol.ai AINews",
+        "name": "smol.ai AINews (DEAD - publisher deployment disabled, HTTP 402 site-wide)",
         "url": "https://news.smol.ai/rss.xml",
-        "enabled": true,
+        "enabled": false,
         "category": "newsletters",
         "profile": [
           "business-markets",
