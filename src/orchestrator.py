@@ -263,6 +263,26 @@ class HorizonOrchestrator:
 
             # 2. Fetch content from all sources
             all_items = await self.fetch_all_sources(since)
+
+            # Novelty, not recency (2026-09-05, NEWS-Radar #91). A source that
+            # publishes monthly needs a window wider than the run's, and a wide
+            # window without this would re-analyse the same items every night
+            # and could publish one twice. Off unless configured, and the count
+            # prints either way so a night can always explain its own field.
+            seen_store = None
+            if getattr(self.config.collection, "skip_seen", False):
+                from .seen import SeenStore
+                seen_store = SeenStore(
+                    Path("data") / "seen.json",
+                    keep_days=self.config.collection.seen_keep_days,
+                )
+                fresh = seen_store.filter_new(all_items)
+                skipped = len(all_items) - len(fresh)
+                print(
+                    f"Seen before: {skipped} of {len(all_items)} skipped, "
+                    f"{len(fresh)} new; store holds {len(seen_store)}"
+                )
+                all_items = fresh
             self.console.print(
                 f"{self.icons['fetched']} Fetched {len(all_items)} items from all sources\n"
             )
@@ -275,6 +295,14 @@ class HorizonOrchestrator:
                 return
 
             # 3. Merge cross-source duplicates (same URL from different sources)
+            if seen_store is not None:
+                # Recorded after the fetch and before anything can fail
+                # downstream: an item this run saw is seen, whatever the run
+                # then does with it, or a crash would make tomorrow re-do today.
+                seen_store.record(all_items)
+                seen_store.prune()
+                seen_store.save()
+
             merged_items = self.merge_cross_source_duplicates(all_items)
             if len(merged_items) < len(all_items):
                 self.console.print(

@@ -264,6 +264,13 @@ class RSSSourceConfig(BaseModel):
     # type has a limit; RSS did not, and a single high-volume feed could supply
     # the overwhelming majority of a run's items and therefore of its cost.
     max_items: Optional[int] = Field(default=None, gt=0)
+    # How far back this feed is read, in hours, overriding the run's window.
+    # A source's cadence is part of its configuration rather than something to
+    # discover: NIST publishes monthly, so on a 30-hour window it returned zero
+    # in every measured run and read as a dead source (2026-09-05 source
+    # review). A wider window costs nothing to fetch and would cost re-analysis
+    # of the same items every night, which is what `seen_ids` prevents.
+    window_hours: Optional[int] = Field(default=None, gt=0)
 
 
 class RedditSubredditConfig(BaseModel):
@@ -623,6 +630,13 @@ class CollectionConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     time_window_hours: int = 24
+    # Skip items this pipeline has already fetched, so a source may declare a
+    # window far wider than the run's without paying to re-analyse the same
+    # items every night. Off by default: with it off the pipeline behaves as it
+    # always has, re-scoring everything in the window, which a manual re-run
+    # still relies on. See src/seen.py and NEWS-Radar BACKLOG #91.
+    skip_seen: bool = False
+    seen_keep_days: int = Field(default=120, gt=0)
 
 
 class DigestConfig(BaseModel):

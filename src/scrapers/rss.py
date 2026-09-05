@@ -5,7 +5,7 @@ import hashlib
 import logging
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 from email.utils import parsedate_to_datetime
 import httpx
@@ -105,10 +105,23 @@ class RSSScraper(BaseScraper):
             # Content extraction below issues a network fetch per entry, so a cap
             # applied after the loop would save nothing. Newest first, so a cap
             # keeps the most recent rather than whatever order the feed used.
+            # A feed may declare its own cadence. The run's window suits a
+            # source that publishes daily and hides one that publishes monthly,
+            # which is how a live NIST feed read as dead in every measured run.
+            feed_since = since
+            if getattr(source, "window_hours", None):
+                feed_since = datetime.now(timezone.utc) - timedelta(
+                    hours=source.window_hours
+                )
+                logger.info(
+                    "Feed %s reads back %dh, not the run's window",
+                    source.name, source.window_hours,
+                )
+
             in_window = []
             for entry in feed.entries:
                 published_at = self._parse_date(entry)
-                if not published_at or published_at < since:
+                if not published_at or published_at < feed_since:
                     continue
                 in_window.append((published_at, entry))
 
