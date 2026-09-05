@@ -262,3 +262,20 @@ def test_setwise_collapse_goes_red(tmp_path):
 
     assert len(collapsed) == 1
     assert "setwise ranker collapsed" in collapsed[0][1]
+
+def test_a_fatal_crash_is_an_error_even_without_a_level_column(tmp_path):
+    """Horizon's fatal path prints through the console and carries no level
+    column, so the 2026-09-04 run that died on a stalled gate batch reported
+    zero errors and went green. NEWS-Radar BACKLOG #83."""
+    result = _parse(
+        tmp_path,
+        "Fetched 316 items from all sources\n"
+        "\u274c Fatal error: Batch msgbatch_01 still in_progress after 3600s\n",
+    )
+    blob = repr(result)
+    assert "Fatal error" in blob
+
+
+def test_a_traceback_is_an_error_too(tmp_path):
+    result = _parse(tmp_path, "Traceback (most recent call last)\n  File x\n")
+    assert "Traceback" in repr(result)

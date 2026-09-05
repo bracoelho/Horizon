@@ -1,15 +1,55 @@
 {
   "totals": {
-    "fetched": 5,
-    "analyzed": 5,
-    "selected": 0
+    "fetched": 316,
+    "merged": null,
+    "analyzed": null,
+    "selected": null,
+    "topic_dupes": null,
+    "published": null,
+    "pre_cap": null,
+    "gated": null,
+    "ranked": null,
+    "floor_rejected": null,
+    "below_score": 0,
+    "enriched": null,
+    "enrich_attempted": null,
+    "tokens": null,
+    "tokens_in": null,
+    "tokens_out": null
   },
   "per_source": {
-    "Hacker News": 5
+    "GitHub": 0,
+    "RSS Feeds": 316
   },
-  "zero_sources": [],
-  "errors": 0,
+  "per_feed": {
+    "Anthropic Alignment Science blog archive (born-blind backfill)": [
+      6,
+      false
+    ],
+    "Anthropic archive (born-blind backfill)": [
+      53,
+      false
+    ],
+    "Claude Blog archive (born-blind backfill)": [
+      65,
+      false
+    ],
+    "Google DeepMind Blog": [
+      30,
+      false
+    ],
+    "OpenAI News": [
+      162,
+      false
+    ]
+  },
+  "zero_sources": [
+    "GitHub"
+  ],
+  "errors": 1,
+  "degraded": 0,
+  "degraded_escalated": false,
   "warnings": 0,
   "posts": [],
-  "finished_utc": "17 Aug 20:31"
+  "finished_utc": "05 Sep 02:46"
 }

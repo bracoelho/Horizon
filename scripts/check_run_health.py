@@ -42,6 +42,13 @@ QUOTED_RE = re.compile(r"'[^']*'|\"[^\"]*\"")
 # containing the word "ERROR" can't fail the job. This gates the build, so a
 # false positive would cry wolf and erode trust in the signal.
 ERROR_RE = re.compile(r"(?:^|\])\s*ERROR\s{2,}")
+# Horizon's fatal path prints through the console rather than the logger, so it
+# carries no level column and the pattern above cannot see it. On 2026-09-04 a
+# run whose gate batch never returned died with a traceback and this check
+# reported "0 errors, 0 warnings" with a funnel that stopped at "fetched"; the
+# job was green and every surface said quiet rather than broken, which is the
+# confusion this whole script exists to remove. NEWS-Radar BACKLOG #83.
+FATAL_RE = re.compile(r"^\s*(?:\W\s*)?(?:Fatal error|Traceback \(most recent call last\))")
 WARNING_RE = re.compile(r"(?:^|\])\s*WARNING\s{2,}")
 # GitHub renders ~10 annotations per level per step; group and cap below that.
 MAX_ANNOTATIONS = 8
@@ -192,7 +199,7 @@ def parse_log(path: Path):
             totals["tokens"] = int(m.group(1))
             totals["tokens_in"] = int(m.group(2))
             totals["tokens_out"] = int(m.group(3))
-        if ERROR_RE.search(line):
+        if ERROR_RE.search(line) or FATAL_RE.search(line):
             errors.append(line.strip()[:200])
             open_error = len(errors) - 1
         elif open_error is not None and CONTINUATION_RE.match(line):
