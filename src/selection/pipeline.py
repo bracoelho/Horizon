@@ -249,4 +249,5 @@ async def select(
         gate_kept=len(kept),
         gate_dropped=len(items) - len(kept),
         defend_rejected=rejected,
+        defend_verdicts=list(defend_verdicts),
     )

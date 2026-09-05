@@ -230,6 +230,18 @@ def test_defend_rejects_when_no_verdict_is_returned() -> None:
     assert selected == []
 
 
+def test_the_result_carries_the_defenders_verdicts() -> None:
+    """A recorded night must hold the decisions, not only the field: without
+    them a replay cannot tell a lost comparison from an item that never
+    reached the shortlist (specs/OUTER-LOOP.md P1)."""
+    result = asyncio.run(
+        select(_cands(6), _FakeClient(), THEMES, SelectionSettings(max_publish=2))
+    )
+    assert len(result.defend_verdicts) == len(result.ranked_ids[:10])
+    assert all(hasattr(v, "ai_nexus") for v in result.defend_verdicts)
+    assert {v.id for v in result.defend_verdicts} <= set(result.ranked_ids)
+
+
 def test_gate_counts_why_verdicts_go_missing(capsys) -> None:
     """The breakdown that separates a lost batch from lost items (BACKLOG #82):
     one unparseable response, one response returning an id nobody has."""

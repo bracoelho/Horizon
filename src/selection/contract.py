@@ -78,6 +78,12 @@ class SelectionResult:
     gate_kept: int = 0
     gate_dropped: int = 0
     defend_rejected: int = 0
+    # The verdicts themselves, not only how many were rejected: a recorded
+    # night that holds the field and the outcome but not the decisions cannot
+    # answer whether a strong item lost a comparison or never reached the
+    # shortlist, which is the wall the 2026-09-03 picks trial hit and the
+    # reason the outer loop's ledger is sequenced where it is.
+    defend_verdicts: list[DefendVerdict] = field(default_factory=list)
 
     @property
     def published_count(self) -> int:

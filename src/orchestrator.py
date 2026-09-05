@@ -929,6 +929,32 @@ class HorizonOrchestrator:
         free of engine imports.
         """
         candidates = to_candidates(items)
+        # The second half of the fixture: what the ranker and the defender
+        # decided on the field recorded above. A failure here must not cost
+        # the run, the same rule the first write follows.
+        try:
+            path = getattr(self, "_fixture_path", None)
+            if path and path.exists():
+                record = json.loads(path.read_text(encoding="utf-8"))
+                record["shortlist"] = list(result.ranked_ids[: 
+                    self._selection_settings().consider])
+                record["defend"] = [
+                    {"id": v.id, "publish": v.publish, "why": v.why,
+                     "ai_nexus": v.ai_nexus}
+                    for v in result.defend_verdicts
+                ]
+                record["published"] = [c.id for c in result.selected]
+                path.write_text(
+                    json.dumps(record, ensure_ascii=False, indent=1),
+                    encoding="utf-8",
+                )
+                self.console.print(
+                    f"Fixture decisions recorded: {len(record['defend'])} "
+                    f"verdicts, {len(record['published'])} published"
+                )
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(f"[yellow]Fixture decisions not saved: {exc}[/yellow]")
+
         by_id = {item.id: item for item in items}
 
         async def analyse_survivors(kept):
@@ -964,10 +990,22 @@ class HorizonOrchestrator:
                 fixture = Path("data") / (
                     f"rank_fixture-{datetime.now().strftime('%Y%m%d-%H%M')}.json"
                 )
+                # Version 2 (2026-09-05, NEWS-Radar #87 P1): the field AND the
+                # decisions taken on it. Version 1 was a bare list of
+                # candidates, which records what the ranker saw and never what
+                # it or the defender did, so a replay could not tell whether a
+                # strong item lost a comparison or never reached the
+                # shortlist. Readers accept both shapes. Written now with the
+                # decisions empty and rewritten when selection returns, so a
+                # crash between the two still leaves the field recorded.
+                self._fixture_path = fixture
                 fixture.write_text(json.dumps(
-                    [{"id": c.id, "title": c.title, "summary": c.summary,
-                      "source": c.source, "url": c.url, "theme": c.theme}
-                     for c in result],
+                    {"version": 2,
+                     "candidates": [
+                         {"id": c.id, "title": c.title, "summary": c.summary,
+                          "source": c.source, "url": c.url, "theme": c.theme}
+                         for c in result],
+                     "shortlist": [], "defend": [], "published": []},
                     ensure_ascii=False, indent=1), encoding="utf-8")
                 self.console.print(f"Rank fixture saved: {fixture}")
             except OSError as exc:

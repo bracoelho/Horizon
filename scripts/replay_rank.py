@@ -70,7 +70,13 @@ class WarningCounter(logging.Handler):
 
 
 def load_fixture(path: Path) -> list[Candidate]:
-    rows = json.loads(path.read_text(encoding="utf-8"))
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    # Fixture version 1 was a bare list of candidates; version 2 (2026-09-05)
+    # is an object carrying the field and the decisions taken on it. Both are
+    # replayable, because the field is what a replay needs; the decisions are
+    # what a judge needs. Six recorded nights are version 1 and must stay
+    # readable.
+    rows = raw["candidates"] if isinstance(raw, dict) else raw
     return [
         Candidate(
             id=r["id"], title=r.get("title", ""), summary=r.get("summary", ""),
