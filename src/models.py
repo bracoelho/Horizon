@@ -585,6 +585,10 @@ class SelectionConfig(BaseModel):
     max_publish: int = Field(default=6, gt=0)
     defend_concurrency: int = Field(default=4, gt=0)
     use_batch: bool = True
+    # Sources whose items inform the day and never occupy a shortlist slot:
+    # a headline with one sentence cannot support a published claim. Matched
+    # case-insensitively as a substring of the item's source name.
+    lead_sources: List[str] = Field(default_factory=list)
     # A rank is comparative, so on a thin day the best of a weak set still
     # ranks first. This is the one absolute statement: below it, an item does
     # not publish however it ranked. Set to null to let ranking alone decide.

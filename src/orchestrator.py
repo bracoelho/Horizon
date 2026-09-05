@@ -904,6 +904,7 @@ class HorizonOrchestrator:
             max_publish=config.max_publish,
             defend_concurrency=config.defend_concurrency,
             use_batch=config.use_batch,
+            lead_sources=list(config.lead_sources),
         )
 
     def _theme_questions(self) -> Dict[str, str]:

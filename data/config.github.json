@@ -662,6 +662,9 @@
     "use_batch": true,
     "min_score": 7.0,
     "rank_mode": "setwise",
-    "rank_set_size": 7
+    "rank_set_size": 7,
+    "lead_sources": [
+      "Google News"
+    ]
   }
 }

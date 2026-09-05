@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Awaitable, Callable, Dict, List, Optional, Protocol, Sequence
 
 from .contract import BatchUnit, Candidate, SelectionResult
@@ -41,6 +41,11 @@ class SelectionSettings:
     max_publish: int = 6
     defend_concurrency: int = 4
     use_batch: bool = True
+    # Sources whose items are a lead and never a candidate: they carry a
+    # headline and one sentence, never an article, so nothing about them can
+    # be defended. Matched as a case-insensitive substring of the item's
+    # source name. Empty means the old behaviour. See NEWS-Radar BACKLOG #66a.
+    lead_sources: List[str] = field(default_factory=list)
 
 
 class SelectionClient(Protocol):
@@ -177,6 +182,32 @@ async def select(
             carry=settings.rank_carry,
         )
 
+    # --- leads are not candidates -------------------------------------------
+    # A source that publishes a headline and one sentence can tell us a story
+    # exists and can never support a published claim: three weeks of evidence
+    # (the Fable 5.1 release detected four times and published zero, and the
+    # 2026-09-04 refusal of an acquisition whose whole body was one line) say
+    # the defender is being asked to judge from a headline. Dropping them here
+    # rather than at fetch keeps them in the gate's and the ranker's view, so
+    # the day is still informed by them, and frees the shortlist slot they
+    # cannot use. Printed, not logged, for the reason the setwise line gives.
+    # The funnel must still account for every item, so the ranked count keeps
+    # the full list: a lead held back sits below the shortlist cut, which is
+    # true, and the printed line names how many and from where.
+    ranked_all = list(ranked)
+    if settings.lead_sources:
+        needles = [s.lower() for s in settings.lead_sources]
+        leads = [
+            c for c in ranked
+            if any(n in (c.source or "").lower() for n in needles)
+        ]
+        if leads:
+            ranked = [c for c in ranked if c not in leads]
+            print(
+                f"Leads held back from the shortlist: {len(leads)} "
+                f"({', '.join(sorted({c.source for c in leads}))})"
+            )
+
     # --- pass three: defend -------------------------------------------------
     async def defend_complete(system: str, user: str) -> str:
         return await client.complete(
@@ -214,7 +245,7 @@ async def select(
 
     return SelectionResult(
         selected=selected,
-        ranked_ids=[c.id for c in ranked],
+        ranked_ids=[c.id for c in ranked_all],
         gate_kept=len(kept),
         gate_dropped=len(items) - len(kept),
         defend_rejected=rejected,

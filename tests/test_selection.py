@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from dataclasses import replace
 from typing import Dict, List
 
 import pytest
@@ -227,6 +228,36 @@ def test_defend_rejects_when_no_verdict_is_returned() -> None:
         return json.dumps({"why": "hmm"})
     selected, _ = asyncio.run(defend(_cands(2), vague, THEMES))
     assert selected == []
+
+
+def test_leads_are_held_back_from_the_shortlist() -> None:
+    """A snippet-only source informs the day and never takes a defender slot
+    (BACKLOG #66a): it stays in the gate's and the ranker's view and is dropped
+    before the only stage that reads a full document."""
+    field_ = [
+        replace(c, source="Google News - AI & energy") if k < 2 else c
+        for k, c in enumerate(_cands(6))
+    ]
+    client = _FakeClient()
+    result = asyncio.run(
+        select(
+            field_,
+            client,
+            THEMES,
+            SelectionSettings(lead_sources=["google news"], max_publish=10),
+        )
+    )
+    assert result.gate_kept == 6
+    assert len(result.selected) == 4
+    assert not any("Google News" in (c.source or "") for c in result.selected)
+
+
+def test_leads_are_kept_when_no_lead_source_is_configured() -> None:
+    field_ = [replace(c, source="Google News") for c in _cands(3)]
+    result = asyncio.run(
+        select(field_, _FakeClient(), THEMES, SelectionSettings(max_publish=10))
+    )
+    assert len(result.selected) == 3
 
 
 def test_defend_refuses_an_item_with_no_ai_nexus() -> None:
