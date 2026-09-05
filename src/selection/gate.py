@@ -84,13 +84,29 @@ def collect(
     """
     known = {c.id for c in candidates}
     seen: Dict[str, GateVerdict] = {}
+    # Why a verdict goes missing, counted rather than guessed (NEWS-Radar
+    # BACKLOG #82). The no-verdict share ran 18, 22, 37 and 42 percent across
+    # four runs and the log said only how many, never why. The counts below
+    # separate the three causes that need different fixes: a response that
+    # cannot be parsed at all loses its whole batch, a response that parses
+    # while omitting ids loses items one by one, and an id that comes back
+    # unrecognised means the model is rewriting identifiers, which is the
+    # failure the setwise ranker already met once.
+    unparseable = 0
+    unknown_ids = 0
 
     for text in responses.values():
-        for raw in _parse(text):
+        rows = _parse(text)
+        if not rows:
+            unparseable += 1
+        for raw in rows:
             if not isinstance(raw, dict):
                 continue
             item_id = str(raw.get("id", ""))
-            if item_id not in known or item_id in seen:
+            if item_id not in known:
+                unknown_ids += 1
+                continue
+            if item_id in seen:
                 continue
             theme = raw.get("theme")
             if theme not in themes:
@@ -113,6 +129,14 @@ def collect(
             "Gate returned no verdict for %d of %d items; keeping them for the ranker",
             len(missing),
             len(known),
+        )
+        # Printed as well as logged, and separately, so the breakdown survives
+        # the CLI's default level and reaches the run log the health check and
+        # the morning review both read.
+        print(
+            f"Gate misses: {len(missing)} of {len(known)} unverdicted from "
+            f"{len(responses)} responses; {unparseable} response(s) "
+            f"unparseable, {unknown_ids} id(s) returned that no candidate has"
         )
     for item_id in missing:
         seen[item_id] = GateVerdict(id=item_id, keep=True, reason="no gate verdict")

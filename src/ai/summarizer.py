@@ -79,9 +79,20 @@ LABELS = {
         # profile. Owner's words, with the order doing the work: the count
         # establishes that the run happened and the bar held, before anything
         # is asked of the reader.
-        "empty_analyzed": "{total} items were analyzed and scored today, and none cleared the bar.",
+        # A quiet day is an editorial outcome and reads as one. The older
+        # sentence said items "cleared the bar", which described the threshold
+        # path this pipeline stopped using in August: items are now ranked
+        # against each other, the strongest are read in full, and each is
+        # refused for a stated reason. On 2026-09-04 that made the page wrong
+        # twice over, since four of the day's items were refused for having
+        # nothing to do with AI rather than for scoring low. NEWS-Radar #35.
+        "empty_analyzed": (
+            "{total} items were read today and none earned a place. The "
+            "strongest were read in full and each was refused for a reason."
+        ),
         "empty_body": (
-            "See the [method](/method/) for how the bar is set.\n\n"
+            "Nothing is published to fill a page. See the "
+            "[method](/method/) for how that judgement is made.\n\n"
             "If you saw something today that my radar missed, tell me on "
             "[LinkedIn](https://www.linkedin.com/in/bracoelho/).\n"
         ),

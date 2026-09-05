@@ -230,6 +230,27 @@ def test_defend_rejects_when_no_verdict_is_returned() -> None:
     assert selected == []
 
 
+def test_gate_counts_why_verdicts_go_missing(capsys) -> None:
+    """The breakdown that separates a lost batch from lost items (BACKLOG #82):
+    one unparseable response, one response returning an id nobody has."""
+    cands = _cands(4)
+    responses = {
+        "a": "not json at all",
+        "b": json.dumps({"verdicts": [
+            {"id": "i0", "keep": True, "theme": "practice", "reason": ""},
+            {"id": "nobody", "keep": True, "theme": "practice", "reason": ""},
+        ]}),
+    }
+    verdicts = gate.collect(responses, cands, THEMES)
+    line = capsys.readouterr().out
+    assert "Gate misses: 3 of 4" in line
+    assert "1 response(s) unparseable" in line
+    assert "1 id(s) returned that no candidate has" in line
+    # The three without a verdict are still kept, which is the rule that
+    # matters more than the counting.
+    assert all(v.keep for v in verdicts)
+
+
 def test_leads_are_held_back_from_the_shortlist() -> None:
     """A snippet-only source informs the day and never takes a defender slot
     (BACKLOG #66a): it stays in the gate's and the ranker's view and is dropped
