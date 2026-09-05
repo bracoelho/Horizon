@@ -549,7 +549,7 @@
       ]
     },
     "ossinsight": {
-      "enabled": true,
+      "enabled": false,
       "period": "past_24_hours",
       "languages": [
         "All",
