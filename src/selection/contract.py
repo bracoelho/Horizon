@@ -93,6 +93,12 @@ class SelectionResult:
     # case it most needs, the ones that never got caught, is exactly the class
     # a survivors-only record erases.
     gate_verdicts: list[GateVerdict] = field(default_factory=list)
+    # The tournament's own rounds, when the setwise ranker was used
+    # (NEWS-Radar N-040, 2026-09-06). Each entry is the group of ids shown
+    # together, the winner, and whether the answer came first time, on retry,
+    # or from the fallback. Recording only, and it is what gives a rank an
+    # explanation: without it nothing can say which comparisons an item won.
+    rank_rounds: list = field(default_factory=list)
 
     @property
     def published_count(self) -> int:

@@ -39,6 +39,14 @@ class PickStats:
         self.picks = 0
         self.retried = 0
         self.fallbacks = 0
+        # The votes themselves, not only how many were cast (NEWS-Radar
+        # N-040, 2026-09-06). About 36 one-winner comparisons decide a
+        # night's order and every one of them was discarded, so an item's
+        # rank carried no explanation: nothing could say which sets it won,
+        # which it lost, or who beat it. Recording only; nothing reads this.
+        # Each entry is {"group": [ids in the order shown], "winner": id,
+        # "how": "picked" | "retried" | "fallback"}.
+        self.rounds: list = []
 
 
 def _entries(group: Sequence[Candidate]) -> str:
@@ -74,6 +82,7 @@ async def _pick(
     """Best of one small group, with one retry and a deterministic fallback."""
     if len(group) == 1:
         return group[0]
+    ids = [c.id for c in group]
     valid = {c.id: c for c in group}
     schema = setwise_schema(list(valid))
     user = setwise_user(_entries(group))
@@ -86,6 +95,10 @@ async def _pick(
             text = ""
         candidate = _parse_best(text, valid)
         if candidate is not None:
+            stats.rounds.append({
+                "group": ids, "winner": candidate.id,
+                "how": "picked" if attempt == 1 else "retried",
+            })
             return candidate
         if attempt == 1:
             stats.retried += 1
@@ -99,6 +112,7 @@ async def _pick(
         "Setwise pick failed twice for a set of %d; falling back to the "
         "group's first candidate", len(group),
     )
+    stats.rounds.append({"group": ids, "winner": group[0].id, "how": "fallback"})
     return group[0]
 
 

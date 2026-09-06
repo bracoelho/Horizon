@@ -92,6 +92,7 @@ async def select(
     # came back as 10; that number belongs to the second condition and is not a
     # disagreement rate.
     verdicts: List[GateVerdict] = []
+    rank_rounds: List[dict] = []
     if skip_gate:
         kept = list(items)
         logger.info("Gate skipped: %d items taken as already gated", len(kept))
@@ -187,6 +188,7 @@ async def select(
             f"Setwise: {pick_stats.picks} picks, {pick_stats.retried} "
             f"retried, {pick_stats.fallbacks} fell back"
         )
+        rank_rounds = list(pick_stats.rounds)
         if pick_stats.fallbacks and pick_stats.fallbacks * 2 >= pick_stats.picks:
             logger.warning(
                 "Setwise collapse: %d of %d picks fell back",
@@ -269,4 +271,5 @@ async def select(
         defend_rejected=rejected,
         defend_verdicts=list(defend_verdicts),
         gate_verdicts=list(verdicts),
+        rank_rounds=rank_rounds,
     )

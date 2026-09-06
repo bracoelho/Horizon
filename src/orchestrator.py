@@ -1125,6 +1125,8 @@ class HorizonOrchestrator:
                      "reason": v.reason}
                     for v in result.gate_verdicts
                 ]
+                # Every comparison the tournament made (NEWS-Radar N-040).
+                record["rank_rounds"] = list(result.rank_rounds)
                 record["ranked"] = list(result.ranked_ids)
                 record["shortlist"] = [v.id for v in result.defend_verdicts]
                 record["defend"] = [
