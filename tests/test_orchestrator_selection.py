@@ -310,6 +310,7 @@ def test_fixture_records_the_decisions_not_only_the_field(
     assert "gate" in record and isinstance(record["gate"], list)
     assert all("score" in c for c in record["candidates"])
     assert "rank_rounds" in record and isinstance(record["rank_rounds"], list)
+    assert all("content" in c for c in record["candidates"])
     assert len(record["candidates"]) == 3
     assert record["shortlist"], "the shortlist was not recorded"
     assert len(record["defend"]) == 3, "the defender's verdicts were not recorded"

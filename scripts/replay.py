@@ -87,6 +87,13 @@ def to_candidates(record: Dict[str, Any]) -> List[Candidate]:
             source=c.get("source", "") or "",
             url=c.get("url", "") or "",
             theme=c.get("theme"),
+            # Version 3 fixtures carry the article text. Before them this was
+            # empty and `defend.py`'s `(content or summary)` fallback quietly
+            # handed the defender a 200-character summary where production
+            # gives it up to 6,000 characters of the article (N-057). The
+            # replay reports which case it is rather than leaving the reader
+            # to assume fidelity it does not have.
+            content=c.get("content", "") or "",
         )
         for c in record.get("candidates", [])
     ]
@@ -234,6 +241,16 @@ async def main() -> int:
     # have published. Fixtures before version 3 carry no scores and the floor
     # cannot run at all on them; saying so is better than quietly reporting a
     # pre-floor set as the edition (NEWS-Radar N-042, closed 2026-09-06).
+    with_text = sum(1 for c in candidates if c.content)
+    if with_text:
+        print(f"Defender input: {with_text} of {len(candidates)} carry article "
+              "text, so the defender reads what production reads.")
+    else:
+        print("Defender input: NO article text in this fixture, so the "
+              "defender reads the ~200-character summary where production "
+              "reads up to 6,000 characters of the article (N-057). Verdicts "
+              "below are summary-path and are not a reproduction of the night.")
+
     scores = scores_of(record)
     floored: List[str] = []
     if scores:

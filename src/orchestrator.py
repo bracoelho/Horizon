@@ -1033,7 +1033,17 @@ class HorizonOrchestrator:
                      "candidates": [
                          {"id": c.id, "title": c.title, "summary": c.summary,
                           "source": c.source, "url": c.url, "theme": c.theme,
-                          "score": scores.get(c.id)}
+                          "score": scores.get(c.id),
+                          # The text the DEFENDER reads, capped at the same
+                          # 6,000 characters it caps at (NEWS-Radar N-057,
+                          # owner's decision 2026-09-06). Without it a replay
+                          # fell through defend.py's `(content or summary)`
+                          # fallback and judged a 200-character summary while
+                          # production judged the article, silently, which
+                          # narrowed three of this session's own results. A
+                          # night goes from about 24 KB to about 250 KB and
+                          # that price was accepted in writing.
+                          "content": (c.content or "")[:6000]}
                          for c in result],
                      "gate": [],
                      "shortlist": [], "defend": [], "published": []},
