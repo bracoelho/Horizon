@@ -957,31 +957,6 @@ class HorizonOrchestrator:
         free of engine imports.
         """
         candidates = to_candidates(items)
-        # The second half of the fixture: what the ranker and the defender
-        # decided on the field recorded above. A failure here must not cost
-        # the run, the same rule the first write follows.
-        try:
-            path = getattr(self, "_fixture_path", None)
-            if path and path.exists():
-                record = json.loads(path.read_text(encoding="utf-8"))
-                record["shortlist"] = list(result.ranked_ids[: 
-                    self._selection_settings().consider])
-                record["defend"] = [
-                    {"id": v.id, "publish": v.publish, "why": v.why,
-                     "ai_nexus": v.ai_nexus}
-                    for v in result.defend_verdicts
-                ]
-                record["published"] = [c.id for c in result.selected]
-                path.write_text(
-                    json.dumps(record, ensure_ascii=False, indent=1),
-                    encoding="utf-8",
-                )
-                self.console.print(
-                    f"Fixture decisions recorded: {len(record['defend'])} "
-                    f"verdicts, {len(record['published'])} published"
-                )
-        except Exception as exc:  # noqa: BLE001
-            self.console.print(f"[yellow]Fixture decisions not saved: {exc}[/yellow]")
 
         by_id = {item.id: item for item in items}
 
@@ -1083,6 +1058,47 @@ class HorizonOrchestrator:
                     continue
                 kept_above.append(item)
             selected = kept_above
+
+        # The second half of the fixture: what the ranker and the defender
+        # decided on the field recorded above. It lives HERE, after the floor,
+        # and the position is the whole point: written 2026-09-05 at the top of
+        # this method instead, it ran before `_fixture_path` was set, so its
+        # guard was always false and it recorded nothing for a whole night
+        # without saying so (NEWS-Radar N-025). A failure must not cost the
+        # run, the same rule the first write follows, but silence must not
+        # either: every branch below speaks.
+        try:
+            path = getattr(self, "_fixture_path", None)
+            if path is None or not path.exists():
+                self.console.print(
+                    "[yellow]Fixture decisions not saved: no fixture from "
+                    "this run to append to[/yellow]"
+                )
+            else:
+                record = json.loads(path.read_text(encoding="utf-8"))
+                record["shortlist"] = list(
+                    result.ranked_ids[: self._selection_settings().consider]
+                )
+                record["defend"] = [
+                    {"id": v.id, "publish": v.publish, "why": v.why,
+                     "ai_nexus": v.ai_nexus}
+                    for v in result.defend_verdicts
+                ]
+                # The ids that actually published, AFTER the score floor, not
+                # the defender's yes list: the floor's own cut is recorded
+                # nowhere else, while the defender's verdicts above already
+                # carry its decision item by item.
+                record["published"] = [item.id for item in selected]
+                path.write_text(
+                    json.dumps(record, ensure_ascii=False, indent=1),
+                    encoding="utf-8",
+                )
+                self.console.print(
+                    f"Fixture decisions recorded: {len(record['defend'])} "
+                    f"verdicts, {len(record['published'])} published"
+                )
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(f"[yellow]Fixture decisions not saved: {exc}[/yellow]")
 
         # Format kept stable: scripts/check_run_health.py parses this line to
         # build the funnel. Selection replaces the threshold and digest-cap

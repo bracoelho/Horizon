@@ -664,7 +664,8 @@
     "rank_mode": "setwise",
     "rank_set_size": 7,
     "lead_sources": [
-      "Google News"
+      "Google News",
+      "google_news"
     ]
   }
 }

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from datetime import datetime, timezone
 
 import pytest
@@ -25,6 +26,16 @@ def _items(n):
         )
         for k in range(n)
     ]
+
+
+def _analysis(score):
+    """Minimal processing block carrying a score, which is all the floor reads."""
+    from src.models import ClassificationResult, ContentAnalysis, ProcessingResult
+
+    return ProcessingResult(
+        classification=ClassificationResult(profile="practice", method="ai_match"),
+        analysis=ContentAnalysis(score=score, reason="test", summary="test"),
+    )
 
 
 @pytest.fixture()
@@ -231,3 +242,69 @@ def test_the_floor_can_be_turned_off(orchestrator, monkeypatch) -> None:
     selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
 
     assert len(selected) == 3
+
+
+def test_fixture_records_the_decisions_not_only_the_field(
+    orchestrator, monkeypatch, tmp_path
+) -> None:
+    """The fixture's second write must run, and must run AFTER the floor.
+
+    Written for NEWS-Radar N-025, from a night that lost its whole audit. The
+    block that appends the shortlist, the defender's verdicts and the published
+    ids was placed at the top of `select_by_ranking`, above the line that sets
+    `_fixture_path`, so its guard was false on every run: it recorded nothing
+    and said nothing, in either branch. The 5-6 Sep fixture reached the
+    archive as version 2 with three empty lists, and the defender audit that
+    was queued behind it had nothing to read.
+
+    So this test asserts placement, not just behaviour: `published` holds what
+    survived the score floor, which is only true if the write happens after it.
+    """
+    from src.selection.contract import Candidate, DefendVerdict, SelectionResult
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data").mkdir()
+
+    items = _items(3)
+    for k, item in enumerate(items):
+        item.processing = None
+    orchestrator.config.selection.min_score = 7.0
+
+    async def fake_analyze(subjects):
+        for k, item in enumerate(subjects):
+            item.processing = _analysis(6.0 if k == 0 else 8.0)
+
+    monkeypatch.setattr(orchestrator, "analyze_items", fake_analyze)
+    monkeypatch.setattr("src.orchestrator.create_ai_client", lambda cfg: object())
+
+    async def fake_select(candidates, client, questions, settings, after_gate=None):
+        kept = list(candidates)
+        if after_gate is not None:
+            kept = await after_gate(kept)
+        return SelectionResult(
+            selected=list(kept),
+            ranked_ids=[c.id for c in kept],
+            gate_kept=len(kept),
+            gate_dropped=0,
+            defend_rejected=0,
+            defend_verdicts=[
+                DefendVerdict(id=c.id, publish=True, why="fine", ai_nexus="about-ai")
+                for c in kept
+            ],
+        )
+
+    monkeypatch.setattr("src.orchestrator.run_selection", fake_select)
+
+    selected, _ = asyncio.run(orchestrator.select_by_ranking(items))
+
+    written = list((tmp_path / "data").glob("rank_fixture-*.json"))
+    assert len(written) == 1
+    record = json.loads(written[0].read_text(encoding="utf-8"))
+    assert record["version"] == 2
+    assert len(record["candidates"]) == 3
+    assert record["shortlist"], "the shortlist was not recorded"
+    assert len(record["defend"]) == 3, "the defender's verdicts were not recorded"
+    # i0 scored 6.0 against a floor of 7.0. The defender passed all three, so a
+    # `published` of three would mean the write ran before the floor.
+    assert record["published"] == [item.id for item in selected]
+    assert len(record["published"]) == 2
