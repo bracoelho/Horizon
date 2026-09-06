@@ -1,134 +1,55 @@
 {
   "totals": {
-    "fetched": 122,
+    "fetched": 316,
     "merged": null,
-    "analyzed": 38,
+    "analyzed": null,
     "selected": null,
     "topic_dupes": null,
-    "published": 0,
+    "published": null,
     "pre_cap": null,
-    "gated": 38,
-    "ranked": 38,
-    "floor_rejected": 9,
-    "below_score": 1,
+    "gated": null,
+    "ranked": null,
+    "floor_rejected": null,
+    "below_score": 0,
     "enriched": null,
     "enrich_attempted": null,
-    "tokens": 262564,
-    "tokens_in": 236394,
-    "tokens_out": 26170,
-    "score_distribution": {
-      "1": 3,
-      "2": 3,
-      "3": 15,
-      "4": 4,
-      "5": 3,
-      "6": 9,
-      "7": 1
-    },
-    "setwise": {
-      "picks": 36,
-      "retried": 0,
-      "fallbacks": 0
-    }
+    "tokens": null,
+    "tokens_in": null,
+    "tokens_out": null
   },
   "per_source": {
-    "Google News": 50,
-    "Hacker News": 18,
-    "Reddit": 6,
-    "RSS Feeds": 38,
-    "GitHub": 10
+    "GitHub": 0,
+    "RSS Feeds": 316
   },
   "per_feed": {
-    "Anthropic News (RSSHub mirror)": [
-      0,
+    "Anthropic Alignment Science blog archive (born-blind backfill)": [
+      6,
       false
     ],
-    "Claude Blog (RSSHub mirror)": [
-      0,
+    "Anthropic archive (born-blind backfill)": [
+      53,
       false
     ],
-    "Cursor Changelog": [
-      0,
-      false
-    ],
-    "Google AI Blog": [
-      0,
+    "Claude Blog archive (born-blind backfill)": [
+      65,
       false
     ],
     "Google DeepMind Blog": [
-      0,
-      false
-    ],
-    "Google Developers Blog": [
-      0,
-      false
-    ],
-    "Google News \u2014 AI & energy": [
-      9,
-      false
-    ],
-    "Hugging Face Blog": [
-      0,
-      false
-    ],
-    "IEEE Spectrum \u2014 AI": [
-      0,
-      false
-    ],
-    "Latitude Media": [
-      1,
-      false
-    ],
-    "MIT Technology Review - AI": [
-      1,
-      false
-    ],
-    "NIST News": [
-      0,
+      30,
       false
     ],
     "OpenAI News": [
-      0,
-      false
-    ],
-    "Simon Willison": [
-      3,
-      false
-    ],
-    "TLDR AI": [
-      0,
-      false
-    ],
-    "The Verge - AI": [
-      3,
-      false
-    ],
-    "Utility Dive": [
-      1,
-      false
-    ],
-    "arXiv cs.AI": [
-      20,
-      false
-    ],
-    "arXiv cs.CL": [
-      0,
-      false
-    ],
-    "arXiv cs.LG": [
-      0,
-      false
-    ],
-    "arXiv cs.SE": [
-      0,
+      162,
       false
     ]
   },
-  "zero_sources": [],
-  "errors": 0,
+  "zero_sources": [
+    "GitHub"
+  ],
+  "errors": 1,
   "degraded": 0,
   "degraded_escalated": false,
-  "warnings": 12,
+  "warnings": 0,
   "posts": [],
-  "finished_utc": "06 Sep 13:48"
+  "finished_utc": "05 Sep 02:46"
 }
