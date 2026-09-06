@@ -45,6 +45,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.ai.client import create_ai_client  # noqa: E402
 from src.orchestrator import HorizonOrchestrator  # noqa: E402
 from src.selection import select as run_selection  # noqa: E402
+from src.ai.tokens import get_usage_snapshot  # noqa: E402
 from src.storage.manager import StorageManager  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -121,6 +122,7 @@ async def one_side(fixture: Path, overrides: List[str], *, use_cache: bool
         "refused": sum(1 for v in result.defend_verdicts if not v.publish),
         "published": [c.id for c in result.selected],
         "cached": False,
+        "tokens": get_usage_snapshot().total_tokens,
     }
     cached.write_text(json.dumps(out, ensure_ascii=False, indent=1),
                       encoding="utf-8")
@@ -228,6 +230,9 @@ async def main() -> int:
     failed = [(f, g) for f, _, gs in verdicts for g in gs if not g[1]]
     noisy = [f for f, c, _ in verdicts if c["within_noise"]]
 
+    live = get_usage_snapshot().total_tokens
+    print(f"\nCost of this gate: {live:,} tokens on the experiments purse. "
+          "A gate that cannot price itself has no business pricing a change.")
     print("\n" + "=" * 72)
     if expectations and failed:
         print(f"REFUSED: {len(failed)} expectation(s) failed. The change does "

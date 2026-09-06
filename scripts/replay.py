@@ -43,6 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.ai.client import create_ai_client  # noqa: E402
 from src.orchestrator import HorizonOrchestrator  # noqa: E402
 from src.selection import Candidate, select as run_selection  # noqa: E402
+from src.ai.tokens import get_usage_snapshot  # noqa: E402
 from src.storage.manager import StorageManager  # noqa: E402
 
 
@@ -229,6 +230,13 @@ async def main() -> int:
           f"floor, 0 below the score floor, {len(result.selected)} published")
     print(f"Score floor: {floor_note}")
     print(f"Elapsed: {time.time() - started:.1f}s")
+    # A harness built to price a change must price itself. Added 2026-09-06
+    # after the Editor asked what a day of these cost and the honest answer
+    # was that eight replays had run without any of them recording a number.
+    usage = get_usage_snapshot()
+    print(f"Tokens: {usage.total_tokens:,} "
+          f"({usage.total_input_tokens:,} in / {usage.total_output_tokens:,} "
+          f"out) on the {purse} purse")
 
     # What the defender actually read, which is NOT ranked_ids[:consider]: that
     # list is pre-lead-filter and keeps every held lead. Printing it as "the
