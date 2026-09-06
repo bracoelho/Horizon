@@ -78,7 +78,7 @@ jobs:
           name: rank-fixture
           path: data/rank_fixture-*.json
           if-no-files-found: ignore
-          retention-days: 30
+          retention-days: 90
 
       - name: "Run health check (BACKLOG #5/#6 - distinguish quiet from broken)"
         env:
