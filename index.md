@@ -104,12 +104,12 @@ Curated by **Bruno Coelho**, technology leadership across Europe, Asia-Pacific a
 
 <div class="pipeline" markdown="1">
 
-`read` → `deduplicate` → `route to a theme` → `score 0–10` → `apply that theme's bar` → `research` → `publish`
+`read` → `deduplicate` → `sift on title and summary` → `score what survives` → `rank the survivors against each other` → `argue the case for the strongest` → `research` → `publish what clears the floor`
 
 </div>
 
 <ul class="doc-links">
-  <li><a href="{{ '/method/' | relative_url }}">Method</a>: where it reads, how items are scored, and where each theme's bar sits.</li>
+  <li><a href="{{ '/method/' | relative_url }}">Method</a>: where it reads, how items are scored, and how the strongest are chosen.</li>
   <li><a href="{{ '/playbook/' | relative_url }}">Firsthand Playbook</a>: what I have run on my own systems, written up to copy.</li>
 </ul>
 

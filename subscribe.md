@@ -43,7 +43,7 @@ Curated by **Bruno Coelho**, technology leadership across Europe, Asia-Pacific a
   <li><span class="k">Cadence</span><span class="v">Daily</span></li>
   <li><span class="k">Volume</span><span class="v">Typically a handful of items per edition, out of several hundred read</span></li>
   <li><span class="k">Themes</span><span class="v">Critical Infrastructure · Reliability &amp; Assurance · Business &amp; Markets · Practice · Horizon</span></li>
-  <li><span class="k">Selection</span><span class="v">Every item scored 0–10; each theme has its own bar</span></li>
+  <li><span class="k">Selection</span><span class="v">Scored, ranked against each other, then argued one at a time</span></li>
   <li><span class="k">Cost</span><span class="v">Free, and there is nothing to sell you</span></li>
 </ul>
 
