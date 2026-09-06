@@ -66,6 +66,7 @@ async def select(
     after_gate: Optional[
         Callable[[List[Candidate]], Awaitable[List[Candidate]]]
     ] = None,
+    skip_gate: bool = False,
 ) -> SelectionResult:
     """Run the full selection and return what survived, with the counts.
 
@@ -82,41 +83,53 @@ async def select(
         return SelectionResult()
 
     # --- pass one: gate -----------------------------------------------------
-    requests = build_gate_requests(
-        items, themes, batch_size=settings.gate_batch_size
-    )
-    responses: Dict[str, str] = {}
+    # `skip_gate` exists for the replay harness; production never passes it.
+    # A recorded fixture holds the gate's SURVIVORS, so replaying one through
+    # the gate judges them a second time, and the gate reads a batch of 40 in a
+    # single request rather than one item per request: the set an item is judged
+    # alongside is part of its context, so a re-gate is not a repeat of the same
+    # question. Measured 2026-09-06, 38 recorded survivors re-gated as one batch
+    # came back as 10; that number belongs to the second condition and is not a
+    # disagreement rate.
+    if skip_gate:
+        kept = list(items)
+        logger.info("Gate skipped: %d items taken as already gated", len(kept))
+    else:
+        requests = build_gate_requests(
+            items, themes, batch_size=settings.gate_batch_size
+        )
+        responses: Dict[str, str] = {}
 
-    if settings.use_batch and hasattr(client, "complete_batch"):
-        responses = await client.complete_batch(
-            [
-                BatchUnit(
-                    custom_id=custom_id,
-                    system=system,
-                    user=user,
+        if settings.use_batch and hasattr(client, "complete_batch"):
+            responses = await client.complete_batch(
+                [
+                    BatchUnit(
+                        custom_id=custom_id,
+                        system=system,
+                        user=user,
+                        schema=GATE_SCHEMA,
+                        effort=settings.gate_effort,
+                        model=settings.gate_model,
+                    )
+                    for custom_id, system, user in requests
+                ]
+            )
+        else:
+            for custom_id, system, user in requests:
+                responses[custom_id] = await client.complete(
+                    system,
+                    user,
+                    model=settings.gate_model,
                     schema=GATE_SCHEMA,
                     effort=settings.gate_effort,
-                    model=settings.gate_model,
                 )
-                for custom_id, system, user in requests
-            ]
-        )
-    else:
-        for custom_id, system, user in requests:
-            responses[custom_id] = await client.complete(
-                system,
-                user,
-                model=settings.gate_model,
-                schema=GATE_SCHEMA,
-                effort=settings.gate_effort,
-            )
 
-    verdicts = collect_gate(responses, items, themes)
-    kept = apply_gate(items, verdicts)
-    logger.info("Gate kept %d of %d items", len(kept), len(items))
+        verdicts = collect_gate(responses, items, themes)
+        kept = apply_gate(items, verdicts)
+        logger.info("Gate kept %d of %d items", len(kept), len(items))
 
-    if not kept:
-        return SelectionResult(gate_kept=0, gate_dropped=len(items))
+        if not kept:
+            return SelectionResult(gate_kept=0, gate_dropped=len(items))
 
     if after_gate is not None:
         refreshed = await after_gate(kept)

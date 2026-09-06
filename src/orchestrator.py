@@ -1076,9 +1076,15 @@ class HorizonOrchestrator:
                 )
             else:
                 record = json.loads(path.read_text(encoding="utf-8"))
-                record["shortlist"] = list(
-                    result.ranked_ids[: self._selection_settings().consider]
-                )
+                # `ranked` is the full ordered list INCLUDING held leads;
+                # `shortlist` is what the defender actually read. They stopped
+                # being the same thing when the lead filter landed, and the
+                # first version of this line recorded the pre-filter top N under
+                # the name "shortlist", which the replay harness caught on the
+                # day it was built (NEWS-Radar N-032). A field that is wrong by
+                # name costs a morning later.
+                record["ranked"] = list(result.ranked_ids)
+                record["shortlist"] = [v.id for v in result.defend_verdicts]
                 record["defend"] = [
                     {"id": v.id, "publish": v.publish, "why": v.why,
                      "ai_nexus": v.ai_nexus}

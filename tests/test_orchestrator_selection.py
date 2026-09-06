@@ -307,4 +307,8 @@ def test_fixture_records_the_decisions_not_only_the_field(
     # i0 scored 6.0 against a floor of 7.0. The defender passed all three, so a
     # `published` of three would mean the write ran before the floor.
     assert record["published"] == [item.id for item in selected]
+    assert record["shortlist"] == [v["id"] for v in record["defend"]], (
+        "shortlist must be what the defender read, not the pre-lead-filter top N"
+    )
+    assert record["ranked"], "the full ranked list must survive alongside it"
     assert len(record["published"]) == 2
