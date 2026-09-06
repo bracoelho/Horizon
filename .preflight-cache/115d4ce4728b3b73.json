@@ -1,0 +1,23 @@
+{
+ "fixture": "rank_fixture-20260905-2044.json",
+ "overrides": [],
+ "candidates": 38,
+ "ranked": 38,
+ "leads_total": 24,
+ "leads_held": 10,
+ "shortlist": [
+  "rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:a21a12789d4e4638",
+  "hackernews:story:49570669",
+  "rss:www.utilitydive.com_feeds_news_:566dc9d473e7b0be",
+  "rss:simonwillison.net_atom_everything_:41ed31a9044de949",
+  "hackernews:story:49574167",
+  "rss:rss.arxiv.org_rss_cs.AI:c8b3e27d350802c1",
+  "rss:rss.arxiv.org_rss_cs.AI:36be206bf04bf3c7",
+  "rss:rss.arxiv.org_rss_cs.AI:563a0d867b890cd3",
+  "rss:rss.arxiv.org_rss_cs.AI:0cba04d181a51a9b",
+  "rss:rss.arxiv.org_rss_cs.AI:a7c9012d0d72395b"
+ ],
+ "refused": 10,
+ "published": [],
+ "cached": false
+}

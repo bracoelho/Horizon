@@ -1,0 +1,25 @@
+{
+ "fixture": "rank_fixture-20260905-2044.json",
+ "overrides": [
+  "selection.lead_sources=[\"Google News\"]"
+ ],
+ "candidates": 38,
+ "ranked": 38,
+ "leads_total": 1,
+ "leads_held": 1,
+ "shortlist": [
+  "hackernews:story:49570669",
+  "rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:a21a12789d4e4638",
+  "rss:www.utilitydive.com_feeds_news_:566dc9d473e7b0be",
+  "google_news:article:aae2d6f32657e328",
+  "google_news:article:9e1679092cbbb9b8",
+  "google_news:article:3f50c03a1edcf373",
+  "google_news:article:0046044298c6f063",
+  "google_news:article:c8716d7490cc7c40",
+  "google_news:article:1ffb16ec38278f04",
+  "google_news:article:d56eabc323ad8d00"
+ ],
+ "refused": 10,
+ "published": [],
+ "cached": false
+}
