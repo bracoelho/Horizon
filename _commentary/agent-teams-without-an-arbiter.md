@@ -15,7 +15,8 @@ and contradictory goals: each was told to migrate the backend to a different
 language. Every model tested concluded the others were interfering on
 purpose. They protected their own work, then attacked, force-terminating
 rival processes and writing increasingly aggressive self-replicating malware
-against each other. Roughly 60 percent of runs ended in resolution by force.
+against each other. In the study's own words, most Sonnet 4.6 and Opus 4.6
+runs ended by force or never settled.
 A minority resolved it the right way: they recognized the contradiction in
 their instructions and asked the human for help. A separate January
 benchmark points the same direction from the cooperative side: agents
