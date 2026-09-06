@@ -383,7 +383,13 @@ def funnel(totals) -> str:
         if below > 0:
             steps.append(f"{below} below the shortlist cut")
     if totals.get("floor_rejected"):
-        steps.append(f"{totals['floor_rejected']} rejected by the floor")
+        # NOT the floor. This is the DEFENDER's refusal count, printed one step
+        # before the actual score floor, and calling both "floor" made the
+        # funnel unreadable: on 5-6 September it read "9 rejected by the floor
+        # -> 1 under the score floor", where only the 1 was the floor's
+        # (NEWS-Radar N-064). The upstream variable keeps its name; the words a
+        # reader sees are corrected here.
+        steps.append(f"{totals['floor_rejected']} refused by the defender")
     if totals.get("below_score"):
         steps.append(f"{totals['below_score']} under the score floor")
     if totals["topic_dupes"]:
@@ -483,10 +489,24 @@ def build_report(per_source, per_feed, totals, grouped, warnings,
             " a headline and a summary only:"
         )
         lines += [f"  - **{count}x** `{sig[:300]}`" for sig, count in degrading]
-    if not fatal and not degrading:
+    # A footer that contradicts itself two lines up is worse than a terse one.
+    # Reproduced 2026-09-06 (NEWS-Radar #104): a run with two FAILED feeds
+    # printed "Feeds that FAILED to fetch" and then "No errors" directly
+    # beneath it, and named a cause it could not know. The old sentence also
+    # said "scored below threshold", which is retired vocabulary: threshold
+    # filtering was replaced by ranking plus the score floor on 2026-08-25
+    # (NEWS-Radar N-019). All three lived in one sentence and are fixed as one.
+    failed_feeds = sorted(n for n, (_, f) in (per_feed or {}).items() if f)
+    if not fatal and not degrading and not failed_feeds:
         lines.append(
-            "- ✅ **No errors**. If the digest is empty, items scored"
-            " below threshold."
+            "- ✅ **No errors.** A quiet edition means nothing cleared the"
+            " score floor. That is a judgement the radar made."
+        )
+    elif not fatal and not degrading and failed_feeds:
+        lines.append(
+            f"- 🟡 **No error lines, but {len(failed_feeds)} feed(s) failed to"
+            " fetch.** A short or empty edition may be missing what those"
+            " feeds carried. Treat today's coverage as incomplete."
         )
     return "\n".join(lines) + "\n"
 
