@@ -96,8 +96,12 @@ VERSION = re.compile(r"(?:[A-Z][A-Za-z]+|\bv)\s*\d+(?:\.\d+)*$")
 # the document's own parts. Found on the first run across the back catalogue,
 # where section numbering produced most of the noise.
 STRUCTURAL = re.compile(r"^\s*(#{1,6}\s|\d+\.\s|[-*]\s*\*\*\d)")
-PART_OF_DOC = re.compile(r"\b(section|step|beat|part|rung|stage|clause|item|"
-                         r"chapter|figure|table)\s*$", re.I)
+PART_OF_DOC = re.compile(r"\b(sections?|steps?|beats?|parts?|rungs?|stages?|"
+                         r"clauses?|items?|chapters?|figures?|tables?)\s*$", re.I)
+# "sections 2 through 6": the second number is structure too, and the first
+# pattern only sees the word immediately before a number.
+DOC_RANGE = re.compile(r"\b(sections?|steps?|beats?|parts?|clauses?)\s+\d+\s*"
+                       r"(?:through|to|and|-|–)\s*\d+", re.I)
 
 
 def split_front_matter(text: str) -> Tuple[str, str]:
@@ -159,6 +163,10 @@ def paired_quotes(line: str) -> List[Tuple[str, int]]:
 def check(path: Path) -> Tuple[List[str], Dict[str, int]]:
     text = path.read_text(encoding="utf-8")
     front, body = split_front_matter(text)
+    # Line numbers must address the FILE, not the body, or every finding sends
+    # the reader to the wrong line. Found while using this on its first real
+    # retro-fit, which is the only way that class of defect gets found.
+    offset = front.count("\n")
     sources = declared(front)
     problems: List[str] = []
     seen: Dict[str, int] = {name: 0 for name, _, _ in SHAPES}
@@ -179,7 +187,7 @@ def check(path: Path) -> Tuple[List[str], Dict[str, int]]:
 
     exempted = [0]
     covered = [s.get("claim", "").lower() for s in sources if s.get("claim")]
-    for lineno, line in enumerate(body.splitlines(), 1):
+    for lineno, line in enumerate(body.splitlines(), 1 + offset):
         if SKIP_LINE.match(line) or line.lstrip().startswith(">"):
             continue
         if EXEMPT.search(line):
@@ -196,6 +204,8 @@ def check(path: Path) -> Tuple[List[str], Dict[str, int]]:
                     if STRUCTURAL.match(line):
                         continue
                     if PART_OF_DOC.search(line[:start]):
+                        continue
+                    if DOC_RANGE.search(line):
                         continue
                     if VERSION.search(line[:start] + token):
                         continue
