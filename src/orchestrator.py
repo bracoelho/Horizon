@@ -1002,12 +1002,40 @@ class HorizonOrchestrator:
                 # decisions empty and rewritten when selection returns, so a
                 # crash between the two still leaves the field recorded.
                 self._fixture_path = fixture
+                # Version 3 (2026-09-06, NEWS-Radar N-042 and N-058). Two
+                # additions, both recording only, neither read by any stage.
+                # `fetched` is every item the night pulled, not only the
+                # gate's survivors: without it the 84 items dropped on
+                # 5-6 September have no identity anywhere, so the case corpus
+                # cannot contain the class it most needs, the ones that were
+                # never caught. `score` is the analysis stage's own 0-to-10
+                # number, which the score floor compares against at the very
+                # end and which no replay could apply because it was never
+                # written down. Readers accept versions 1, 2 and 3.
+                scores = {}
+                for item in survivors:
+                    value = getattr(
+                        getattr(getattr(item, "processing", None),
+                                "analysis", None),
+                        "score", None)
+                    if value is not None:
+                        scores[item.id] = value
                 fixture.write_text(json.dumps(
-                    {"version": 2,
+                    {"version": 3,
+                     "fetched": [
+                         {"id": i.id, "title": i.title,
+                          "source": (getattr(i, "metadata", None) or {}).get(
+                              "feed_name", "")
+                          or getattr(getattr(i, "source_type", None),
+                                     "value", ""),
+                          "url": str(getattr(i, "url", "") or "")}
+                         for i in items],
                      "candidates": [
                          {"id": c.id, "title": c.title, "summary": c.summary,
-                          "source": c.source, "url": c.url, "theme": c.theme}
+                          "source": c.source, "url": c.url, "theme": c.theme,
+                          "score": scores.get(c.id)}
                          for c in result],
+                     "gate": [],
                      "shortlist": [], "defend": [], "published": []},
                     ensure_ascii=False, indent=1), encoding="utf-8")
                 self.console.print(f"Rank fixture saved: {fixture}")
@@ -1083,6 +1111,20 @@ class HorizonOrchestrator:
                 # the name "shortlist", which the replay harness caught on the
                 # day it was built (NEWS-Radar N-032). A field that is wrong by
                 # name costs a morning later.
+                # The gate's own verdicts, for every item it was shown.
+                # Recording only, and it closes the largest hole in the record
+                # (NEWS-Radar N-041): the gate's schema already REQUIRES a
+                # reason per item and `collect` already parses one, so the
+                # model has been explaining every drop for months and the
+                # pipeline has thrown all of it away. An unverdicted item is
+                # kept with the literal reason "no gate verdict", which is
+                # what separates a MISS from a mislabel, the ambiguity N-054
+                # had to leave open.
+                record["gate"] = [
+                    {"id": v.id, "keep": v.keep, "theme": v.theme,
+                     "reason": v.reason}
+                    for v in result.gate_verdicts
+                ]
                 record["ranked"] = list(result.ranked_ids)
                 record["shortlist"] = [v.id for v in result.defend_verdicts]
                 record["defend"] = [

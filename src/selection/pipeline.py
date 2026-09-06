@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Awaitable, Callable, Dict, List, Optional, Protocol, Sequence
 
-from .contract import BatchUnit, Candidate, SelectionResult
+from .contract import BatchUnit, Candidate, GateVerdict, SelectionResult
 from .defend import defend as defend_pass
 from .gate import apply as apply_gate
 from .gate import build_requests as build_gate_requests
@@ -91,6 +91,7 @@ async def select(
     # question. Measured 2026-09-06, 38 recorded survivors re-gated as one batch
     # came back as 10; that number belongs to the second condition and is not a
     # disagreement rate.
+    verdicts: List[GateVerdict] = []
     if skip_gate:
         kept = list(items)
         logger.info("Gate skipped: %d items taken as already gated", len(kept))
@@ -129,7 +130,11 @@ async def select(
         logger.info("Gate kept %d of %d items", len(kept), len(items))
 
         if not kept:
-            return SelectionResult(gate_kept=0, gate_dropped=len(items))
+            return SelectionResult(
+                gate_kept=0,
+                gate_dropped=len(items),
+                gate_verdicts=list(verdicts),
+            )
 
     if after_gate is not None:
         refreshed = await after_gate(kept)
@@ -263,4 +268,5 @@ async def select(
         gate_dropped=len(items) - len(kept),
         defend_rejected=rejected,
         defend_verdicts=list(defend_verdicts),
+        gate_verdicts=list(verdicts),
     )

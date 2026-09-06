@@ -84,6 +84,15 @@ class SelectionResult:
     # shortlist, which is the wall the 2026-09-03 picks trial hit and the
     # reason the outer loop's ledger is sequenced where it is.
     defend_verdicts: list[DefendVerdict] = field(default_factory=list)
+    # The gate's own verdicts, for every item it was shown and not only the
+    # survivors. Added 2026-09-06 (NEWS-Radar N-041, N-058): the gate's schema
+    # already REQUIRES a reason per item and `collect` already parses it, so
+    # for months the model explained every drop and the pipeline discarded all
+    # of it. A recorded night that cannot say why 84 of 122 items died cannot
+    # support the labelled case corpus it is being kept for, and the class of
+    # case it most needs, the ones that never got caught, is exactly the class
+    # a survivors-only record erases.
+    gate_verdicts: list[GateVerdict] = field(default_factory=list)
 
     @property
     def published_count(self) -> int:

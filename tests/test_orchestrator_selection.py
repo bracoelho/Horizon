@@ -300,7 +300,15 @@ def test_fixture_records_the_decisions_not_only_the_field(
     written = list((tmp_path / "data").glob("rank_fixture-*.json"))
     assert len(written) == 1
     record = json.loads(written[0].read_text(encoding="utf-8"))
-    assert record["version"] == 2
+    # Version 3 since 2026-09-06 (N-041, N-042, N-058): the field gained the
+    # full fetched list, the analysis score, and the gate's verdict for every
+    # item it saw. All three are recording only. The assertion is kept on the
+    # exact version rather than loosened to ">= 2", because a silent version
+    # drift is how a reader ends up parsing a shape nobody declared.
+    assert record["version"] == 3
+    assert "fetched" in record and isinstance(record["fetched"], list)
+    assert "gate" in record and isinstance(record["gate"], list)
+    assert all("score" in c for c in record["candidates"])
     assert len(record["candidates"]) == 3
     assert record["shortlist"], "the shortlist was not recorded"
     assert len(record["defend"]) == 3, "the defender's verdicts were not recorded"

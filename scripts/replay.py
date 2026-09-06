@@ -62,6 +62,22 @@ def load_fixture(path: Path) -> Dict[str, Any]:
     return raw
 
 
+def scores_of(record: Dict[str, Any]) -> Dict[str, float]:
+    """The analysis score per id, when the fixture is version 3 or later.
+
+    Before 2026-09-06 the score was never written down (NEWS-Radar N-042), so a
+    replay could only ever report a PRE-FLOOR set and call it the edition. This
+    returns an empty map for those nights, and every caller must say so rather
+    than quietly presenting a pre-floor result as a published one.
+    """
+    out: Dict[str, float] = {}
+    for c in record.get("candidates", []):
+        value = c.get("score")
+        if isinstance(value, (int, float)):
+            out[str(c["id"])] = float(value)
+    return out
+
+
 def to_candidates(record: Dict[str, Any]) -> List[Candidate]:
     return [
         Candidate(
@@ -215,19 +231,37 @@ async def main() -> int:
 
     # The score floor is the orchestrator's, not selection's, and a replay that
     # skipped it would report a different edition from the one the night would
-    # have published. A fixture carries no scores, so it cannot be applied here;
-    # saying so is better than quietly reporting a pre-floor set as the edition.
-    floor_note = (
-        f"NOT APPLIED: a fixture carries no scores, so the {config.selection.min_score} "
-        "floor cannot run here. The published set below is pre-floor and is an "
-        "upper bound on what the night would have published."
-    )
+    # have published. Fixtures before version 3 carry no scores and the floor
+    # cannot run at all on them; saying so is better than quietly reporting a
+    # pre-floor set as the edition (NEWS-Radar N-042, closed 2026-09-06).
+    scores = scores_of(record)
+    floored: List[str] = []
+    if scores:
+        floor = config.selection.min_score
+        # An item with no score counts as UNKNOWN and is KEPT, which is the
+        # production rule: a gap in scoring must not empty an edition.
+        floored = [c.id for c in result.selected
+                   if c.id in scores and scores[c.id] < floor]
+        floor_note = (
+            f"applied: {len(floored)} of {len(result.selected)} fell below "
+            f"{floor}, leaving {len(result.selected) - len(floored)}. "
+            f"{sum(1 for c in result.selected if c.id not in scores)} had no "
+            "score and were kept, as production keeps them."
+        )
+    else:
+        floor_note = (
+            f"NOT APPLIED: this fixture predates version 3 and carries no "
+            f"scores, so the {config.selection.min_score} floor cannot run "
+            "here. The published set below is pre-floor and is an upper bound "
+            "on what the night would have published."
+        )
 
     by_id = {c.id: c for c in candidates}
     print()
     print(f"Selection: {len(candidates)} gated to {result.gate_kept}, "
           f"{len(result.ranked_ids)} ranked, {result.defend_rejected} rejected by "
-          f"floor, 0 below the score floor, {len(result.selected)} published")
+          f"floor, {len(floored)} below the score floor, "
+          f"{len(result.selected) - len(floored)} published")
     print(f"Score floor: {floor_note}")
     print(f"Elapsed: {time.time() - started:.1f}s")
     # A harness built to price a change must price itself. Added 2026-09-06
