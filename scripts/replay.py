@@ -177,6 +177,11 @@ async def main() -> int:
         "--json", dest="json_out", type=Path,
         help="also write the decisions here, for comparison across runs",
     )
+    parser.add_argument(
+        "--allow-summary-path", action="store_true",
+        help="run even though the fixture carries no article text. The "
+             "verdicts will be summary-path and are NOT a reproduction of "
+             "the night. Pass it only when that is what you want to measure.")
     args = parser.parse_args()
 
     if not args.fixture.exists():
@@ -227,6 +232,34 @@ async def main() -> int:
         print(f"  ! {warning}")
     print("=" * 72)
 
+    with_text = sum(1 for c in candidates if c.content)
+    if with_text:
+        print(f"Defender input: {with_text} of {len(candidates)} carry article "
+              "text, so the defender reads what production reads.")
+    elif args.allow_summary_path:
+        print("Defender input: NO article text in this fixture, so the "
+              "defender reads the ~165-character summary where production "
+              "reads up to 6,000 characters of the article (N-057). Verdicts "
+              "below are summary-path and are not a reproduction of the night. "
+              "You asked for this with --allow-summary-path.")
+    else:
+        # A WARNING IS NOT A CHECK. This printed a warning all day on
+        # 2026-09-06 and did not stop its own author proposing a second
+        # measurement over the same wrong input twelve hours later
+        # (NEWS-Radar N-075). Refusing costs one flag and prevents a run
+        # whose output looks like evidence and describes a pipeline that
+        # does not exist.
+        print(f"REFUSED: not one of {len(candidates)} candidates in "
+              f"{args.fixture.name} carries article text, so this replay "
+              "would judge ~165-character summaries against a stage that "
+              "reads up to 6,000 characters (N-057, N-075).")
+        print("  Fixtures from before 2026-09-06 20:06 JST (fork 33e719e) "
+              "carry no text and never will: no source has a past to "
+              "re-fetch. Use a later night.")
+        print("  To measure the summary path deliberately, pass "
+              "--allow-summary-path.")
+        return 1
+
     started = time.time()
     result = await run_selection(
         candidates,
@@ -241,16 +274,6 @@ async def main() -> int:
     # have published. Fixtures before version 3 carry no scores and the floor
     # cannot run at all on them; saying so is better than quietly reporting a
     # pre-floor set as the edition (NEWS-Radar N-042, closed 2026-09-06).
-    with_text = sum(1 for c in candidates if c.content)
-    if with_text:
-        print(f"Defender input: {with_text} of {len(candidates)} carry article "
-              "text, so the defender reads what production reads.")
-    else:
-        print("Defender input: NO article text in this fixture, so the "
-              "defender reads the ~200-character summary where production "
-              "reads up to 6,000 characters of the article (N-057). Verdicts "
-              "below are summary-path and are not a reproduction of the night.")
-
     scores = scores_of(record)
     floored: List[str] = []
     if scores:
