@@ -270,7 +270,11 @@ async def main() -> int:
             "overrides": applied,
             "gate_kept": result.gate_kept,
             "ranked": list(result.ranked_ids),
-            "shortlist": list(result.ranked_ids[: settings.consider]),
+            # What the defender read, NOT ranked_ids[:consider]. The same wrong
+            # expression was written in three places (the fixture, this report's
+            # display, and here) and fixing two of them was how the third
+            # survived long enough to be found separately.
+            "shortlist": [v.id for v in result.defend_verdicts],
             "defend": [
                 {"id": v.id, "publish": v.publish, "why": v.why,
                  "ai_nexus": v.ai_nexus}
