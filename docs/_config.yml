@@ -14,6 +14,21 @@ feed:
 exclude:
   - ".github"
   - "node_modules"
+  # Upstream Horizon's own engine documentation. It belongs in this repository,
+  # which forked that engine, and it has no business on a site that carries the
+  # owner's byline. Each of these rendered inside the radar's layout at a .html
+  # URL, so the header above them read "AI Radar, curated by Bruno Coelho":
+  # 73 em dashes against STYLE.md's ban, 51 mentions of the forked tool, and a
+  # product design document for a product that is not his. Orphaned from every
+  # nav, with no robots.txt, so the exposure was a search engine rather than a
+  # reader (NEWS-Radar N-085, 2026-09-06). Attribution is untouched and
+  # deliberate: NOTICE.md and /method/ both credit Horizon.
+  - "configuration.md"
+  - "scoring.md"
+  - "profiles.md"
+  - "scrapers.md"
+  - "extractors.md"
+  - "horizon-hub-design.md"
 
 collections:
   commentary:

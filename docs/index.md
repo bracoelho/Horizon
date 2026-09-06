@@ -104,7 +104,7 @@ Curated by **Bruno Coelho**, technology leadership across Europe, Asia-Pacific a
 
 <div class="pipeline" markdown="1">
 
-`read` → `deduplicate` → `route to a theme` → `score 0–10` → `apply that theme's bar` → `research` → `publish`
+`read` → `deduplicate` → `sift on title and summary` → `score what survives` → `rank the survivors against each other` → `argue the case for the strongest` → `research` → `publish what clears the floor`
 
 </div>
 
