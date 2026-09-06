@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, List, Optional, Protocol, Sequence
+from typing import Dict, List, Optional, Protocol, Sequence, Tuple
 
 from .contract import Candidate, GateVerdict
 from .prompts import GATE_SCHEMA, format_entries, gate_system, gate_user
@@ -26,20 +26,34 @@ class BatchRunner(Protocol):
         """Map (custom_id, system, user) triples to their text responses."""
 
 
-def _parse(text: str) -> List[dict]:
-    """Pull the verdict list out of a response, tolerating stray prose."""
+def _parse(text: str) -> Tuple[List[dict], str]:
+    """Pull the verdict list out of a response, and say HOW it failed.
+
+    Returns (rows, kind) where kind is "" on success, "malformed" when the text
+    is not readable JSON, and "wrong_shape" when it IS valid JSON that simply
+    carries no `verdicts` list.
+
+    The distinction is the whole point (NEWS-Radar N-016 / #102). Both used to
+    return a bare [] and increment one counter called `unparseable`, which
+    merged two failures needing opposite fixes: malformed text is a parse and
+    retry problem, while valid JSON of the wrong shape is a PROMPT or SCHEMA
+    problem and is not unparseable at all. A morning spent on the retry path
+    would never have found the second.
+    """
     try:
         payload = json.loads(text)
     except json.JSONDecodeError:
         start, end = text.find("{"), text.rfind("}")
         if start == -1 or end <= start:
-            return []
+            return [], "malformed"
         try:
             payload = json.loads(text[start : end + 1])
         except json.JSONDecodeError:
-            return []
+            return [], "malformed"
     verdicts = payload.get("verdicts") if isinstance(payload, dict) else None
-    return verdicts if isinstance(verdicts, list) else []
+    if isinstance(verdicts, list):
+        return verdicts, ""
+    return [], "wrong_shape"
 
 
 def chunk(items: Sequence[Candidate], size: int) -> List[List[Candidate]]:
@@ -92,13 +106,16 @@ def collect(
     # while omitting ids loses items one by one, and an id that comes back
     # unrecognised means the model is rewriting identifiers, which is the
     # failure the setwise ranker already met once.
-    unparseable = 0
+    malformed = 0
+    wrong_shape = 0
     unknown_ids = 0
 
     for text in responses.values():
-        rows = _parse(text)
-        if not rows:
-            unparseable += 1
+        rows, failure = _parse(text)
+        if failure == "malformed":
+            malformed += 1
+        elif failure == "wrong_shape":
+            wrong_shape += 1
         for raw in rows:
             if not isinstance(raw, dict):
                 continue
@@ -133,10 +150,14 @@ def collect(
         # Printed as well as logged, and separately, so the breakdown survives
         # the CLI's default level and reaches the run log the health check and
         # the morning review both read.
+        # `unparseable` stays the TOTAL so the decision table in NEWS-Radar's
+        # CLAUDE.md keeps reading; the split is added beside it.
+        unparseable = malformed + wrong_shape
         print(
             f"Gate misses: {len(missing)} of {len(known)} unverdicted from "
             f"{len(responses)} responses; {unparseable} response(s) "
-            f"unparseable, {unknown_ids} id(s) returned that no candidate has"
+            f"unparseable ({malformed} malformed, {wrong_shape} wrong-shape), "
+            f"{unknown_ids} id(s) returned that no candidate has"
         )
     for item_id in missing:
         seen[item_id] = GateVerdict(id=item_id, keep=True, reason="no gate verdict")

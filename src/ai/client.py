@@ -224,6 +224,9 @@ class AnthropicClient(AIClient):
                 self.config.provider.value,
                 input_tokens=getattr(usage, "input_tokens", 0),
                 output_tokens=getattr(usage, "output_tokens", 0),
+                # The response says which model served it, so this is measured
+                # rather than inferred from what we asked for.
+                model=getattr(message, "model", None),
             )
 
     @staticmethod
