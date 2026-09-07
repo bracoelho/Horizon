@@ -1022,6 +1022,36 @@ class HorizonOrchestrator:
                         scores[item.id] = value
                 fixture.write_text(json.dumps(
                     {"version": 3,
+                     # THE CONTRACT (NEWS-Radar N-106, owner's decision
+                     # 2026-09-07): a corpus whose schema changes underneath it
+                     # is not a corpus. Three fixture generations already exist
+                     # and a reader cannot tell from a file which one it holds
+                     # or what its keys mean, so the older nights cannot be
+                     # compared with the newer ones. This block travels WITH
+                     # the data and says what each key records. It is written
+                     # and never read by any stage of the run: nothing here can
+                     # change a decision or fail a night.
+                     #
+                     # `fetched` is the one that most needs saying. It is
+                     # written AFTER cross-source dedup, so it is smaller than
+                     # the funnel line's own "fetched" count by exactly the
+                     # number of merged duplicates (N-102). Nothing is lost, a
+                     # merged item was caught under another id, but a key that
+                     # is not what it is named misleads every future reader.
+                     "contract": {
+                         "version": 3,
+                         "written_at": datetime.now().isoformat(timespec="seconds"),
+                         "records": {
+                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged",
+                             "gate": "one entry per fetched item: the gate's verdict, its theme and its reason",
+                             "candidates": "the gate's survivors, each with the analysis score and the article text the defender reads, capped at 6000 characters",
+                             "ranked": "the full ranked order, longer than the shortlist by the leads held back",
+                             "shortlist": "the ids the defender actually read",
+                             "defend": "the defender's verdict for each shortlist item",
+                             "published": "what reached the page",
+                             "rank_rounds": "one entry per tournament pick: the group shown, the winner, and how the answer came",
+                         },
+                     },
                      "fetched": [
                          {"id": i.id, "title": i.title,
                           "source": (getattr(i, "metadata", None) or {}).get(
