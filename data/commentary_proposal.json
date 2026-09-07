@@ -1,26 +1,26 @@
 {
-  "title": "CISA ends six free cybersecurity assessments amid budget cuts",
-  "theme": "Critical Infrastructure",
-  "score": 7.0,
-  "url": "https://www.utilitydive.com/news/cisa-scraps-6-free-cybersecurity-assessments-for-critical-infrastructure-op/829570/",
-  "item_url": "/item/2026-09-03-2134-01-cisa-ends-six-free-cybersecurity-assessments-amid-budget-cuts-en/",
-  "edition_url": "/2026/09/03/2134-summary-en.html",
-  "plain": "The Cybersecurity and Infrastructure Security Agency (CISA) has discontinued six free cybersecurity assessments that critical infrastructure operators previously used to evaluate operational technology (OT) security. Tatyana Bolton, executive director of the OT Cyber Coalition, attributed the cuts to severe budget redu",
+  "title": "Peer Pressure Between Agents Silently Breaks Conformal Prediction Guarantees",
+  "theme": "Reliability & Assurance",
+  "score": 8.0,
+  "url": "https://arxiv.org/abs/2609.04445",
+  "item_url": "/item/2026-09-07-2157-03-peer-pressure-between-agents-silently-breaks-conformal-prediction-guar-en/",
+  "edition_url": "/2026/09/07/2157-summary-en.html",
+  "plain": "Researchers demonstrate that conformal prediction certificates calibrated for a large language model answering alone lose their validity when the same model observes peer agents unanimously asserting a wrong answer, a mechanism they term score-mechanism shift. In laboratory tests across open-weight models and multiple-",
   "angles": [
     {
-      "claim": "AI engineering teams inside smaller utilities now inherit an OT baselining task CISA used to do for free, with no budget line for it.",
-      "audience": "AI and OT engineering leads at small and mid-size utilities and water systems",
-      "rank_reason": "It forces an immediate governance decision, who pays and who schedules the replacement assessment, so it changes a Monday task list, not just awareness."
+      "claim": "Any conformal prediction calibration done on single-agent outputs must be treated as invalid the moment agents can observe peer answers before finalizing.",
+      "audience": "AI engineering leads in utilities using multi-agent LLM pipelines with escalation controls",
+      "rank_reason": "Directly changes what must be checked before Monday: recalibrate under peer-visible conditions or stop trusting the guarantee, and the article demonstrates the mechanism and the numeric drop."
     },
     {
-      "claim": "Any AI system an operator connects to OT should now assume its baseline security posture is self-reported, not federally verified, until a paid substitute is booked.",
-      "audience": "AI governance leads and CISOs at critical infrastructure operators",
-      "rank_reason": "It reaches the target reader by tying the funding cut directly to AI deployment risk, but it extends the article's claim further than the reporting supports since no AI-specific gap is documented."
+      "claim": "Monitoring average coverage as a safety signal is itself a vulnerability, since an attacker can cut coverage on low-confidence items nearly in half while the average looks fine.",
+      "audience": "Directors who ask what metric proves the escalation control is working",
+      "rank_reason": "Gives the director a concrete Thursday question about subgroup coverage rather than aggregate coverage, backed directly by the 87% to 47% figure in the source."
     },
     {
-      "claim": "Directors should ask this Thursday which of the six discontinued assessments their AI vendors' OT integrations depended on for their own security claims.",
-      "audience": "Directors and boards overseeing AI deployment in critical infrastructure",
-      "rank_reason": "Useful boardroom question but weaker because the six assessments are unnamed, so the claim cannot be verified or acted on precisely yet."
+      "claim": "An escalation-on-uncertainty design is not a safety backstop if peer pressure can make the model falsely confident enough to skip escalation entirely.",
+      "audience": "Engineers designing human-review triggers in multi-agent systems",
+      "rank_reason": "Narrower than the first two since it addresses one downstream consequence of the same finding rather than the calibration assumption itself, but still actionable for anyone relying on escalation logic as a control."
     }
   ]
 }
