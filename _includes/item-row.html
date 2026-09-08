@@ -4,7 +4,6 @@ cannot drift apart. Expects: include.item
 {%- endcomment -%}
 <li class="item-row">
   <a href="{{ include.item.url | relative_url }}">
-    <span class="score-badge" data-tier="{% if include.item.score >= 8 %}high{% else %}good{% endif %}">{{ include.item.score }}</span>
     <span class="item-row-title">{{ include.item.title }}</span>
   </a>
   <span class="item-row-meta">{{ include.item.source }} <span aria-hidden="true">·</span> {{ include.item.date | date: "%d %b" }}</span>
