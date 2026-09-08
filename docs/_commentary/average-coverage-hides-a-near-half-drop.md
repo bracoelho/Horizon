@@ -8,20 +8,19 @@ item_url: "https://arxiv.org/abs/2609.04445"
 item_score: "8.0"
 edition_url: /2026/09/07/2157-summary-en.html
 ---
-<!-- VOICE CHECK. Read this, then delete this whole block.
 
-  negative to positive: ', not'
+**What happened.** An AI Agent being the guarantee, can change its own lower limit due to peer pressure without leaving a trace. 
+When an AI system answers a question, it can attach a guarantee to its answer: "the right answer is inside this set nine times in ten". That guarantee is measured with the system working alone. Researchers have now shown that it stops being true the moment the same system works in a group and hears the other AI agents confidently agree on a wrong answer. It goes along with the room. In the tests, the nine-in-ten guarantee fell to about seven in ten, and on the hardest cases, where the guarantee matters most, it fell below one in two. The certificate still says nine in ten. Nothing on the dashboard changes.
+**Think of:** An experienced claims assessor whose file says she is right nine times in ten. Put her on a committee with three confident colleagues who happen to be wrong, and she defers. Her file still says nine in ten. Nobody re-tested her inside the committee
 
-"rather than" and "instead of" are only banned in their
-rhetorical use, so a plain comparison here is fine and this note
-is wrong about it. ", not" and "not just" are the flourish
-itself, and the title is where they do the most damage.
--->
+**Why it matters**. The number a company watches can stay flat while the thing it stands for has already failed. In the tests, the overall reliability figure barely moved, because most cases are easy and the system still gets those right. Underneath, on the hard cases, where an AI system is supposed to hand off to a person, reliability was cut nearly in half. The average passed. The safety it was meant to prove was gone.
+**Think of** a hospital that reports one figure: patients seen on time, 95 percent. The number holds every month. Inside it, the routine visits run early and the emergencies run late, and the average never shows the emergencies. A board reading the single figure would say the service is fine. The patients who needed it most would not.
 
-**What happened.** Researchers found that conformal prediction certificates calibrated for a language model answering alone lose their validity once that model sees peer agents unanimously assert a wrong answer, a mechanism they call score-mechanism shift. The effect was shown in laboratory tests across open-weight models and multiple choice tasks.
-
-**Why it matters.** Teams that treat average coverage as proof an escalation control is working are relying on a number that can stay flat while the guarantee underneath it fails. The tests showed coverage on low-confidence items can be cut nearly in half even as the overall average looks unchanged, meaning the metric can pass while the safety property it stands for is gone.
-
-**What to do.** Your team should report coverage split by confidence band, not as a single average, before any multi-agent escalation path goes live. The question to put to your CTO: what is our conformal coverage on the lowest-confidence quartile of cases, measured separately from the overall average, and who reviews that number before an escalation control is trusted in production.
-
-**Where I would be wrong.** Segmenting coverage costs engineering time and could flag a healthy system as suspect if the confidence bands are drawn poorly, delaying a working escalation path over a false alarm. Waiting for more field evidence before segmenting costs nothing if peer pressure effects turn out rare outside the lab, but if they are common, every system relying on average coverage as its safety proof is already exposed, and the gap stays invisible until it fails on a case that mattered.
+**What to do**. If your AI systems check each other's work, or hand a case to a person when unsure, the reliability number you hold was most likely measured with each system working alone, and it does not cover how they work together.
+*A question to assess*, not an emergency. Consider addressing before trusting that hand-off in production:
+1. What deterministic methods are used by the Agents to leave a trail auditable and not possible to temper with
+2. We are measuring reliability with the other agents present?
+3. Do ensure a deterministic report and escalation the hard cases on their own (never inside an average, because that is where this failure hides)?
+4. Do we have a routine with our own staff scoring previous cases to check calibration needs?
+    
+**Where I would be wrong.** I have seem and dealt myself with systems with AI Agents feeling peer pressue from other Agents. I could be wrong about how your AI Agentic system is exposed to what the paper reports and the impact it can create.
