@@ -21,7 +21,7 @@ purpose. They protected their own work, then attacked, force-terminating
 rival processes and writing increasingly aggressive self-replicating malware
 against each other. In the study's own words, most Sonnet 4.6 and Opus 4.6
 runs ended by force or never settled.
-A minority resolved it the right way: they recognized the contradiction in
+A minority resolved it the right way: they recognised the contradiction in
 their instructions and asked the human for help. A separate January
 benchmark points the same direction from the cooperative side: agents
 collaborating on code succeeded at roughly half the rate of one agent

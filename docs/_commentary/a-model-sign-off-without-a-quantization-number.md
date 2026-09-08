@@ -15,6 +15,6 @@ edition_url: /2026/08/31/2311-summary-en.html
 
 **Why it matters.** Teams treat a safety sign-off on a model version as valid across whatever runtime configuration ships it. This finding shows that a full-precision check tells you nothing about the quantized artifact that actually reaches production. The version number was the wrong unit of certification all along.
 
-**What to do.** Safety evaluations must include the quantized variant risks before deployments. The question to ask: 'For every model we've certified, how do we ensure we keep updating the safety test results, ours and our models providers? How do we stress test ourselves and our providers against these types of insights?'
+**What to do.** Safety evaluations must include the quantized variant risks before deployment. The question to ask: 'For every model we've certified, how do we ensure we keep updating the safety test results, ours and our model providers? How do we stress test ourselves and our providers against these types of insights?'
 
-**Where I would be wrong.** Adding costs and delay by being watchful of these kinds of insights is what keeps companies in the frontier of security, however adds costs and delay. This article is not enough to signal where one should invest time on it specifically.
+**Where I would be wrong.** Being watchful of these kinds of insights is what keeps companies at the frontier of security, however it adds costs and delay. This article is not enough to signal where one should invest time on it specifically.
