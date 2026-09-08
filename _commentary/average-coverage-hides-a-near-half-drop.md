@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 title: "Average Coverage Hides a Near-Half Drop"
 date: 2026-09-07 23:28:16 +0000
 theme: Reliability & Assurance
