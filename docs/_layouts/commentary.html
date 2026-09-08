@@ -13,7 +13,7 @@ layout: default
 
   {% if page.item_url %}
   <p class="commentary-on">
-    On: <a href="{{ page.item_url }}">{{ page.item_title | default: page.item_url }}</a>{% if page.item_score %} <span class="score-badge" data-tier="high">{{ page.item_score }}</span>{% endif %}
+    On: <a href="{{ page.item_url }}">{{ page.item_title | default: page.item_url }}</a>
     {% if page.edition_url %}<br><span class="commentary-edition">Surfaced in the <a href="{{ page.edition_url | relative_url }}">edition of {{ page.edition_date | default: page.date | date: "%d %B" }}</a></span>{% endif %}
   </p>
   {% endif %}

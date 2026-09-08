@@ -294,21 +294,6 @@ pre {
 }
 
 /* --- Score badge: the one place colour means something --- */
-.score-badge {
-  display: inline-block;
-  padding: .12em .5em;
-  border-radius: 3px;
-  font-family: var(--hz-mono);
-  font-size: .75em;
-  font-weight: 700;
-  margin-left: .4em;
-  vertical-align: middle;
-  border: 1px solid transparent;
-}
-.score-badge[data-tier="high"] { background: var(--hz-accent); color: var(--hz-accent-ink); }
-.score-badge[data-tier="good"] { background: var(--hz-accent-dim); color: var(--hz-accent-ink-soft); border-color: var(--hz-accent-dim); }
-.score-badge[data-tier="mid"]  { background: transparent; color: var(--hz-text-muted); border-color: var(--hz-border); }
-.score-badge[data-tier="low"]  { background: transparent; color: var(--hz-text-faint); border-color: var(--hz-border); }
 
 /* --- Item metadata --- */
 .tag-line code {
