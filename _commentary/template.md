@@ -22,8 +22,10 @@ actually lived through: a programme, a vendor conversation, a failure.
 team building: what they would do differently. For the board funding it: what
 it changes about risk, cost, or dependency.
 
-**The question to ask.** The one a director should put to their CTO about
-this. This is the line that gets quoted.
+**The question to ask.** The one he could raise AT a board, among the other
+members, and never one he delegates downward. A question asked downward may be
+technical; a question raised among peers may not. This is the line that gets
+quoted.
 
 **Where I would be wrong.** The condition that would invalidate the argument,
 or the reading you rejected and why. Nobody trusts a take with no exposed
