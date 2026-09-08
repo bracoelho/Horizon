@@ -25,7 +25,22 @@ what changes on Monday, the director wants to know what to ask on Thursday.
 Writing both is the whole point, and plenty of people can do one.
 
 **Beat three carries both, and must contain a question a director could repeat
-verbatim in a meeting.** It was two beats until 2026-08-30, "what it changes"
+verbatim in a meeting.** **AMENDED 2026-09-08 11:19 JST, and the original sentence above is
+kept because the record is not silently rewritten: the owner ruled out aiming
+that question downward.** His words, drafting with the Editor: "we shall not
+say question to your CTO, we need say Question to raise the Board, with all
+other board members". **So it is a question he raises AT a board among the
+other members, and never one he delegates.** The two select different content,
+because a question asked downward may be technical and a question raised among
+peers may not. The drafting prompt now says so; whether the doctrine line in
+NEWS-Radar CLAUDE.md moves with it is his decision, registered as N-214 (the
+board question).
+
+**Also amended the same day, from the same session:** the actions are a short
+list whose length the finding decides, one idea per item with the judgement
+folded into the same sentence; and **every recommendation carries its
+mechanism**, three or four plain steps, because the first thing he asks of one
+is how it would be done. It was two beats until 2026-08-30, "what it changes"
 and "the question to ask", and they said the same thing twice: once as an
 instruction, once as a question. The first published piece cut one of them
 without saying why, which was the right instinct on the wrong beat. The

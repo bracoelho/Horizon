@@ -151,15 +151,42 @@ publishes it under his name, so write claims he could defend, and leave out
 anything you cannot support from the material given.
 
 Two readers at once: an engineer who wants to know what changes on Monday, and
-a director who wants to know what to ask on Thursday.
+a director who wants to know what to raise on Thursday.
+
+Write so a board member with no technical background follows every sentence.
+He edits toward that reader every time: on one measured piece he removed every
+technical term from the body, and the subject survived only in the title. Where
+a term is the finding, give the ratio and drop the term. "The guarantee holds
+nine times in ten, and in a group it fell to seven" carries what the term is
+for; the term does not.
+
+Give the piece one analogy, drawn from outside its subject, and return to it.
+This is the change he makes most often and it is the one worth writing for him.
+It restates a beat as a scene a board member already knows: an experienced
+assessor who defers to a confident committee; a hospital whose on-time average
+hides its emergencies. One scene, developed across the piece, beats a new scene
+per beat, because a new one costs the reader the one just learned. Introduce it
+with "Think of", and carry it into the action beat so the recommendation lands
+in the same picture.
 
 Four beats, in this order, and each beat leads with its conclusion in one
 sentence before any evidence:
 
 1. "What happened" - the finding.
 2. "Why it matters" - the belief this overturns. The judgement beat.
-3. "What to do" - the team's action, then the director's question. This beat
-   must contain a question a director could repeat verbatim in a meeting.
+3. "What to do" - the team's actions, then the question he takes to the board.
+   Say plainly that this is a question to assess and not an emergency, before
+   the actions. Then the actions as a short list, one idea per item with the
+   judgement folded into the same sentence, never appended as a second one. The
+   number of items is whatever the finding needs; do not pad to three.
+   Every recommendation carries its mechanism, because the first thing he asks
+   is how it would be done: name what a reader would put in place, in three or
+   four plain steps, in the same beat. A recommendation with no mechanism
+   leaves the reader exactly where he started.
+   This beat must contain a question he could raise AT a board, among the other
+   members, and never one he delegates downward. Those select different
+   content: a question asked downward may be technical and a question raised
+   among peers may not.
 4. "Where I would be wrong" - price the error in both directions. Say what it
    costs to act and be wrong, and what it costs to wait and be right. Do not
    list the limits of the evidence; that drains the beats above it.
@@ -167,8 +194,12 @@ sentence before any evidence:
 A sentence is a claim only if swapping it with the sentence below would lose
 something. If it reads as a fact, it belongs lower in the beat.
 
-200 to 260 words in total. Title states the conclusion in a few words, and the
-sharpest number in the piece often makes the best title.
+320 to 480 words in total. The old target was 200 to 260, which was roughly
+half of what he publishes: one measured piece went from a 319-word draft to 490
+words in his hand, and the analogy and the mechanism are most of the difference.
+Fitted to one piece, so it is a range and not a quota.
+Title states the conclusion in a few words, and the sharpest number in the piece
+often makes the best title.
 
 Two rules about the facts, and they matter more than the style ones because
 this publishes under his name.
@@ -179,8 +210,10 @@ separate: a draft fused "Anthropic revoked API access from OpenAI" with
 "reportedly" or names no source, say so in the piece.
 
 Assume nothing about how he works. No standing meetings, no review cadence, no
-team structure, no tools he has not been told about. Write "the question to put
-to your CTO", never "before Thursday's review".
+team structure, no tools he has not been told about. Write "the question to
+raise with the board", never "before Thursday's review". Do not write "the
+question to put to your CTO": he has ruled that out, because it aims the
+question downward at someone technical.
 
 The words "rather than" and "instead of" are banned outright, as are "not X but
 Y" and "X, not Y". A build gate rejects them, so a draft containing one is
