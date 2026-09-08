@@ -1,26 +1,26 @@
 {
-  "title": "Peer Pressure Between Agents Silently Breaks Conformal Prediction Guarantees",
-  "theme": "Reliability & Assurance",
-  "score": 8.0,
-  "url": "https://arxiv.org/abs/2609.04445",
-  "item_url": "/item/2026-09-07-2157-03-peer-pressure-between-agents-silently-breaks-conformal-prediction-guar-en/",
-  "edition_url": "/2026/09/07/2157-summary-en.html",
-  "plain": "Researchers demonstrate that conformal prediction certificates calibrated for a large language model answering alone lose their validity when the same model observes peer agents unanimously asserting a wrong answer, a mechanism they term score-mechanism shift. In laboratory tests across open-weight models and multiple-",
+  "title": "Utilities shift large-load risk onto customers via new tariff terms",
+  "theme": "Critical Infrastructure",
+  "score": 7.0,
+  "url": "https://www.utilitydive.com/news/large-load-tariffs-lbnl-brattle/829796/",
+  "item_url": "/item/2026-09-08-2151-01-utilities-shift-large-load-risk-onto-customers-via-new-en/",
+  "edition_url": "/2026/09/08/2151-summary-en.html",
+  "plain": "Research from Lawrence Berkeley National Laboratory finds a sharp increase since early 2025 in the number of active and proposed utility tariffs specifically targeting large loads, chiefly data centers. These tariffs increasingly incorporate upfront payments, exit fees, and multi-year ramp schedules that phase in deman",
   "angles": [
     {
-      "claim": "Any conformal prediction calibration done on single-agent outputs must be treated as invalid the moment agents can observe peer answers before finalizing.",
-      "audience": "AI engineering leads in utilities using multi-agent LLM pipelines with escalation controls",
-      "rank_reason": "Directly changes what must be checked before Monday: recalibrate under peer-visible conditions or stop trusting the guarantee, and the article demonstrates the mechanism and the numeric drop."
+      "claim": "AI teams planning new training or inference clusters must now budget for exit fees and multi-year ramp schedules as standard interconnection costs, not contingencies.",
+      "audience": "AI infrastructure and capacity planning leads at data-center operators and their utility counterparts",
+      "rank_reason": "Directly changes a capital planning and site-selection decision an AI engineering leader must make before committing to a build."
     },
     {
-      "claim": "Monitoring average coverage as a safety signal is itself a vulnerability, since an attacker can cut coverage on low-confidence items nearly in half while the average looks fine.",
-      "audience": "Directors who ask what metric proves the escalation control is working",
-      "rank_reason": "Gives the director a concrete Thursday question about subgroup coverage rather than aggregate coverage, backed directly by the 87% to 47% figure in the source."
+      "claim": "Rising qualifying-demand thresholds mean some AI compute buildouts that once triggered large-load review will now fall outside it, and teams should recheck which tariff regime applies.",
+      "audience": "AI infrastructure leads and utility rates counterparts negotiating power for compute buildouts",
+      "rank_reason": "Reaches the reader and prompts a concrete check, though it is narrower than the first angle since it only affects classification, not total exposure."
     },
     {
-      "claim": "An escalation-on-uncertainty design is not a safety backstop if peer pressure can make the model falsely confident enough to skip escalation entirely.",
-      "audience": "Engineers designing human-review triggers in multi-agent systems",
-      "rank_reason": "Narrower than the first two since it addresses one downstream consequence of the same finding rather than the calibration assumption itself, but still actionable for anyone relying on escalation logic as a control."
+      "claim": "Utilities are converting stranded-asset risk from cancelled or under-delivered AI projects into contractual minimum-take obligations that AI teams must model into worst-case shutdown costs.",
+      "audience": "AI engineering and finance leads sizing exit risk on committed compute projects",
+      "rank_reason": "Ranks last because it restates the source's framing of risk-shifting with less new decision content than the first two angles."
     }
   ]
 }
