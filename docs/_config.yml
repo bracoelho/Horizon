@@ -29,6 +29,10 @@ exclude:
   - "scrapers.md"
   - "extractors.md"
   - "horizon-hub-design.md"
+  # The seventh inherited upstream page, found 2026-09-10 (N-244). The sweep of
+  # 2026-09-07 removed six and verified 404 on all six; it enumerated its own
+  # list rather than this directory, and this file was in neither.
+  - "twitter-cookies.md"
 
 collections:
   commentary:
