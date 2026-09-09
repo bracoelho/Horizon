@@ -181,6 +181,21 @@ def _edition_date(when: datetime) -> str:
     return f"{when.day} {when:%B %Y}"
 
 
+def _fixture_summary(item: object) -> str:
+    """The summary the GATE read for this item, for the fixture's record.
+
+    Mirrors `src/selection/adapter.to_candidate`: the analysis summary when the
+    item was analysed, and the article text when it was not. The gate runs
+    BEFORE analysis, so for every item it dropped there is no analysis and the
+    text is exactly what it saw. Recording the derived value rather than the
+    rule means a replay never has to reproduce the rule to reproduce the input.
+    """
+    processing = getattr(item, "processing", None)
+    analysis = getattr(processing, "analysis", None) if processing else None
+    summary = (getattr(analysis, "summary", "") or "") if analysis else ""
+    if summary.strip():
+        return summary
+    return (getattr(item, "content", "") or "")[:6000]
 class HorizonOrchestrator:
     """Orchestrates the complete workflow for content aggregation and analysis."""
 
@@ -1039,10 +1054,10 @@ class HorizonOrchestrator:
                      # merged item was caught under another id, but a key that
                      # is not what it is named misleads every future reader.
                      "contract": {
-                         "version": 3,
+                         "version": 4,
                          "written_at": datetime.now().isoformat(timespec="seconds"),
                          "records": {
-                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged",
+                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged. SINCE VERSION 4 each entry also carries `summary` (what the gate read), `content` (the article text capped at 6000 characters) and `author` (the publisher), FOR EVERY ITEM INCLUDING THE ONES THE GATE DROPPED",
                              "gate": "one entry per fetched item: the gate's verdict, its theme and its reason",
                              "candidates": "the gate's survivors, each with the analysis score and the article text the defender reads, capped at 6000 characters",
                              "ranked": "the full ranked order, longer than the shortlist by the leads held back",
@@ -1052,13 +1067,36 @@ class HorizonOrchestrator:
                              "rank_rounds": "one entry per tournament pick: the group shown, the winner, and how the answer came",
                          },
                      },
+                     # VERSION 4 (NEWS-Radar, the owner's decision 2026-09-10)
+                     # records the TEXT of every fetched item, not only of the
+                     # gate's survivors. Until now a replay could ask what
+                     # SELECTION would have decided and could never ask the
+                     # more important question: what did the GATE throw away?
+                     # On a night that loses 40 items of 226 to a gate fault
+                     # that is the question that matters, and the dropped
+                     # items had their text recorded nowhere, so it could not
+                     # be asked at all.
+                     #
+                     # `author` is the PUBLISHER, and it is here because the
+                     # scrapers already capture it and this record threw it
+                     # away: six items covering one story all carry `source:
+                     # google_news` while Bloomberg, Yahoo and the rest sit in
+                     # this field. Counting DISTINCT publishers behind a story
+                     # is what separates real coverage from one repository
+                     # shipping seven releases in a night.
+                     #
+                     # Written and read by no stage of the run. The price is
+                     # roughly 800 KB a night against 451, accepted in writing.
                      "fetched": [
                          {"id": i.id, "title": i.title,
                           "source": (getattr(i, "metadata", None) or {}).get(
                               "feed_name", "")
                           or getattr(getattr(i, "source_type", None),
                                      "value", ""),
-                          "url": str(getattr(i, "url", "") or "")}
+                          "url": str(getattr(i, "url", "") or ""),
+                          "author": getattr(i, "author", None) or "",
+                          "summary": _fixture_summary(i),
+                          "content": (getattr(i, "content", "") or "")[:6000]}
                          for i in items],
                      "candidates": [
                          {"id": c.id, "title": c.title, "summary": c.summary,
