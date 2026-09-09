@@ -2400,5 +2400,158 @@
   "degraded": 0,
   "warnings": 12,
   "zero_sources": []
+ },
+ {
+  "run_id": "34405123501",
+  "event": "schedule",
+  "utc": "2026-09-09T21:24:50Z",
+  "funnel": {
+   "fetched": 226,
+   "gated": 132,
+   "analyzed": 132,
+   "ranked": 132,
+   "floor_rejected": 6,
+   "below_score": 0,
+   "published": 4,
+   "enriched": 4,
+   "tokens": 756773
+  },
+  "score_distribution": {
+   "0": 2,
+   "1": 13,
+   "2": 26,
+   "3": 18,
+   "4": 26,
+   "5": 14,
+   "6": 22,
+   "7": 11
+  },
+  "setwise": {
+   "picks": 94,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "reliability-assurance": 3,
+   "critical-infrastructure": 1
+  },
+  "published_scores": [
+   7.0,
+   7.0,
+   7.0,
+   7.0
+  ],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.SE",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "Utility Dive",
+    "score": 7.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    2,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    22,
+    false
+   ],
+   "Hugging Face Blog": [
+    1,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    3,
+    false
+   ],
+   "Latitude Media": [
+    3,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    1,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    2,
+    false
+   ],
+   "Simon Willison": [
+    3,
+    false
+   ],
+   "TLDR AI": [
+    1,
+    false
+   ],
+   "The Verge - AI": [
+    7,
+    false
+   ],
+   "Utility Dive": [
+    5,
+    false
+   ],
+   "arXiv cs.AI": [
+    20,
+    false
+   ],
+   "arXiv cs.CL": [
+    20,
+    false
+   ],
+   "arXiv cs.LG": [
+    20,
+    false
+   ],
+   "arXiv cs.SE": [
+    20,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 16,
+  "zero_sources": []
  }
 ]
