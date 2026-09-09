@@ -1,26 +1,26 @@
 {
-  "title": "Study Finds Agents Adopt Corrupted Tool Outputs at High Rates",
+  "title": "Study Finds LLM Agents Often Adopt Corrupted Tool Outputs Uncritically",
   "theme": "Reliability & Assurance",
   "score": 7.0,
   "url": "https://arxiv.org/abs/2609.05587",
-  "item_url": "/item/2026-09-09-1016-01-study-finds-agents-adopt-corrupted-tool-outputs-at-high-en/",
-  "edition_url": "/2026/09/09/1016-summary-en.html",
-  "plain": "A laboratory study evaluated fourteen large language models acting as agents across three tool types: web search, sub-agent delegation, and code execution. Researchers deliberately corrupted tool returns and measured whether agents adopted the corrupted content in their final answers, finding a mean adoption rate excee",
+  "item_url": "/item/2026-09-09-2124-01-study-finds-llm-agents-often-adopt-corrupted-tool-outputs-en/",
+  "edition_url": "/2026/09/09/2124-summary-en.html",
+  "plain": "A study evaluating fourteen large language models across three tool types—web search, delegation to a sub-agent, and code execution—deliberately corrupted tool returns and measured whether agents incorporated the corrupted content into their final answers. Mean adoption of corrupted output exceeded one third across all",
   "angles": [
     {
-      "claim": "Tool outputs must be treated as untrusted input requiring independent verification, not as a trustworthy grounding layer for agent decisions.",
-      "audience": "AI engineering leads designing agent orchestration pipelines",
-      "rank_reason": "Directly changes what an engineer builds Monday: add a verification step before tool output reaches a final answer, backed by the 33-68% adoption rate across fourteen models."
+      "claim": "Any agent pipeline that hands tool output straight to a final answer needs a validation layer, since agents will not self-report conflicts they detect.",
+      "audience": "AI engineering leads building or reviewing tool-using agents in critical infrastructure operators",
+      "rank_reason": "Directly changes what an engineer must add to production pipelines this week and is fully supported by the study's own recommendation."
     },
     {
-      "claim": "Logging must capture when an agent's internal reasoning contradicts its final answer, because agents can silently suppress a correct answer they already found.",
-      "audience": "AI engineering leads and directors governing agent observability",
-      "rank_reason": "Reaches both readers with a concrete governance ask, though it is narrower than the first angle since it addresses one failure mode rather than the general trust boundary."
+      "claim": "Silent suppression of correct internal answers, not lack of detection, is the real failure, so logging internal reasoning traces should become a governance requirement.",
+      "audience": "AI governance leads and directors overseeing model assurance in utilities",
+      "rank_reason": "Reaches the director's Thursday question about what to ask for, but is one inferential step further from the raw finding than the first angle."
     },
     {
-      "claim": "Prompting, metadata, and post-training patches should not be trusted as mitigations for tool overtrust, since none generalized across models or tools in testing.",
-      "audience": "Directors evaluating vendor claims about agent safety mitigations",
-      "rank_reason": "Useful for Thursday's questions to vendors, but ranks last because it is a negative claim about absence of a fix rather than a decision-changing action."
+      "claim": "No current mitigation, including post-training by the model builder, reliably fixes overtrust, so vendor assurances of built-in safety cannot be taken as sufficient.",
+      "audience": "Directors evaluating vendor claims and procurement standards for agentic AI systems",
+      "rank_reason": "Actionable for procurement conversations but slightly narrower in immediate operational impact than the first two, since it addresses vendor trust rather than pipeline design."
     }
   ]
 }
