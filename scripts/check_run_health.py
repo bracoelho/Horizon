@@ -498,10 +498,32 @@ def build_report(per_source, per_feed, totals, grouped, warnings,
     # (NEWS-Radar N-019). All three lived in one sentence and are fixed as one.
     failed_feeds = sorted(n for n, (_, f) in (per_feed or {}).items() if f)
     if not fatal and not degrading and not failed_feeds:
-        lines.append(
-            "- ✅ **No errors.** A quiet edition means nothing cleared the"
-            " score floor. That is a judgement the radar made."
-        )
+        # CORRECTED 2026-09-10 (NEWS-Radar N-239). The sentence below was
+        # printed on EVERY clean run without reading the published count, so it
+        # asserted a quiet edition on any night that published. It was written
+        # by the commit that fixed the previous false footer, and it stayed
+        # invisible because every night after it was genuinely quiet. The
+        # 2026-09-08 run published 1 and the page still said the edition was
+        # quiet. A claim printed unconditionally about a variable it never
+        # reads is the same defect in a new sentence.
+        published = totals.get("published")
+        if published is None:
+            # The Selection line did not parse. Say so, and choose neither
+            # claim: silence here would leave the reader with the fuller
+            # sentence they saw yesterday and no way to know it had stopped
+            # being checked.
+            lines.append(
+                "- ✅ **No errors.** The published count could not be read from"
+                " this run, so this footer makes no claim about the edition."
+            )
+        elif published == 0:
+            lines.append(
+                "- ✅ **No errors.** A quiet edition means nothing cleared the"
+                " score floor. That is a judgement the radar made."
+            )
+        else:
+            word = "item" if published == 1 else "items"
+            lines.append(f"- ✅ **No errors.** {published} {word} published.")
     elif not fatal and not degrading and failed_feeds:
         lines.append(
             f"- 🟡 **No error lines, but {len(failed_feeds)} feed(s) failed to"
