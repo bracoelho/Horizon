@@ -15,4 +15,4 @@ edition_url: /2026/08/17/1640-summary-en.html
 
 **The question to ask.** Have two people (not AI) run the same interpretability analysis independently and compare the statements they produce. If those differ, you have a reproducibility problem even before a compliance problem.
 
-**What is next.** The study was done with a "small" model, further studies with "bigger" models are needed in addition to the interpretability mechanisms. 
+**What is next.** The study was done with a "small" model; further studies with "bigger" models are needed in addition to the interpretability mechanisms. 
