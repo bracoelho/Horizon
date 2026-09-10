@@ -1,26 +1,26 @@
 {
-  "title": "Study Finds LLM Agents Often Adopt Corrupted Tool Outputs Uncritically",
+  "title": "Large-Language-Model Document Auditors Fabricate Findings at Scale",
   "theme": "Reliability & Assurance",
   "score": 7.0,
-  "url": "https://arxiv.org/abs/2609.05587",
-  "item_url": "/item/2026-09-09-2124-01-study-finds-llm-agents-often-adopt-corrupted-tool-outputs-en/",
-  "edition_url": "/2026/09/09/2124-summary-en.html",
-  "plain": "A study evaluating fourteen large language models across three tool types—web search, delegation to a sub-agent, and code execution—deliberately corrupted tool returns and measured whether agents incorporated the corrupted content into their final answers. Mean adoption of corrupted output exceeded one third across all",
+  "url": "https://arxiv.org/abs/2609.09696",
+  "item_url": "/item/2026-09-10-2124-01-large-language-model-document-auditors-fabricate-findings-at-scale-en/",
+  "edition_url": "/2026/09/10/2124-summary-en.html",
+  "plain": "A study evaluated Google Gemini 3.0 Pro's ability to detect planted contaminants in a constructed corpus of 150 academic papers from supply chain management and medical research, with 450 known contaminants (typographical corruption, semantic reversal, absurd out-of-context insertion) injected across the set. Testing a",
   "angles": [
     {
-      "claim": "Any agent pipeline that hands tool output straight to a final answer needs a validation layer, since agents will not self-report conflicts they detect.",
-      "audience": "AI engineering leads building or reviewing tool-using agents in critical infrastructure operators",
-      "rank_reason": "Directly changes what an engineer must add to production pipelines this week and is fully supported by the study's own recommendation."
+      "claim": "Any LLM document-audit pipeline must cap batch size and mechanically re-verify every finding against source text before sign-off.",
+      "audience": "AI engineering leads governing document-audit or QA pipelines built on LLMs",
+      "rank_reason": "Directly changes what an engineer configures Monday morning: batch limits and a verification step, both specified in the source's own harness."
     },
     {
-      "claim": "Silent suppression of correct internal answers, not lack of detection, is the real failure, so logging internal reasoning traces should become a governance requirement.",
-      "audience": "AI governance leads and directors overseeing model assurance in utilities",
-      "rank_reason": "Reaches the director's Thursday question about what to ask for, but is one inferential step further from the raw finding than the first angle."
+      "claim": "An LLM auditor that reports 100% completion at large scale is more dangerous than one that visibly fails, because its errors mimic the target style.",
+      "audience": "Directors approving AI-based audit or compliance workflows",
+      "rank_reason": "Gives a director a concrete Thursday question, why does completion rate alone satisfy sign-off, but is a framing of the finding rather than a new operational control."
     },
     {
-      "claim": "No current mitigation, including post-training by the model builder, reliably fixes overtrust, so vendor assurances of built-in safety cannot be taken as sufficient.",
-      "audience": "Directors evaluating vendor claims and procurement standards for agentic AI systems",
-      "rank_reason": "Actionable for procurement conversations but slightly narrower in immediate operational impact than the first two, since it addresses vendor trust rather than pipeline design."
+      "claim": "Detection accuracy on realistic-looking errors is worse than on obviously absurd ones, so audits tuned against toy test cases will pass while missing real contamination.",
+      "audience": "Engineers designing test suites or acceptance criteria for LLM auditors",
+      "rank_reason": "Useful for test design but narrower and more inferential than the batch-size and completion-rate claims, since it generalizes a domain-specific accuracy split into a design rule."
     }
   ]
 }
