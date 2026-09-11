@@ -270,3 +270,21 @@ def test_batch_failure_logs_the_reason_not_just_the_category(monkeypatch, caplog
             client.complete_batch([BatchRequest("gate-0", "s", "u")], poll_seconds=0)
         )
     assert "effort not supported" in caplog.text
+
+
+def test_batch_keeps_why_each_entry_stopped(monkeypatch, caplog) -> None:
+    """NEWS-Radar N-267: a response cut at the ceiling still arrives as text, so
+    the stop reason is the only evidence the batch was truncated."""
+    client = _client(monkeypatch)
+    cut = _entry("a", '{"verdicts": [')
+    cut.result.message.stop_reason = "max_tokens"
+    done = _entry("b", "{}")
+    done.result.message.stop_reason = "end_turn"
+    _batched(client, [cut, done])
+    with caplog.at_level("WARNING"):
+        out = asyncio.run(client.complete_batch(
+            [BatchRequest("a", "s", "u"), BatchRequest("b", "s", "u")], poll_seconds=0
+        ))
+    assert set(out) == {"a", "b"}
+    assert client.last_batch_stops == {"a": "max_tokens", "b": "end_turn"}
+    assert "stopped at max_tokens" in caplog.text

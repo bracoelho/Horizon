@@ -60,6 +60,24 @@ def chunk(items: Sequence[Candidate], size: int) -> List[List[Candidate]]:
     return [list(items[i : i + size]) for i in range(0, len(items), size)]
 
 
+def batch_keys(candidates: Sequence[Candidate], size: int) -> Dict[str, Dict[str, str]]:
+    """The short key each item is shown under, per request: `gate-N` -> {key: id}.
+
+    The model is shown `1` to `40` within its batch instead of the item's own id,
+    and its answer is mapped back here. Measured on the 10-11 Sep night before it
+    shipped (NEWS-Radar N-267, N-268): the model copies every id it is shown back,
+    one feed's ids are 213 characters, and the batch holding them ran past the
+    token ceiling in 5 of 5 replays and lost all forty verdicts; arXiv ids came
+    back with their prefix stripped and matched nothing. Replayed with short keys
+    the batch finished 5 of 5, no stripped ids came back, and verdicts landed on
+    the right item as often as with the real ids.
+    """
+    return {
+        f"gate-{index}": {str(k + 1): c.id for k, c in enumerate(group)}
+        for index, group in enumerate(chunk(candidates, size))
+    }
+
+
 def build_requests(
     candidates: Sequence[Candidate],
     themes: Dict[str, str],
@@ -73,12 +91,12 @@ def build_requests(
         entries = format_entries(
             [
                 {
-                    "id": c.id,
+                    "id": str(k + 1),
                     "title": c.title,
                     "source": c.source,
                     "summary": c.brief(),
                 }
-                for c in group
+                for k, c in enumerate(group)
             ]
         )
         requests.append((f"gate-{index}", system, gate_user(entries)))
@@ -89,6 +107,9 @@ def collect(
     responses: Dict[str, str],
     candidates: Sequence[Candidate],
     themes: Dict[str, str],
+    *,
+    batch_size: int = DEFAULT_BATCH_SIZE,
+    stops: Optional[Dict[str, str]] = None,
 ) -> List[GateVerdict]:
     """Turn raw responses into verdicts, one per candidate.
 
@@ -97,6 +118,7 @@ def collect(
     delete work; the ranker will discard it cheaply if it does not belong.
     """
     known = {c.id for c in candidates}
+    keys = batch_keys(candidates, batch_size)
     seen: Dict[str, GateVerdict] = {}
     # Why a verdict goes missing, counted rather than guessed (NEWS-Radar
     # BACKLOG #82). The no-verdict share ran 18, 22, 37 and 42 percent across
@@ -110,7 +132,10 @@ def collect(
     wrong_shape = 0
     unknown_ids = 0
 
-    for text in responses.values():
+    for custom_id, text in responses.items():
+        # A short key is read within its own batch; a full id is still accepted,
+        # so a caller that shows real ids keeps working.
+        table = keys.get(custom_id, {})
         rows, failure = _parse(text)
         if failure == "malformed":
             malformed += 1
@@ -119,8 +144,9 @@ def collect(
         for raw in rows:
             if not isinstance(raw, dict):
                 continue
-            item_id = str(raw.get("id", ""))
-            if item_id not in known:
+            said = str(raw.get("id", ""))
+            item_id = table.get(said) or (said if said in known else None)
+            if item_id is None:
                 unknown_ids += 1
                 continue
             if item_id in seen:
@@ -136,6 +162,19 @@ def collect(
             )
 
     missing = known - set(seen)
+    # Printed on EVERY run, zero included, so a clean night is a reading rather
+    # than a silence (NEWS-Radar N-267). `stops` comes from the batch path; the
+    # synchronous path has no stop reasons and says so instead of printing 0.
+    truncated = (
+        f"{sum(1 for s in stops.values() if s == 'max_tokens')} stopped at max_tokens"
+        if stops is not None
+        else "stop reasons not recorded"
+    )
+    print(
+        f"Gate batches: {len(responses)} of {len(keys)} responses; {truncated}; "
+        f"{malformed + wrong_shape} unparseable; {unknown_ids} unmatched id(s); "
+        f"{len(missing)} of {len(known)} items unverdicted"
+    )
     if missing:
         # "N of M", not "N": the health check fails the build on a stage that
         # collapsed, and cannot tell a two-item gap from a total failure unless

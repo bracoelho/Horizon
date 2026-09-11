@@ -6,6 +6,7 @@ the ranker and the defend step cannot drift apart on who they are selecting for.
 
 from __future__ import annotations
 
+import copy
 from typing import Dict, List
 
 READER = """You select for one reader: a Head of AI Engineering for a region, also
@@ -70,6 +71,22 @@ GATE_SCHEMA: Dict[str, object] = {
     "required": ["verdicts"],
     "additionalProperties": False,
 }
+
+
+def gate_schema(keys: List[str]) -> Dict[str, object]:
+    """GATE_SCHEMA with each verdict's id drawn from its own batch's short keys.
+
+    The setwise ranker's mechanism applied to the gate: the answer is drawn from a
+    closed list, so a key outside the batch cannot be sampled. Measured on the
+    10-11 Sep night before it shipped (NEWS-Radar N-267, N-270): with plain short
+    keys the model once invented a 41st key in a batch of 40.
+    """
+    schema = copy.deepcopy(GATE_SCHEMA)
+    schema["properties"]["verdicts"]["items"]["properties"]["id"] = {
+        "type": "string",
+        "enum": list(keys),
+    }
+    return schema
 
 
 def gate_system(themes: Dict[str, str]) -> str:

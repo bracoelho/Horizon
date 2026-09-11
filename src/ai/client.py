@@ -166,6 +166,8 @@ class AnthropicClient(AIClient):
         self.model = config.model
         self.temperature = config.temperature
         self.max_tokens = config.max_tokens
+        # Why each entry of the last batch stopped, by custom_id (NEWS-Radar N-267).
+        self.last_batch_stops: Dict[str, str] = {}
 
     def build_params(
         self,
@@ -344,6 +346,7 @@ class AnthropicClient(AIClient):
         omitted rather than raising, so one bad item cannot lose a whole run; the
         caller compares the returned keys against what it submitted.
         """
+        self.last_batch_stops = {}
         if not requests:
             return {}
 
@@ -380,6 +383,7 @@ class AnthropicClient(AIClient):
         # Results come back in arbitrary order, so key by custom_id. Collecting
         # by position is the classic way to silently mis-assign every result.
         collected: Dict[str, str] = {}
+        stops: Dict[str, str] = {}
         async for entry in await self.client.messages.batches.results(batch.id):
             if entry.result.type != "succeeded":
                 # Log the reason, not just the category. The 2026-08-20 gate
@@ -398,6 +402,17 @@ class AnthropicClient(AIClient):
                 continue
             message = entry.result.message
             self._record(message)
+            # Carried out rather than dropped (NEWS-Radar N-267): a response cut
+            # at the token ceiling still arrives as text here and is only lost a
+            # call later, in the gate, so why it stopped is the only evidence.
+            stop = str(getattr(message, "stop_reason", "") or "")
+            stops[entry.custom_id] = stop
+            if stop == "max_tokens":
+                logger.warning(
+                    "Batch entry %s stopped at max_tokens after %s output tokens",
+                    entry.custom_id,
+                    getattr(getattr(message, "usage", None), "output_tokens", "?"),
+                )
             try:
                 collected[entry.custom_id] = self._first_text(message)
             except ValueError:
@@ -408,6 +423,7 @@ class AnthropicClient(AIClient):
             logger.warning(
                 "Batch %s returned %d of %d results", batch.id, len(collected), len(requests)
             )
+        self.last_batch_stops = stops
         return collected
 
 

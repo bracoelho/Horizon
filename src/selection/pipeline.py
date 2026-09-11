@@ -10,8 +10,9 @@ from .contract import BatchUnit, Candidate, GateVerdict, SelectionResult
 from .defend import defend as defend_pass
 from .gate import apply as apply_gate
 from .gate import build_requests as build_gate_requests
+from .gate import batch_keys as gate_batch_keys
 from .gate import collect as collect_gate
-from .prompts import DEFEND_SCHEMA, GATE_SCHEMA, RANK_SCHEMA
+from .prompts import DEFEND_SCHEMA, RANK_SCHEMA, gate_schema
 from .rank import rank as rank_pass
 from .setwise import PickStats, setwise_rank
 
@@ -101,6 +102,8 @@ async def select(
             items, themes, batch_size=settings.gate_batch_size
         )
         responses: Dict[str, str] = {}
+        keys = gate_batch_keys(items, settings.gate_batch_size)
+        stops: Optional[Dict[str, str]] = None
 
         if settings.use_batch and hasattr(client, "complete_batch"):
             responses = await client.complete_batch(
@@ -109,24 +112,29 @@ async def select(
                         custom_id=custom_id,
                         system=system,
                         user=user,
-                        schema=GATE_SCHEMA,
+                        schema=gate_schema(list(keys[custom_id])),
                         effort=settings.gate_effort,
                         model=settings.gate_model,
                     )
                     for custom_id, system, user in requests
                 ]
             )
+            recorded = getattr(client, "last_batch_stops", None)
+            stops = recorded if isinstance(recorded, dict) else None
         else:
             for custom_id, system, user in requests:
                 responses[custom_id] = await client.complete(
                     system,
                     user,
                     model=settings.gate_model,
-                    schema=GATE_SCHEMA,
+                    schema=gate_schema(list(keys[custom_id])),
                     effort=settings.gate_effort,
                 )
 
-        verdicts = collect_gate(responses, items, themes)
+        verdicts = collect_gate(
+            responses, items, themes,
+            batch_size=settings.gate_batch_size, stops=stops,
+        )
         kept = apply_gate(items, verdicts)
         logger.info("Gate kept %d of %d items", len(kept), len(items))
 

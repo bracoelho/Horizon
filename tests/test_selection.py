@@ -99,6 +99,58 @@ def test_gate_ignores_ids_it_was_never_given() -> None:
     assert [v.id for v in verdicts] == ["i0"]
 
 
+def test_gate_shows_short_keys_not_item_ids() -> None:
+    """NEWS-Radar N-267: the model copies back every id it is shown, and one
+    feed's 213-character ids ran a batch past the token ceiling."""
+    cands = _cands(45, prefix="rss:news.google.com_rss_search?q=long:")
+    reqs = gate.build_requests(cands, THEMES, batch_size=40)
+    first_user, second_user = reqs[0][2], reqs[1][2]
+    assert "[1] Item 0" in first_user and "[40] Item 39" in first_user
+    assert "[1] Item 40" in second_user and "[5] Item 44" in second_user
+    assert "rss:news.google.com" not in first_user + second_user
+
+
+def test_gate_maps_short_keys_back_within_their_own_batch() -> None:
+    cands = _cands(45)
+    responses = {
+        "gate-0": json.dumps({"verdicts": [{"id": "3", "keep": False, "theme": "practice", "reason": "a"}]}),
+        "gate-1": json.dumps({"verdicts": [{"id": "3", "keep": True, "theme": "practice", "reason": "b"}]}),
+    }
+    by_id = {v.id: v for v in gate.collect(responses, cands, THEMES, batch_size=40)}
+    assert (by_id["i2"].keep, by_id["i2"].reason) == (False, "a")
+    assert (by_id["i42"].keep, by_id["i42"].reason) == (True, "b")
+
+
+def test_gate_schema_limits_each_key_to_its_batch() -> None:
+    from src.selection.prompts import GATE_SCHEMA, gate_schema
+
+    item = gate_schema(["1", "2", "3"])["properties"]["verdicts"]["items"]
+    assert item["properties"]["id"] == {"type": "string", "enum": ["1", "2", "3"]}
+    # The shared schema is copied, never mutated.
+    assert GATE_SCHEMA["properties"]["verdicts"]["items"]["properties"]["id"] == {"type": "string"}
+    assert item["required"] == GATE_SCHEMA["properties"]["verdicts"]["items"]["required"]
+
+
+def test_gate_reports_its_batches_on_every_run(capsys) -> None:
+    """The instrument speaks at zero, so a clean night is a reading, not a silence."""
+    cands = _cands(2)
+    ok = json.dumps({"verdicts": [
+        {"id": "1", "keep": True, "theme": "practice", "reason": ""},
+        {"id": "2", "keep": False, "theme": "practice", "reason": ""},
+    ]})
+    gate.collect({"gate-0": ok}, cands, THEMES, stops={"gate-0": "end_turn"})
+    line = capsys.readouterr().out
+    assert ("Gate batches: 1 of 1 responses; 0 stopped at max_tokens; 0 unparseable; "
+            "0 unmatched id(s); 0 of 2 items unverdicted") in line
+    assert "Gate misses" not in line
+    gate.collect({"gate-0": '{"verdicts": [{"id": "1"'}, cands, THEMES, stops={"gate-0": "max_tokens"})
+    line = capsys.readouterr().out
+    assert "1 stopped at max_tokens; 1 unparseable" in line
+    assert "2 of 2 items unverdicted" in line
+    gate.collect({"gate-0": ok}, cands, THEMES)
+    assert "stop reasons not recorded" in capsys.readouterr().out
+
+
 def test_gate_apply_tags_the_theme() -> None:
     cands = _cands(2)
     verdicts = [
@@ -625,3 +677,14 @@ def test_full_ids_still_win_over_suffix_interpretation():
 
     # "tail" is a real full id here, so it must mean that candidate.
     assert out[0].id == "tail"
+
+
+def test_select_hands_the_batch_stop_reasons_to_the_gate(capsys) -> None:
+    class _Stops(_FakeClient):
+        async def complete_batch(self, requests, **kwargs):
+            out = await super().complete_batch(requests, **kwargs)
+            self.last_batch_stops = {r.custom_id: "end_turn" for r in requests}
+            return out
+
+    asyncio.run(select(_cands(6), _Stops(), THEMES, SelectionSettings(max_publish=2)))
+    assert "0 stopped at max_tokens" in capsys.readouterr().out
