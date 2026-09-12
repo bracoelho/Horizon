@@ -68,5 +68,5 @@ is the control group; your contract is the treatment. Keep the write-up.
 *Written for the readers of [the commentary on Anthropic's multiagent
 study](/commentary/agent-teams-without-an-arbiter/). The contract this
 template distils governs the sessions that build and run this site, and
-what they operate is measured in public: [the control room](/ops.html)
+what they operate is measured in public: the control room (coming soon)
 carries every run's numbers.*
