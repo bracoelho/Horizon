@@ -19,9 +19,10 @@ TOP_COMMENTS_LIMIT = 5
 class HackerNewsScraper(BaseScraper):
     """Scraper for Hacker News stories with top comments."""
 
-    def __init__(self, config: HackerNewsConfig, http_client: httpx.AsyncClient):
+    def __init__(self, config: HackerNewsConfig, http_client: httpx.AsyncClient, extractors=None):
         super().__init__(config.model_dump(), http_client)
         self.base_url = "https://hacker-news.firebaseio.com/v0"
+        self._extractors = extractors
 
     async def fetch(self, since: datetime) -> List[ContentItem]:
         if not self.config.get("enabled", True):
@@ -69,11 +70,55 @@ class HackerNewsScraper(BaseScraper):
                 if item:
                     items.append(item)
 
-            return items
+            return await self._attach_articles(items)
 
         except httpx.HTTPError as e:
             logger.warning("Error fetching Hacker News stories: %s", e)
             return []
+
+    async def _attach_articles(self, items: List[ContentItem]) -> List[ContentItem]:
+        """Put a link post's article ahead of its comments (NEWS-Radar N-283).
+
+        A link post's own text is only its top comments, so the scorer judged the
+        commenters and never the article. RSS sources already fetch the page through
+        `content_extractor`, and this uses the same extractor. A post whose URL is
+        Hacker News itself keeps its own text, and a failed or refused page keeps the
+        comments, so an extraction can add text and never remove it.
+        """
+        name = self.config.get("content_extractor")
+        extractor = self._extractors.get(name) if (name and self._extractors) else None
+        if not extractor:
+            return items
+        links = [i for i in items if "news.ycombinator.com" not in str(i.url)]
+        if not links:
+            return items
+        limit = asyncio.Semaphore(8)
+
+        async def one(item: ContentItem) -> Optional[str]:
+            async with limit:
+                try:
+                    return await extractor.extract(str(item.url), self.client)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("Hacker News article extraction failed for %s: %s", item.url, exc)
+                    return None
+
+        texts = dict(zip((i.id for i in links), await asyncio.gather(*(one(i) for i in links))))
+        attached, out = 0, []
+        for item in items:
+            if item.id not in texts:
+                out.append(item)
+                continue
+            text = (texts[item.id] or "").strip()
+            metadata = {**(item.metadata or {}), "article_extracted": bool(text)}
+            if text:
+                attached += 1
+                content = text + ("\n\n" + item.content if item.content else "")
+                out.append(item.model_copy(update={"content": content, "metadata": metadata}))
+            else:
+                out.append(item.model_copy(update={"metadata": metadata}))
+        # printed beside the log, so the count survives the CLI's default level
+        print(f"Hacker News articles: {attached} of {len(links)} link posts carry their article text")
+        return out
 
     async def _fetch_story(self, story_id: int) -> Optional[dict]:
         try:

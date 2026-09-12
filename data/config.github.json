@@ -167,6 +167,7 @@
     ],
     "hackernews": {
       "enabled": true,
+      "content_extractor": "trafilatura",
       "fetch_top_stories": 30,
       "min_score": 40,
       "category": "tech",

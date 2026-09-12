@@ -578,7 +578,12 @@ class HorizonOrchestrator:
 
             # Hacker News
             if self.config.sources.hackernews.enabled:
-                hn_scraper = HackerNewsScraper(self.config.sources.hackernews, client)
+                from .extractors import ExtractorRegistry
+                hn_scraper = HackerNewsScraper(
+                    self.config.sources.hackernews,
+                    client,
+                    ExtractorRegistry(self.config.extractors),
+                )
                 tasks.append(self._fetch_with_progress("Hacker News", hn_scraper, since))
 
             # RSS feeds

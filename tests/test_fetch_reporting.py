@@ -97,7 +97,7 @@ def test_partial_failure_keeps_items_and_source_names(monkeypatch) -> None:
     )
     monkeypatch.setattr(
         "src.orchestrator.HackerNewsScraper",
-        lambda config, client: StubScraper(error=ValueError("unavailable")),
+        lambda config, client, extractors=None: StubScraper(error=ValueError("unavailable")),
     )
 
     items = asyncio.run(orchestrator.fetch_all_sources(SINCE))

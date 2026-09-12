@@ -233,6 +233,10 @@ class HackerNewsConfig(BaseModel):
     min_score: int = 100
     category: Optional[str] = None
     profile: ProfileRoute = None
+    # The extractor that fetches a link post's article, as an RSS source's
+    # content_extractor does; None keeps the post's own text and comments only
+    # (NEWS-Radar N-283, the scorer judged Hacker News links on comments alone).
+    content_extractor: Optional[str] = None
 
 
 class ExtractorType(str, Enum):
