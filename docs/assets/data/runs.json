@@ -2849,5 +2849,138 @@
   "degraded": 0,
   "warnings": 14,
   "zero_sources": []
+ },
+ {
+  "run_id": "34718347311",
+  "event": "schedule",
+  "utc": "2026-09-12T20:59:24Z",
+  "funnel": {
+   "fetched": 119,
+   "gated": 46,
+   "analyzed": 46,
+   "ranked": 46,
+   "floor_rejected": 6,
+   "below_score": 3,
+   "published": 1,
+   "enriched": 1,
+   "tokens": 285165
+  },
+  "score_distribution": {
+   "1": 1,
+   "2": 4,
+   "3": 12,
+   "4": 13,
+   "5": 6,
+   "6": 8,
+   "7": 2
+  },
+  "setwise": {
+   "picks": 37,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "reliability-assurance": 1
+  },
+  "published_scores": [
+   7.0
+  ],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "The Verge - AI",
+    "score": 7.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    true
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    0,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    4,
+    false
+   ],
+   "Hugging Face Blog": [
+    0,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    0,
+    false
+   ],
+   "Latitude Media": [
+    1,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    1,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    2,
+    false
+   ],
+   "Simon Willison": [
+    6,
+    false
+   ],
+   "TLDR AI": [
+    0,
+    false
+   ],
+   "The Verge - AI": [
+    5,
+    false
+   ],
+   "Utility Dive": [
+    3,
+    false
+   ],
+   "arXiv cs.AI": [
+    20,
+    false
+   ],
+   "arXiv cs.CL": [
+    0,
+    false
+   ],
+   "arXiv cs.LG": [
+    0,
+    false
+   ],
+   "arXiv cs.SE": [
+    0,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 15,
+  "zero_sources": []
  }
 ]
