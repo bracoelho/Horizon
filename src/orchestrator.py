@@ -182,7 +182,11 @@ def _edition_date(when: datetime) -> str:
 
 
 def _fixture_summary(item: object) -> str:
-    """The summary the GATE read for this item, for the fixture's record.
+    """The item's summary for the fixture's record: the analysis summary when there is one.
+
+    CORRECTED 2026-09-12 (NEWS-Radar N-281): this said it was the summary the GATE
+    read, and for every item the gate kept it is not, since analysis runs after the
+    gate. What the gate was shown is recorded beside it as `sift_input`.
 
     Mirrors `src/selection/adapter.to_candidate`: the analysis summary when the
     item was analysed, and the article text when it was not. The gate runs
@@ -972,6 +976,12 @@ class HorizonOrchestrator:
         free of engine imports.
         """
         candidates = to_candidates(items)
+        # What the sift is shown for each item, taken from the very candidates it
+        # judges, before any analysis exists (NEWS-Radar N-281: the fixture's
+        # `summary` became the scorer's sentence for every kept item, so a replay
+        # built from it sent the sift an input it never saw).
+        sift_shown = {c.id: {"title": c.title, "source": c.source, "brief": c.brief()}
+                      for c in candidates}
 
         by_id = {item.id: item for item in items}
 
@@ -1057,7 +1067,7 @@ class HorizonOrchestrator:
                          "version": 4,
                          "written_at": datetime.now().isoformat(timespec="seconds"),
                          "records": {
-                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged. SINCE VERSION 4 each entry also carries `summary` (what the gate read), `content` (the article text capped at 6000 characters) and `author` (the publisher), FOR EVERY ITEM INCLUDING THE ONES THE GATE DROPPED",
+                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged. SINCE VERSION 4 each entry also carries `summary` (the analysis summary for an item the gate kept, the item's text for one it dropped), `content` (the article text capped at 6000 characters) and `author` (the publisher), FOR EVERY ITEM INCLUDING THE ONES THE GATE DROPPED. SINCE 2026-09-12 (N-281) each entry also carries `sift_input`: the title, source and 400-character brief the gate was shown, taken from the candidates it judged",
                              "gate": "one entry per fetched item: the gate's verdict, its theme and its reason",
                              "candidates": "the gate's survivors, each with the analysis score and the article text the defender reads, capped at 6000 characters",
                              "ranked": "the full ranked order, longer than the shortlist by the leads held back",
@@ -1096,6 +1106,7 @@ class HorizonOrchestrator:
                           "url": str(getattr(i, "url", "") or ""),
                           "author": getattr(i, "author", None) or "",
                           "summary": _fixture_summary(i),
+                          "sift_input": sift_shown.get(i.id),
                           "content": (getattr(i, "content", "") or "")[:6000]}
                          for i in items],
                      "candidates": [

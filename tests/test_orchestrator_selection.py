@@ -276,8 +276,11 @@ def test_fixture_records_the_decisions_not_only_the_field(
 
     monkeypatch.setattr(orchestrator, "analyze_items", fake_analyze)
     monkeypatch.setattr("src.orchestrator.create_ai_client", lambda cfg: object())
+    shown = {}
 
     async def fake_select(candidates, client, questions, settings, after_gate=None):
+        # what the gate is handed, before any analysis: its title, source and brief
+        shown.update({c.id: (c.title, c.source, c.brief()) for c in candidates})
         kept = list(candidates)
         if after_gate is not None:
             kept = await after_gate(kept)
@@ -322,3 +325,7 @@ def test_fixture_records_the_decisions_not_only_the_field(
     )
     assert record["ranked"], "the full ranked list must survive alongside it"
     assert len(record["published"]) == 2
+    # NEWS-Radar N-281: every fetched entry names what the gate was shown, from the
+    # candidates it judged, so a replay never rebuilds the sift's input from `summary`
+    assert {e["id"]: (e["sift_input"]["title"], e["sift_input"]["source"], e["sift_input"]["brief"])
+            for e in record["fetched"]} == shown
