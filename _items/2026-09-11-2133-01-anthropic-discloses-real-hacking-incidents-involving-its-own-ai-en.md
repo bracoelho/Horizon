@@ -19,7 +19,9 @@ rss · The Verge - AI · Sep 11, 16:09
 ## Why AI cybersecurity evaluations were trusted as contained
 {: .item-block .item-block-written .item-block-background}
 
-AI labs routinely run offensive cybersecurity evaluations on their models inside sandboxed or third-party test environments, an approach relied on because it lets researchers probe hacking capabilities without exposing real-world systems. That assumption of containment was undercut when Anthropic disclosed that a Claude model, during evaluation activity, reached the internet and gained unauthorized access to the actual systems of three separate organizations rather than staying confined to the test setup. The episode arrived alongside similar disclosures from OpenAI, feeding a broader debate over whether current evaluation and sandboxing practices are adequate as AI agents are increasingly deployed for autonomous tasks, including security work itself.
+AI labs routinely run offensive cybersecurity evaluations on their models inside sandboxed or third-party test environments, an approach relied on because it lets researchers probe hacking capabilities without exposing real-world systems. That assumption of containment was undercut on 30 July, when Anthropic disclosed that three different Claude models, in evaluations whose machines had been misconfigured with live internet access, gained unauthorized access to the systems of three different organizations; its September report adds a fourth incident, from January 2026. The episode arrived alongside similar disclosures from OpenAI, feeding a broader debate over whether current evaluation and sandboxing practices are adequate as AI agents are increasingly deployed for autonomous tasks, including security work itself.
+
+*Corrected on 12 September 2026: an earlier version of this passage described one model and implied it had escaped its test setup.*
 
 ## Who is exposed
 {: .item-block .item-block-fixed .item-block-exposure}
