@@ -38,6 +38,7 @@ from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
 from .selection import select as run_selection
 from .selection.ladder import LadderSettings, run_ladder
+from .extractors.pull import run_pull
 
 
 _TRACKING_QUERY_PARAMETERS = {
@@ -1317,6 +1318,28 @@ class HorizonOrchestrator:
                 # nowhere else, while the defender's verdicts above already
                 # carry its decision item by item.
                 record["published"] = [item.id for item in selected]
+                # Pass 0, the pull (NEWS-Radar N-344, the lab's E14): the article
+                # behind every short or Google News item, RECORDING ONLY and off
+                # unless `selection.pull_enabled`; nothing reads it.
+                if self.config.selection.pull_enabled:
+                    try:
+                        pulled = await run_pull(
+                            record.get("fetched", []),
+                            spacing=self.config.selection.pull_spacing_seconds,
+                        )
+                        record["pull"] = pulled
+                        record.setdefault("contract", {}).setdefault("records", {})["pull"] = (
+                            "Pass 0, recording only: for every fetched item of 600 characters or fewer or "
+                            "behind a Google News link, the route to the publisher, the status, the length "
+                            "before and after, the publisher, the page's byline and the article capped at 6000 "
+                            "characters; read by no stage and never sent to a model"
+                        )
+                        self.console.print(
+                            f"Pull recorded: {pulled['with_article']} of {pulled['wanted']} short or "
+                            f"aggregator items carry their article; routes {pulled['routes']}"
+                        )
+                    except Exception as exc:  # noqa: BLE001
+                        self.console.print(f"[yellow]Pull not recorded: {exc}[/yellow]")
                 if ladder_block is not None:
                     record["ladder"] = ladder_block
                     record.setdefault("contract", {}).setdefault("records", {})["ladder"] = (

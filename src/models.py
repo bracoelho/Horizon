@@ -614,6 +614,9 @@ class SelectionConfig(BaseModel):
     ladder_runs: int = Field(default=6, gt=0)
     ladder_model: Optional[str] = None
     ladder_max_wait_seconds: float = Field(default=1800.0, gt=0)
+    # Pass 0, the pull (NEWS-Radar N-344): recording only, off until declared.
+    pull_enabled: bool = False
+    pull_spacing_seconds: float = Field(default=1.0, ge=0)
 
 
 class ProcessingConfig(BaseModel):
