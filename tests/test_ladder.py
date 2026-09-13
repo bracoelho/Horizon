@@ -78,7 +78,7 @@ def test_run_ladder_records_and_leaves_candidates_untouched():
     items = [cand(1), cand(2, summary="")]
     before = list(items)
     client = FakeBatchClient()
-    block = asyncio.run(L.run_ladder(client, items, L.LadderSettings(runs=6, model="m")))
+    block = asyncio.run(L.run_ladder(client, items, L.LadderSettings(runs=6, model="m", vote_use_batch=True)))
     assert items == before
     assert block["taxonomy"] == "v2.3" and block["seat"] == "cto"
     assert block["calls"] == {"vote_asked": 12, "vote_returned": 12, "judge_asked": 2, "judge_returned": 2}
@@ -93,7 +93,22 @@ def test_run_ladder_marks_items_whose_votes_never_came_back():
     class Empty(FakeBatchClient):
         async def complete_batch(self, units, **kwargs):
             return {}
-    block = asyncio.run(L.run_ladder(Empty(), [cand(1)], L.LadderSettings(runs=2)))
+    block = asyncio.run(L.run_ladder(Empty(), [cand(1)], L.LadderSettings(runs=2, vote_use_batch=True)))
     row = block["items"][0]
     assert row["theme"] is None and row["judgement"] is None and row["judgement_flag"] == "no cluster"
     assert block["calls"]["judge_asked"] == 0
+
+
+def test_the_vote_goes_synchronously_by_default_and_the_judgement_by_batch():
+    class Both(FakeBatchClient):
+        def __init__(self):
+            super().__init__(); self.sync_ids = []
+        async def complete(self, system, user, **kwargs):
+            self.sync_ids.append(system[:20])
+            return '{"theme": "vendor-dependency", "second": "none", "why": "w"}'
+    client = Both()
+    block = asyncio.run(L.run_ladder(client, [cand(1)], L.LadderSettings(runs=3)))
+    assert len(client.sync_ids) == 3
+    assert [u.custom_id for u in client.units] == ["b0000"]
+    assert block["paths"] == {"vote": "synchronous", "judge": "batch"}
+    assert block["items"][0]["theme"] == "vendor-dependency"

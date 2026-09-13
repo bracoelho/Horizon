@@ -175,13 +175,17 @@ class LadderSettings:
     runs: int = DEFAULT_RUNS
     model: Optional[str] = None
     use_batch: bool = True
+    # The vote is sent synchronously by default: every lab measurement was, and on the
+    # same text the Batch API answered differently on boundary items, 6 of 6 each way
+    # (NEWS-Radar N-344, B1). The judgement held on the Batch API (M3).
+    vote_use_batch: bool = False
     max_wait_seconds: float = 3600.0
     concurrency: int = 6
 
 
-async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSettings) -> tuple[Dict[str, str], Dict[str, str]]:
-    """Texts and stop reasons by custom_id, through the Batch API when the client has one."""
-    if settings.use_batch and hasattr(client, "complete_batch"):
+async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSettings, *, batch: bool) -> tuple[Dict[str, str], Dict[str, str]]:
+    """Texts and stop reasons by custom_id, through the Batch API when asked and the client has one."""
+    if batch and hasattr(client, "complete_batch"):
         texts = await client.complete_batch(units, max_wait_seconds=settings.max_wait_seconds, label="ladder")
         stops = getattr(client, "last_batch_stops", None)
         return texts, dict(stops) if isinstance(stops, dict) else {}
@@ -212,7 +216,7 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
         BatchUnit(custom_id=f"a{i:04d}r{r}", system=system_a, user=users[i], model=settings.model)
         for i in range(len(items)) for r in range(1, settings.runs + 1)
     ]
-    texts_a, stops_a = await _complete_all(client, units_a, settings)
+    texts_a, stops_a = await _complete_all(client, units_a, settings, batch=settings.use_batch and settings.vote_use_batch)
     rows: List[dict] = []
     for i, c in enumerate(items):
         answers = [parse_json(texts_a[f"a{i:04d}r{r}"]) if f"a{i:04d}r{r}" in texts_a else None
@@ -225,7 +229,7 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
         BatchUnit(custom_id=f"b{i:04d}", system=within_system(row["theme"]), user=users[i], model=settings.model)
         for i, row in enumerate(rows) if row["theme"]
     ]
-    texts_b, stops_b = await _complete_all(client, units_b, settings)
+    texts_b, stops_b = await _complete_all(client, units_b, settings, batch=settings.use_batch)
     for i, row in enumerate(rows):
         key = f"b{i:04d}"
         if not row["theme"]:
@@ -239,6 +243,8 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
         "runs": settings.runs,
         "model": settings.model,
         "seat": "cto",
+        "paths": {"vote": "batch" if settings.use_batch and settings.vote_use_batch else "synchronous",
+                  "judge": "batch" if settings.use_batch else "synchronous"},
         "calls": {"vote_asked": len(units_a), "vote_returned": len(texts_a),
                   "judge_asked": len(units_b), "judge_returned": len(texts_b)},
         "stops": dict(stops),

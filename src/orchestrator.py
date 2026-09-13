@@ -1252,6 +1252,7 @@ class HorizonOrchestrator:
                         runs=self.config.selection.ladder_runs,
                         model=self.config.selection.ladder_model or self.config.ai.model,
                         use_batch=self.config.selection.use_batch,
+                        vote_use_batch=self.config.selection.ladder_vote_use_batch,
                         max_wait_seconds=self.config.selection.ladder_max_wait_seconds,
                     ),
                 )
