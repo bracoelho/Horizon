@@ -608,6 +608,12 @@ class SelectionConfig(BaseModel):
     # because enabling selection retired the per-theme thresholds without
     # putting anything in their place.
     min_score: Optional[float] = Field(default=6.0, ge=0, le=10)
+    # The clustered ladder's first stage (NEWS-Radar N-344): recorded into the
+    # fixture and read by nothing. Off until a declared night turns it on.
+    ladder_enabled: bool = False
+    ladder_runs: int = Field(default=6, gt=0)
+    ladder_model: Optional[str] = None
+    ladder_max_wait_seconds: float = Field(default=1800.0, gt=0)
 
 
 class ProcessingConfig(BaseModel):

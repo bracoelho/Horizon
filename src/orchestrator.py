@@ -37,6 +37,7 @@ from .ai.tokens import get_usage_snapshot
 from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
 from .selection import select as run_selection
+from .selection.ladder import LadderSettings, run_ladder
 
 
 _TRACKING_QUERY_PARAMETERS = {
@@ -1023,6 +1024,10 @@ class HorizonOrchestrator:
 
         by_id = {item.id: item for item in items}
 
+        # The candidates the ranker saw, with their analysis summaries, kept for
+        # the ladder's recording (NEWS-Radar N-344); empty when the gate kept nothing.
+        analysed_kept: list = []
+
         async def analyse_survivors(kept):
             """Score only what the gate kept, then hand the results back.
 
@@ -1048,6 +1053,7 @@ class HorizonOrchestrator:
                 for c in kept
                 if c.id in refreshed
             ]
+            analysed_kept[:] = result
             # Observer write for the replay harness (PLAN-S1 step 1): the
             # exact candidates the ranker is about to see, so a recorded day
             # can be replayed through either ranker with identical input. A
@@ -1229,6 +1235,36 @@ class HorizonOrchestrator:
                 kept_above.append(item)
             selected = kept_above
 
+        # The clustered ladder's first stage (NEWS-Radar N-344, the owner's
+        # decision OS N-193): the v2.3 theme vote and the judgement inside the
+        # cluster, on the candidates the ranker saw, RECORDING ONLY. It runs after
+        # the floor so nothing it returns can reach `selected`, and it is off
+        # unless `selection.ladder_enabled` says otherwise. A failure is printed
+        # and costs the run nothing.
+        ladder_block = None
+        if self.config.selection.ladder_enabled and analysed_kept:
+            try:
+                ladder_block = await run_ladder(
+                    create_ai_client(self.config.ai),
+                    list(analysed_kept),
+                    LadderSettings(
+                        runs=self.config.selection.ladder_runs,
+                        model=self.config.selection.ladder_model or self.config.ai.model,
+                        use_batch=self.config.selection.use_batch,
+                        max_wait_seconds=self.config.selection.ladder_max_wait_seconds,
+                    ),
+                )
+                calls = ladder_block["calls"]
+                self.console.print(
+                    f"Ladder recorded: {len(ladder_block['items'])} items, "
+                    f"{calls['vote_returned']} of {calls['vote_asked']} votes, "
+                    f"{calls['judge_returned']} of {calls['judge_asked']} judgements, "
+                    f"taxonomy {ladder_block['taxonomy']}"
+                )
+            except Exception as exc:  # noqa: BLE001
+                ladder_block = None
+                self.console.print(f"[yellow]Ladder not recorded: {exc}[/yellow]")
+
         # The second half of the fixture: what the ranker and the defender
         # decided on the field recorded above. It lives HERE, after the floor,
         # and the position is the whole point: written 2026-09-05 at the top of
@@ -1281,6 +1317,13 @@ class HorizonOrchestrator:
                 # nowhere else, while the defender's verdicts above already
                 # carry its decision item by item.
                 record["published"] = [item.id for item in selected]
+                if ladder_block is not None:
+                    record["ladder"] = ladder_block
+                    record.setdefault("contract", {}).setdefault("records", {})["ladder"] = (
+                        "the clustered ladder's first stage, recording only: per candidate the "
+                        "taxonomy v2.3 theme voted RUNS times (majority, margin, tie, runner-up) and "
+                        "one judgement for the CTO seat inside that cluster; read by no stage"
+                    )
                 path.write_text(
                     json.dumps(record, ensure_ascii=False, indent=1),
                     encoding="utf-8",
