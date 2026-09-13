@@ -3,6 +3,10 @@
   "name": "Critical Infrastructure",
   "match": "match.md",
   "analysis": "analysis.md",
+  "content": {
+    "analysis_max_chars": 2000,
+    "sampling": "prefix"
+  },
   "enrichment": {
     "prompt": "enrichment.md",
     "blocks": [
