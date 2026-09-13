@@ -4,7 +4,7 @@
   "match": "match.md",
   "analysis": "analysis.md",
   "content": {
-    "analysis_max_chars": 2000,
+    "analysis_max_chars": 6000,
     "sampling": "prefix"
   },
   "enrichment": {
