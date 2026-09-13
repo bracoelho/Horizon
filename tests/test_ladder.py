@@ -12,9 +12,10 @@ def cand(i, **kw):
     return Candidate(**base)
 
 
-def test_the_item_prompt_never_carries_a_byline_and_caps_content():
-    text = L.item_user(cand(1))
+def test_the_item_prompt_never_carries_a_byline_or_the_scorers_summary_and_caps_content():
+    text = L.item_user(cand(1, summary="The scorer says: headline only, no supporting detail"))
     assert "Author:" not in text
+    assert "Summary" not in text and "no supporting detail" not in text
     assert text.endswith("C" * L.CONTENT_CHARS)
     assert "C" * (L.CONTENT_CHARS + 1) not in text
 

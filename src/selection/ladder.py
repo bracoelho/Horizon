@@ -12,7 +12,7 @@ within-cluster call of E10, which E20 measured inside the v2.3 clusters):
 
   Pass A  the theme alone, asked RUNS times per item at temperature 1.0; the majority is
           the cluster, the runner-up and the margin are recorded. No byline in the prompt
-          (E17: it acts as framing on headline-only items), no "none" value.
+          (E17: it acts as framing on headline-only items), no summary line (E25), no "none" value.
   Pass B  one call per item inside its majority cluster, for ONE seat (the CTO), the
           cluster's own definition in the frame: relevance, change urgency, must-read in
           the cluster, one line. One call per seat is the shape (E20: asking three seats
@@ -96,14 +96,15 @@ Return JSON only:
 
 
 def item_user(candidate: Candidate) -> str:
-    """The item as both passes read it: e1_run.user_prompt with no byline.
+    """The item as both passes read it: e1_run.user_prompt with no byline and no summary.
 
-    The byline is never sent (E17). The summary is the analysis summary the
-    candidate carries after scoring, which is what the lab's fixtures recorded.
+    The byline is never sent (E17). Nor is the candidate's summary: after scoring
+    it is the scorer's own sentence, and fed back as input it steered the judgement
+    down on headline-only news by one to four points (the lab's E25, 2026-09-13:
+    within one point of the with-summary judgement on 0.851, per-cluster top three
+    0.72). The recorded text alone is what both passes read.
     """
     parts = [f"Title: {candidate.title}", f"Source: {candidate.source}", f"URL: {candidate.url}"]
-    if candidate.summary:
-        parts.append(f"Summary as recorded: {candidate.summary}")
     content = (candidate.content or "")[:CONTENT_CHARS]
     if content:
         parts.append(f"Content: {content}")
