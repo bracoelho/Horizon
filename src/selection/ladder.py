@@ -181,7 +181,7 @@ class LadderSettings:
 async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSettings) -> tuple[Dict[str, str], Dict[str, str]]:
     """Texts and stop reasons by custom_id, through the Batch API when the client has one."""
     if settings.use_batch and hasattr(client, "complete_batch"):
-        texts = await client.complete_batch(units, max_wait_seconds=settings.max_wait_seconds)
+        texts = await client.complete_batch(units, max_wait_seconds=settings.max_wait_seconds, label="ladder")
         stops = getattr(client, "last_batch_stops", None)
         return texts, dict(stops) if isinstance(stops, dict) else {}
     gate = asyncio.Semaphore(settings.concurrency)

@@ -335,6 +335,7 @@ class AnthropicClient(AIClient):
         *,
         poll_seconds: float = 20.0,
         max_wait_seconds: float = 3600.0,
+        label: Optional[str] = None,
     ) -> Dict[str, str]:
         """Run many independent completions through the Batch API at half price.
 
@@ -420,8 +421,13 @@ class AnthropicClient(AIClient):
 
         missing = {r.custom_id for r in requests} - set(collected)
         if missing:
+            # A labelled batch belongs to a recording stage (NEWS-Radar N-344, the
+            # ladder), and the label sits between the id and "returned" so the
+            # health check's collapse pattern, which fails the job, reads only
+            # the unlabelled batches of the stages that decide.
             logger.warning(
-                "Batch %s returned %d of %d results", batch.id, len(collected), len(requests)
+                "Batch %s%s returned %d of %d results", batch.id,
+                f" ({label})" if label else "", len(collected), len(requests)
             )
         self.last_batch_stops = stops
         return collected
