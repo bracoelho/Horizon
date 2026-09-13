@@ -2982,5 +2982,127 @@
   "degraded": 0,
   "warnings": 15,
   "zero_sources": []
+ },
+ {
+  "run_id": "34782758477",
+  "event": "schedule",
+  "utc": "2026-09-13T21:12:39Z",
+  "funnel": {
+   "fetched": 89,
+   "gated": 23,
+   "analyzed": 23,
+   "ranked": 23,
+   "floor_rejected": 5,
+   "below_score": 2,
+   "published": 0,
+   "tokens": 180728
+  },
+  "score_distribution": {
+   "1": 2,
+   "2": 3,
+   "3": 6,
+   "4": 6,
+   "5": 2,
+   "6": 3,
+   "7": 1
+  },
+  "setwise": {
+   "picks": 32,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {},
+  "published_scores": [],
+  "items": [],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    0,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    2,
+    false
+   ],
+   "Hugging Face Blog": [
+    0,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    0,
+    false
+   ],
+   "Latitude Media": [
+    0,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    0,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    1,
+    false
+   ],
+   "Simon Willison": [
+    3,
+    false
+   ],
+   "TLDR AI": [
+    0,
+    false
+   ],
+   "The Verge - AI": [
+    4,
+    false
+   ],
+   "Utility Dive": [
+    0,
+    false
+   ],
+   "arXiv cs.AI": [
+    0,
+    false
+   ],
+   "arXiv cs.CL": [
+    0,
+    false
+   ],
+   "arXiv cs.LG": [
+    0,
+    false
+   ],
+   "arXiv cs.SE": [
+    0,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 13,
+  "zero_sources": []
  }
 ]
