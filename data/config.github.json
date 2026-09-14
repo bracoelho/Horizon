@@ -329,6 +329,19 @@
         ]
       },
       {
+        "name": "Google Research Blog",
+        "url": "https://research.google/blog/rss/",
+        "enabled": true,
+        "category": "research-labs",
+        "profile": [
+          "business-markets",
+          "practice",
+          "horizon-research",
+          "reliability-assurance",
+          "critical-infrastructure"
+        ]
+      },
+      {
         "name": "Google Developers Blog",
         "url": "https://developers.googleblog.com/feeds/posts/default",
         "enabled": true,
