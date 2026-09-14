@@ -1,0 +1,32 @@
+{%- comment -%}
+In this edition: every item the edition published, in published rank, each
+naming its shelf (the owner, 2026-09-14, B2 on the choices page). The edition
+page prints it when the edition published two or more; with one, the lead is
+the edition. The first six show, the pipeline's max_publish today, and any
+more open in place under a native disclosure, so a night of 12 or 24 (the
+radar published both in August) keeps the shelves near the top. Every item is
+listed whatever the reader's shelves and depth, since this is what the
+edition published. Expects include.items, already in published rank.
+{%- endcomment -%}
+{%- assign items = include.items -%}
+{%- assign first = 6 -%}
+<section class="in-edition" aria-labelledby="in-edition-h">
+  <h2 class="in-edition-h" id="in-edition-h">In this edition <span aria-hidden="true">·</span> {{ items.size }} published</h2>
+  <ol class="in-list">
+    {%- for i in items limit: first %}
+    {%- assign ishelf = i.shelf | default: i.theme %}
+    <li class="in-item" data-hue="{{ ishelf }}"><span class="in-n">{{ forloop.index }}</span><a class="in-title" href="{{ i.url | relative_url }}">{{ i.title }}</a><span class="in-shelf shelf-sq">{{ i.shelf_name | default: i.theme_name }}</span></li>
+    {%- endfor %}
+  </ol>
+  {%- if items.size > first %}
+  <details class="in-more">
+    <summary>The other {{ items.size | minus: first }}</summary>
+    <ol class="in-list">
+      {%- for i in items offset: first %}
+      {%- assign ishelf = i.shelf | default: i.theme %}
+      <li class="in-item" data-hue="{{ ishelf }}"><span class="in-n">{{ forloop.index | plus: first }}</span><a class="in-title" href="{{ i.url | relative_url }}">{{ i.title }}</a><span class="in-shelf shelf-sq">{{ i.shelf_name | default: i.theme_name }}</span></li>
+      {%- endfor %}
+    </ol>
+  </details>
+  {%- endif %}
+</section>

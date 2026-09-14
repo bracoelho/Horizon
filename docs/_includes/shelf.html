@@ -14,7 +14,7 @@ Reads an item's shelf from the ladder's `shelf` field, else from `theme`.
 {%- assign newest = all | sort: "date" | last -%}
 <section class="shelf" data-shelf="{{ s.id }}" aria-labelledby="shelf-{{ s.id }}">
   <header class="shelf-head">
-    <h2 class="shelf-name" id="shelf-{{ s.id }}"><a href="/{{ s.id }}/">{{ s.name }}</a></h2>
+    <h2 class="shelf-name" id="shelf-{{ s.id }}"><a class="shelf-sq" href="/{{ s.id }}/">{{ s.name }}</a></h2>
     <p class="shelf-count">{% if here.size > 0 %}{{ here.size }} in this edition{% else %}Latest {{ newest.date | date: "%-d %b" }}{% endif %}</p>
   </header>
   {%- if s.question %}

@@ -31,6 +31,10 @@ edition first and each edition in its published rank.
     {% include colophon.html edition=edition tonight=tonight shelves=shelves %}
   </header>
 
+  {%- if tonight.size > 1 %}
+  {% include in-edition.html items=tonight %}
+  {%- endif %}
+
   <div class="shelves">
     {%- for s in shelves -%}{%- if s.id == lead_shelf %}
     {% include shelf.html shelf=s groups=groups lead=lead edition=edition %}

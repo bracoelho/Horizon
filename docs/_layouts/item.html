@@ -12,7 +12,7 @@ when an item carries them, else `theme` and `theme_name`.
 <article class="item-page">
 
   <header class="item-head">
-    <p class="kicker"><a href="/{{ shelf }}/">{{ shelf_name }}</a></p>
+    <p class="kicker" data-hue="{{ shelf }}"><a class="shelf-tag shelf-sq" href="/{{ shelf }}/">{{ shelf_name }}</a></p>
     <h1 class="item-title">{{ page.title }}</h1>
     <p class="item-attr">
       {% if page.source %}<span>{{ page.source }}</span> <span aria-hidden="true">·</span>{% endif %}
@@ -40,7 +40,7 @@ when an item carries them, else `theme` and `theme_name`.
   </div>
 
   <footer class="item-foot">
-    {% if page.edition_url %}
+    {% if page.edition_url and page.edition_url != "" %}
     <p><a href="{{ page.edition_url | relative_url }}">Read the full edition of {{ page.edition_title }}</a></p>
     {% endif %}
     <p><a href="/{{ shelf }}/">More in {{ shelf_name }}</a> <span aria-hidden="true">·</span> <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a></p>

@@ -31,7 +31,7 @@ no `related` the block is exactly the single anchor, as before.
     {% if page.item_url %}
     <p class="brief-h" id="commentary-on-h">On</p>
     <p class="commentary-item"><a href="{{ page.item_url }}">{{ page.item_title | default: page.item_url }}</a></p>
-    {% if page.edition_url %}<p class="commentary-edition">Surfaced in the <a href="{{ page.edition_url | relative_url }}">edition of {{ page.edition_date | default: page.date | date: "%-d %B" }}</a></p>{% endif %}
+    {% if page.edition_url and page.edition_url != "" %}<p class="commentary-edition">Surfaced in the <a href="{{ page.edition_url | relative_url }}">edition of {{ page.edition_date | default: page.date | date: "%-d %B" }}</a></p>{% endif %}
     {% endif %}
 
     {% if related.size > 0 %}

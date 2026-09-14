@@ -196,6 +196,44 @@ img { max-width: 100%; height: auto; }
   .row-brief-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; line-clamp: 5; overflow: hidden; }
 }
 
+/* ---- shelf colours ----
+   Each shelf has one hue: on its rule, as a square before its name, and on the
+   kicker above its lead (the owner, 2026-09-14, A3 on the choices page). The
+   hue says which shelf; the accent still says what needs attention. Set for
+   the ink ground only (tenure/DESIGN.md, Properties). On paper, or for a shelf
+   id with no hue below, everything falls back to ink, graphite and the accent. */
+:root[data-ground="ink"] {
+  --shelf-reliability-assurance: #8FAEC9; --shelf-critical-infrastructure: #C4A970;
+  --shelf-business-markets: #7FB89C; --shelf-practice: #D08A7E; --shelf-horizon-research: #B3A6D4;
+}
+[data-shelf="reliability-assurance"], [data-hue="reliability-assurance"] { --shelf-c: var(--shelf-reliability-assurance); }
+[data-shelf="critical-infrastructure"], [data-hue="critical-infrastructure"] { --shelf-c: var(--shelf-critical-infrastructure); }
+[data-shelf="business-markets"], [data-hue="business-markets"] { --shelf-c: var(--shelf-business-markets); }
+[data-shelf="practice"], [data-hue="practice"] { --shelf-c: var(--shelf-practice); }
+[data-shelf="horizon-research"], [data-hue="horizon-research"] { --shelf-c: var(--shelf-horizon-research); }
+.shelf[data-shelf] { border-top-color: var(--shelf-c, var(--ink)); }
+.shelf-sq::before { content: ""; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.35em; vertical-align: 0.08em; background: var(--shelf-c, var(--graphite)); }
+.shelf .row-kicker { color: var(--shelf-c, var(--accent)); }
+.kicker .shelf-tag { color: var(--shelf-c, var(--accent)); }
+
+/* ---- in this edition ----
+   Every item the edition published, in published rank, when it published two
+   or more (the owner, 2026-09-14, B2). Six show and the rest open in place. */
+.in-edition { margin-top: var(--s-6); padding-top: var(--s-3); border-top: 1px solid var(--ink); max-width: 52rem; }
+.in-edition-h { margin: 0 0 var(--s-2); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--graphite); }
+.in-list { list-style: none; margin: 0; padding: 0; }
+.in-item { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 2px var(--s-3); align-items: baseline; margin: 0; padding: var(--s-2) 0; border-bottom: 1px solid var(--hairline); }
+.in-n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--graphite); font-variant-numeric: tabular-nums; }
+.in-title { font-size: 0.95rem; font-weight: 500; line-height: 1.35; text-decoration: none; }
+.in-title:hover { text-decoration: underline; }
+.in-shelf { grid-column: 2; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--graphite); }
+.in-more { margin: 0; }
+.in-more summary { padding: var(--s-2) 0; border-bottom: 1px solid var(--hairline); }
+@media (min-width: 760px) {
+  .in-item { grid-template-columns: 1.6rem minmax(0, 1fr) auto; padding: var(--s-1) 0; }
+  .in-shelf { grid-column: auto; white-space: nowrap; }
+}
+
 /* the blocks under the edition */
 .home-block { margin-top: var(--s-16); padding-top: var(--s-4); border-top: 1px solid var(--ink); }
 .home-block-h { margin: 0 0 var(--s-4); font-family: var(--font-display); font-size: var(--text-xl); font-weight: 500; line-height: 1.2; }
