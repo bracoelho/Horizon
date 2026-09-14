@@ -1,0 +1,8 @@
+# The parameters of the reader's page rules (the owner, 2026-09-14, OS N-222;
+# the rules in full: OS specs/RADAR-PAGE-BRIEF.md, "The reader's page rules").
+# Rule 2, the lead until stage 2: when the newest edition has no article, the
+# newest commentary leads if it is at most lead_commentary_days old; else the
+# newest article leads if it is at most lead_article_days old; else no lead.
+# Days are counted back from the time of the build.
+lead_commentary_days: 7
+lead_article_days: 7

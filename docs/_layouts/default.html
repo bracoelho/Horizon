@@ -24,7 +24,20 @@
     {% include masthead.html %}
 
     <main id="main" class="main-content" role="main">
-      {{ content }}
+      {%- comment -%}
+      TEMPORARY, rule 7 of the reader's page rules (the owner, 2026-09-14, OS
+      N-222): an edition page drops the pipeline's Run health section, and the
+      rule above it, at render. Remove this block once the workflow stops
+      writing the section and the gh-pages sources are stripped (the radar
+      master's fix B).
+      {%- endcomment -%}
+      {%- assign body = content -%}
+      {%- if page.collection == "posts" and content contains '<h2 id="run-health"' -%}
+        {%- assign body = content | split: '<h2 id="run-health"' | first | strip -%}
+        {%- assign tail = body | slice: -6, 6 -%}
+        {%- if tail == "<hr />" -%}{%- assign cut = body.size | minus: 6 -%}{%- assign body = body | slice: 0, cut -%}{%- endif -%}
+      {%- endif %}
+      {{ body }}
     </main>
 
     <footer class="site-foot" role="contentinfo">

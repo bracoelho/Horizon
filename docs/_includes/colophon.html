@@ -12,7 +12,8 @@ colours. Shelf colours are on by default and the reader can turn them off
 (the owner, 2026-09-14); the choice holds on every page.
 {%- endcomment -%}
 <div class="colophon">
-  <p class="readout-facts"><span class="rf-n">{{ include.edition.analyzed | default: 0 }}</span> read <span aria-hidden="true">·</span> <span class="rf-n">{{ include.tonight.size }}</span> published</p>
+  {%- comment -%} Rule 1 of the reader's page rules: freshness, not yield. The newest edition's run time, a zero-article edition included; never a count. {%- endcomment %}
+  <p class="readout-facts">Updated <time datetime="{{ include.updated.date | date_to_xmlschema }}">{{ include.updated.date | date: "%-d %B %Y, %H:%M" }} UTC</time></p>
   <div class="readout-view">
     <p class="readout-set"><span data-out="shelves">All shelves</span>, <span data-out="depth">3 each</span><span data-out="hues"></span><span data-needs="order" hidden>, <span data-out="order">the radar's order</span></span><span data-needs="ind" hidden>, marked: <span data-out="marked">none</span></span></p>
     <button class="adjust" type="button" data-act="toggle" aria-expanded="false" aria-controls="fold" hidden>Adjust <span class="chev" aria-hidden="true">›</span></button>

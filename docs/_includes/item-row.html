@@ -4,11 +4,13 @@ include.n (its place on the shelf, from 1), include.lead (true for the item
 that leads the page) and include.new (true when it belongs to the current
 edition). Reads the ladder's fields when an item carries them, and prints
 nothing for a field it lacks: ev, soon, industry (a list), why, act.
+include.dated is true when the lead came from rule 2's third step (the newest
+edition had no article), and the kicker then gives the item's date.
 {%- endcomment -%}
 {%- assign i = include.item -%}
 <li class="row{% if include.lead %} row-lead{% endif %}{% if include.new %} row-new{% endif %}" data-n="{{ include.n }}"{% if i.ev %} data-ev="{{ i.ev }}"{% endif %}{% if i.soon %} data-soon="{{ i.soon }}"{% endif %}{% if i.industry %} data-ind="{{ i.industry | join: ' ' }}"{% endif %}>
   {%- if include.lead %}
-  <p class="row-kicker">{% if include.new %}Leads the edition{% else %}Last published, {{ i.date | date: "%-d %B" }}{% endif %}</p>
+  <p class="row-kicker">{% if include.new and include.dated != true %}Leads the edition{% else %}Last published, {{ i.date | date: "%-d %B" }}{% endif %}</p>
   {%- endif %}
   <span class="row-mark" hidden></span>
   <a class="row-title" href="{{ i.url | relative_url }}">{{ i.title }}</a>
