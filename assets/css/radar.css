@@ -215,6 +215,9 @@ img { max-width: 100%; height: auto; }
 .shelf-sq::before { content: ""; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.35em; vertical-align: 0.08em; background: var(--shelf-c, var(--graphite)); }
 .shelf .row-kicker { color: var(--shelf-c, var(--accent)); }
 .kicker .shelf-tag { color: var(--shelf-c, var(--accent)); }
+/* The reader can turn the hues off in Adjust (the owner, 2026-09-14). An
+   initial value leaves --shelf-c unset, so every rule above takes its fallback. */
+:root[data-hues="off"] [data-shelf], :root[data-hues="off"] [data-hue] { --shelf-c: initial; }
 
 /* ---- in this edition ----
    Every item the edition published, in published rank, when it published two

@@ -7,12 +7,14 @@ Without the script the readout shows the defaults, Adjust stays hidden and the
 page is complete. The script reveals Adjust, fills the readout, and reveals a
 group marked data-needs only when some item on the page carries that field:
 ev or soon for the labels and orders, industry for the marks. Until the
-ladder's stage 2 writes those fields, the fold holds shelves and depth.
+ladder's stage 2 writes those fields, the fold holds shelves, depth and shelf
+colours. Shelf colours are on by default and the reader can turn them off
+(the owner, 2026-09-14); the choice holds on every page.
 {%- endcomment -%}
 <div class="colophon">
   <p class="readout-facts"><span class="rf-n">{{ include.edition.analyzed | default: 0 }}</span> read <span aria-hidden="true">·</span> <span class="rf-n">{{ include.tonight.size }}</span> published</p>
   <div class="readout-view">
-    <p class="readout-set"><span data-out="shelves">All shelves</span>, <span data-out="depth">3 each</span><span data-needs="order" hidden>, <span data-out="order">the radar's order</span></span><span data-needs="ind" hidden>, marked: <span data-out="marked">none</span></span></p>
+    <p class="readout-set"><span data-out="shelves">All shelves</span>, <span data-out="depth">3 each</span><span data-out="hues"></span><span data-needs="order" hidden>, <span data-out="order">the radar's order</span></span><span data-needs="ind" hidden>, marked: <span data-out="marked">none</span></span></p>
     <button class="adjust" type="button" data-act="toggle" aria-expanded="false" aria-controls="fold" hidden>Adjust <span class="chev" aria-hidden="true">›</span></button>
   </div>
 </div>
@@ -32,6 +34,14 @@ ladder's stage 2 writes those fields, the fold holds shelves and depth.
     <span class="seg" role="group" aria-labelledby="fg-depth">
       <button type="button" data-act="depth" data-v="1" aria-pressed="false">1</button><button type="button" data-act="depth" data-v="3" aria-pressed="true">3</button><button type="button" data-act="depth" data-v="5" aria-pressed="false">5</button>
     </span>
+  </section>
+
+  <section class="fg" aria-labelledby="fg-hues">
+    <div class="fg-head"><h2 class="fg-name" id="fg-hues">Shelf colours</h2><span class="fg-kind">Pick one</span></div>
+    <span class="seg" role="group" aria-labelledby="fg-hues">
+      <button type="button" data-act="hues" data-v="on" aria-pressed="true">On</button><button type="button" data-act="hues" data-v="off" aria-pressed="false">Off</button>
+    </span>
+    <p class="fg-help">Off shows every shelf in ink, here and on every page. The shelf names stay.</p>
   </section>
 
   <section class="fg" data-needs="order" aria-labelledby="fg-order" hidden>

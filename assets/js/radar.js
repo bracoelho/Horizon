@@ -15,6 +15,12 @@
   function load() { try { return JSON.parse(window.localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function save(c) { try { window.localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) { /* storage blocked: choices last this visit */ } }
 
+  /* Shelf colours are the reader's choice, and the choice holds on every page
+     (the owner, 2026-09-14). Set as soon as the script runs, before the page
+     is read. Without the script the colours stay on. */
+  function hues(on) { document.documentElement.setAttribute("data-hues", on ? "on" : "off"); }
+  hues(load().hues !== false);
+
   /* No score on any public page. Edition pages written by the pipeline still
      print a star and "N/10" beside each headline; this removes the text until
      the pipeline stops writing it. */
@@ -100,7 +106,8 @@
       order: ORDERS.indexOf(d.order) > -1 ? d.order : "radar",
       ind: Array.isArray(d.ind) ? d.ind : [],
       labels: Array.isArray(d.labels) ? d.labels : ["soon", "ev"],
-      now: d.now === true
+      now: d.now === true,
+      hues: d.hues !== false
     };
 
     function marks(r) {
@@ -146,9 +153,11 @@
       var none = root.querySelector(".shelves-empty");
       if (none) none.hidden = visible > 0;
       root.setAttribute("data-labels", C.labels.join(" "));
+      hues(C.hues);
 
       out("shelves", visible === sections.length ? "All " + sections.length + " shelves" : visible + " of " + sections.length + " shelves");
       out("depth", C.depth === 1 ? "1 each" : C.depth + " each");
+      out("hues", C.hues ? "" : ', <b>no shelf colours</b><button class="reset" type="button" data-act="hues" data-v="on">Reset</button>');
       if (C.order === "radar") out("order", "the radar's order");
       else {
         var ob = fold.querySelector('[data-act="order"][data-v="' + C.order + '"]');
@@ -161,6 +170,7 @@
         var act = b.getAttribute("data-act"), v = b.getAttribute("data-v"), on = null;
         if (act === "shelf") on = C.hidden.indexOf(v) < 0;
         else if (act === "depth") on = C.depth === +v;
+        else if (act === "hues") on = (v === "on") === C.hues;
         else if (act === "order") { on = C.order === v; b.disabled = !available(v); }
         else if (act === "ind") on = C.ind.indexOf(v) > -1;
         else if (act === "label") on = C.labels.indexOf(v) > -1;
@@ -183,6 +193,7 @@
       if (act === "close") { setOpen(false); adjust.focus(); return; }
       if (act === "shelf") toggle(C.hidden, v);
       else if (act === "depth") C.depth = +v;
+      else if (act === "hues") C.hues = v === "on";
       else if (act === "order") { if (available(v)) C.order = v; }
       else if (act === "ind") {
         if (isBundle(v)) C.ind = C.ind.indexOf(v) > -1 ? [] : [v];
