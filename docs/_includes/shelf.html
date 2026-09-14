@@ -46,6 +46,6 @@ the newest copy stays, and the counts count articles, not copies.
   {%- endfor %}
   </ul>
   <p class="shelf-empty" hidden>Nothing on this shelf needs action now.</p>
-  <p class="shelf-all"><a href="/{{ s.id }}/">Shelf archive, {{ all_n }} item{% if all_n != 1 %}s{% endif %}<span class="sr"> in {{ s.name }}</span></a></p>
+  <p class="shelf-all"><a href="/{{ s.id }}/">Shelf archive, {{ all_n }} article{% if all_n != 1 %}s{% endif %}<span class="sr"> in {{ s.name }}</span></a></p>
 </section>
 {%- endif -%}

@@ -46,13 +46,13 @@ shelf with nothing yet shows its heading and no sentence about the absence.
   {% if shelf_items.size > 0 %}
   <div class="ledger-wrap">
     <table class="ledger">
-      <caption>{{ shelf_items.size }} item{% if shelf_items.size != 1 %}s{% endif %} published, newest first</caption>
+      <caption>{{ shelf_items.size }} article{% if shelf_items.size != 1 %}s{% endif %}, newest first</caption>
       <thead>
-        <tr><th scope="col">Item</th><th scope="col">Publisher</th><th scope="col">Surfaced</th>{% if labelled.size > 0 %}<th scope="col">How soon</th><th scope="col">Evidence</th>{% endif %}</tr>
+        <tr><th scope="col">Article</th><th scope="col">Publisher</th><th scope="col">Surfaced</th>{% if labelled.size > 0 %}<th scope="col">How soon</th><th scope="col">Evidence</th>{% endif %}</tr>
       </thead>
       {%- for m in months %}
       <tbody>
-        <tr class="ledger-group"><th scope="rowgroup" colspan="{{ cols }}">{{ m.items.first.date | date: "%B %Y" }} <span class="ledger-n">{{ m.size }} item{% if m.size != 1 %}s{% endif %}</span></th></tr>
+        <tr class="ledger-group"><th scope="rowgroup" colspan="{{ cols }}">{{ m.items.first.date | date: "%B %Y" }} <span class="ledger-n">{{ m.size }} article{% if m.size != 1 %}s{% endif %}</span></th></tr>
         {%- assign eds = m.items | group_by: "edition_url" | reverse -%}
         {%- for e in eds -%}{%- for i in e.items %}
         <tr>
@@ -71,6 +71,6 @@ shelf with nothing yet shows its heading and no sentence about the absence.
   </div>
   {% endif %}
 
-  <p class="page-back"><a href="{{ '/' | relative_url }}">Back to the latest edition</a> <span aria-hidden="true">·</span> <a href="{{ '/method/' | relative_url }}">How items are chosen</a></p>
+  <p class="page-back"><a href="{{ '/' | relative_url }}">Back to the latest edition</a> <span aria-hidden="true">·</span> <a href="{{ '/method/' | relative_url }}">How articles are chosen</a></p>
 
 </div>
