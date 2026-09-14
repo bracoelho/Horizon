@@ -1,24 +1,59 @@
 ---
 layout: default
 ---
-<div class="theme-archive">
+{%- comment -%}
+A shelf's archive, on direction D's ledger: every published item on the shelf
+as one table, newest month first, each edition in its published rank. Label
+columns appear when the shelf's items carry the ladder's labels. Reads the
+shelf id from `shelf_id`, else `theme_id`; an item's shelf from `shelf`, else
+`theme`.
+{%- endcomment -%}
+{%- assign shelf_id = page.shelf_id | default: page.theme_id -%}
+{%- assign shelf_items = site.items | where: "lang", "en" | where: "shelf", shelf_id -%}
+{%- if shelf_items.size == 0 -%}{%- assign shelf_items = site.items | where: "lang", "en" | where: "theme", shelf_id -%}{%- endif -%}
+{%- assign shelf_items = shelf_items | sort: "relative_path" -%}
+{%- assign months = shelf_items | group_by_exp: "i", "i.date | date: '%Y-%m'" | reverse -%}
+{%- assign labelled = shelf_items | where_exp: "i", "i.ev" -%}
+{%- assign cols = 3 -%}{%- if labelled.size > 0 -%}{%- assign cols = 5 -%}{%- endif -%}
+<div class="ledger-page">
 
-  <p class="item-kicker">Theme</p>
-  <h1 class="item-title">{{ page.title }}</h1>
-  <p class="theme-question">{{ page.question }}</p>
-  <p class="theme-scope">{{ page.scope }}</p>
+  <header class="page-head">
+    <p class="kicker">Shelf</p>
+    <h1 class="page-title">{{ page.title }}</h1>
+    {% if page.question %}<p class="shelf-question">{{ page.question }}</p>{% endif %}
+    {% if page.scope %}<p class="shelf-scope">{{ page.scope }}</p>{% endif %}
+  </header>
 
-  {% assign theme_items = site.items | where: "lang", "en" | where: "theme", page.theme_id | sort: "date" | reverse %}
-
-  {% if theme_items.size > 0 %}
-  <p class="theme-count">{{ theme_items.size }} item{% if theme_items.size != 1 %}s{% endif %} so far.</p>
-  <ul class="item-list">
-    {% for item in theme_items %}{% include item-row.html item=item %}{% endfor %}
-  </ul>
+  {% if shelf_items.size > 0 %}
+  <div class="ledger-wrap">
+    <table class="ledger">
+      <caption>{{ shelf_items.size }} item{% if shelf_items.size != 1 %}s{% endif %} published, newest first</caption>
+      <thead>
+        <tr><th scope="col">Item</th><th scope="col">Publisher</th><th scope="col">Surfaced</th>{% if labelled.size > 0 %}<th scope="col">How soon</th><th scope="col">Evidence</th>{% endif %}</tr>
+      </thead>
+      {%- for m in months %}
+      <tbody>
+        <tr class="ledger-group"><th scope="rowgroup" colspan="{{ cols }}">{{ m.items.first.date | date: "%B %Y" }} <span class="ledger-n">{{ m.size }} item{% if m.size != 1 %}s{% endif %}</span></th></tr>
+        {%- assign eds = m.items | group_by: "edition_url" | reverse -%}
+        {%- for e in eds -%}{%- for i in e.items %}
+        <tr>
+          <td class="l-item"><a href="{{ i.url | relative_url }}">{{ i.title }}</a></td>
+          <td class="l-pub">{{ i.source }}</td>
+          <td class="l-date"><time datetime="{{ i.date | date_to_xmlschema }}">{{ i.date | date: "%-d %b" }}</time></td>
+          {%- if labelled.size > 0 %}
+          <td class="l-lab">{% if i.soon %}{% include label.html kind="soon" v=i.soon %}{% endif %}</td>
+          <td class="l-lab">{% if i.ev %}{% include label.html kind="ev" v=i.ev %}{% endif %}</td>
+          {%- endif %}
+        </tr>
+        {%- endfor -%}{%- endfor %}
+      </tbody>
+      {%- endfor %}
+    </table>
+  </div>
   {% else %}
-  <p class="take-empty">Nothing has cleared this theme's bar yet. Items appear here from the next edition onwards.</p>
+  <p class="take-empty">Nothing has cleared this shelf's bar yet. Items appear here from the next edition onwards.</p>
   {% endif %}
 
-  <p class="theme-back"><a href="{{ '/' | relative_url }}">Back to the radar</a> <span aria-hidden="true">·</span> <a href="{{ '/method/' | relative_url }}">How items are scored</a></p>
+  <p class="page-back"><a href="{{ '/' | relative_url }}">Back to the latest edition</a> <span aria-hidden="true">·</span> <a href="{{ '/method/' | relative_url }}">How items are chosen</a></p>
 
 </div>

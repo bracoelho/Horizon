@@ -1,0 +1,79 @@
+{%- comment -%}
+The colophon: the page's settings as a readout, and one Adjust button opening
+one fold that holds every choice (the owner's pick, 2026-09-14). Expects
+include.edition, include.tonight and include.shelves.
+
+Without the script the readout shows the defaults, Adjust stays hidden and the
+page is complete. The script reveals Adjust, fills the readout, and reveals a
+group marked data-needs only when some item on the page carries that field:
+ev or soon for the labels and orders, industry for the marks. Until the
+ladder's stage 2 writes those fields, the fold holds shelves and depth.
+{%- endcomment -%}
+<div class="colophon">
+  <p class="readout-facts"><span class="rf-n">{{ include.edition.analyzed | default: 0 }}</span> read <span aria-hidden="true">·</span> <span class="rf-n">{{ include.tonight.size }}</span> published</p>
+  <div class="readout-view">
+    <p class="readout-set"><span data-out="shelves">All shelves</span>, <span data-out="depth">3 each</span><span data-needs="order" hidden>, <span data-out="order">the radar's order</span></span><span data-needs="ind" hidden>, marked: <span data-out="marked">none</span></span></p>
+    <button class="adjust" type="button" data-act="toggle" aria-expanded="false" aria-controls="fold" hidden>Adjust <span class="chev" aria-hidden="true">›</span></button>
+  </div>
+</div>
+
+<div class="fold" id="fold" hidden>
+  <section class="fg" aria-labelledby="fg-shelves">
+    <div class="fg-head"><h2 class="fg-name" id="fg-shelves">Shelves</h2><span class="fg-kind">Pick any</span></div>
+    <div class="chips">
+      {%- for s in include.shelves %}
+      <button class="chip" type="button" data-act="shelf" data-v="{{ s.id }}" aria-pressed="true">{{ s.short | default: s.name }}</button>
+      {%- endfor %}
+    </div>
+  </section>
+
+  <section class="fg" aria-labelledby="fg-depth">
+    <div class="fg-head"><h2 class="fg-name" id="fg-depth">Items per shelf</h2><span class="fg-kind">Pick one</span></div>
+    <span class="seg" role="group" aria-labelledby="fg-depth">
+      <button type="button" data-act="depth" data-v="1" aria-pressed="false">1</button><button type="button" data-act="depth" data-v="3" aria-pressed="true">3</button><button type="button" data-act="depth" data-v="5" aria-pressed="false">5</button>
+    </span>
+  </section>
+
+  <section class="fg" data-needs="order" aria-labelledby="fg-order" hidden>
+    <div class="fg-head"><h2 class="fg-name" id="fg-order">Order</h2><span class="fg-kind">Pick one</span></div>
+    <div class="radios" role="group" aria-labelledby="fg-order">
+      <button class="radio" type="button" data-act="order" data-v="radar" aria-pressed="true">The radar's order</button>
+      <button class="radio" type="button" data-act="order" data-v="soon" data-needs="soon" aria-pressed="false">Needs action first</button>
+      <button class="radio" type="button" data-act="order" data-v="ev" data-needs="ev" aria-pressed="false">Best evidence first</button>
+      <button class="radio" type="button" data-act="order" data-v="ind" data-needs="ind" aria-pressed="false">Marked industry first</button>
+    </div>
+    <p class="fg-help">The radar's order is its judgement. Any other order is yours, and the readout says so.</p>
+  </section>
+
+  <section class="fg fg-wide" data-needs="ind" aria-labelledby="fg-ind" hidden>
+    <div class="fg-head"><h2 class="fg-name" id="fg-ind">Mark an industry</h2><span class="fg-kind">Pick any</span></div>
+    <div class="chips">
+      {%- for b in site.data.industries.bundles %}
+      <button class="chip" type="button" data-act="ind" data-v="{{ b.id }}" data-members="{{ b.members | join: ' ' }}" data-name="{{ b.name }}" aria-pressed="false">{{ b.name }} <span class="n"></span></button>
+      {%- endfor %}
+      {%- for x in site.data.industries.list %}
+      <button class="chip" type="button" data-act="ind" data-v="{{ x.id }}" data-name="{{ x.short | default: x.name }}" aria-pressed="false">{{ x.name }} <span class="n"></span></button>
+      {%- endfor %}
+    </div>
+    <p class="fg-help">Marks matching items with a rule and a label, and hides nothing. A zero means nothing in this edition; the mark stays for the next.</p>
+  </section>
+
+  <section class="fg" data-needs="labels" aria-labelledby="fg-labels" hidden>
+    <div class="fg-head"><h2 class="fg-name" id="fg-labels">Labels on each item</h2><span class="fg-kind">Pick any</span></div>
+    <div class="chips">
+      <button class="chip" type="button" data-act="label" data-v="soon" data-needs="soon" aria-pressed="true">How soon</button>
+      <button class="chip" type="button" data-act="label" data-v="ev" data-needs="ev" aria-pressed="true">Evidence</button>
+    </div>
+  </section>
+
+  <section class="fg" data-needs="soon" aria-labelledby="fg-now" hidden>
+    <div class="fg-head"><h2 class="fg-name" id="fg-now">Only what needs action now</h2><span class="fg-kind">Filter</span></div>
+    <div class="chips"><button class="chip" type="button" data-act="now" aria-pressed="false">Now only</button></div>
+    <p class="fg-help">Hides the rest on every shelf.</p>
+  </section>
+
+  <div class="fold-end">
+    <p class="fold-note">Choices stay in this browser, and nothing is sent anywhere.</p>
+    <button class="fold-done" type="button" data-act="close">Done</button>
+  </div>
+</div>

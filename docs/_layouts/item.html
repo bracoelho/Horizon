@@ -1,22 +1,39 @@
 ---
 layout: default
 ---
+{%- comment -%}
+The item page, on direction A's lead block: the shelf, the headline, who
+reported it and when, then why it matters and what a team does when the
+ladder writes them, then the written body. Reads `shelf` and `shelf_name`
+when an item carries them, else `theme` and `theme_name`.
+{%- endcomment -%}
+{%- assign shelf = page.shelf | default: page.theme -%}
+{%- assign shelf_name = page.shelf_name | default: page.theme_name -%}
 <article class="item-page">
 
-  <p class="item-kicker">
-    <a href="/{{ page.theme }}/">{{ page.theme_name }}</a>
-  </p>
-
-  <h1 class="item-title">{{ page.title }}</h1>
-
-  <p class="item-meta">
-    Surfaced <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
-    {% if page.link %}<span aria-hidden="true">·</span> <a class="item-source-link" href="{{ page.link }}">Read the original</a>{% endif %}
-  </p>
+  <header class="item-head">
+    <p class="kicker"><a href="/{{ shelf }}/">{{ shelf_name }}</a></p>
+    <h1 class="item-title">{{ page.title }}</h1>
+    <p class="item-attr">
+      {% if page.source %}<span>{{ page.source }}</span> <span aria-hidden="true">·</span>{% endif %}
+      <span>Surfaced <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time></span>
+      {% if page.link %}<span aria-hidden="true">·</span> <a class="item-source-link" href="{{ page.link }}">Read the original</a>{% endif %}
+    </p>
+    {% if page.soon or page.ev %}
+    <p class="item-labels">{% if page.soon %}<span class="lab" data-l="soon" data-v="{{ page.soon }}">{% include label.html kind="soon" v=page.soon %}</span>{% endif %}{% if page.ev %}<span class="lab" data-l="ev" data-v="{{ page.ev }}">{% include label.html kind="ev" v=page.ev %}</span>{% endif %}</p>
+    {% endif %}
+  </header>
 
   {% unless page.enriched %}
   <p class="item-thin">Background research did not complete for this item, so it carries the headline and the summary only.</p>
   {% endunless %}
+
+  {% if page.why or page.act %}
+  <div class="item-brief">
+    {% if page.why %}<div><p class="brief-h">Why it matters</p><p>{{ page.why }}</p></div>{% endif %}
+    {% if page.act %}<div class="brief-act"><p class="brief-h">What a team does</p><p>{{ page.act }}</p></div>{% endif %}
+  </div>
+  {% endif %}
 
   <div class="item-body">
     {{ content }}
@@ -26,7 +43,7 @@ layout: default
     {% if page.edition_url %}
     <p><a href="{{ page.edition_url | relative_url }}">Read the full edition of {{ page.edition_title }}</a></p>
     {% endif %}
-    <p><a href="/{{ page.theme }}/">More in {{ page.theme_name }}</a> <span aria-hidden="true">·</span> <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a></p>
+    <p><a href="/{{ shelf }}/">More in {{ shelf_name }}</a> <span aria-hidden="true">·</span> <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a></p>
   </footer>
 
 </article>

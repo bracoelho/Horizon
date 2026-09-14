@@ -1,0 +1,32 @@
+# The industry vocabulary the edition page marks by. It is the radar's, as
+# NEWS-Radar specs/FACETS.json holds it on 2026-09-14 (facet `domain`, with
+# `general` left out because it marks nothing); design only renders it.
+# Under review: radar-theme/research/2026-09-14-industry-vocabulary-check.md
+# found thirteen sectors the official lists name and this list lacks, and the
+# critical infrastructure bundle has no single definition across jurisdictions.
+# The owner decided the bundle on 2026-09-13; its members here are every
+# value, as drawn in the controls specimens, until the radar decides otherwise.
+bundles:
+  - id: critical-infrastructure
+    name: Critical infrastructure
+    members: [energy-utilities, transport-mobility, financial-services, health, telecom, industrial, public-justice, defence]
+list:
+  - id: energy-utilities
+    name: Energy and utilities
+    short: Energy
+  - id: transport-mobility
+    name: Transport
+  - id: financial-services
+    name: Financial services
+    short: Finance
+  - id: health
+    name: Health
+  - id: telecom
+    name: Telecom
+  - id: industrial
+    name: Industrial
+  - id: public-justice
+    name: Public and justice
+    short: Public
+  - id: defence
+    name: Defence

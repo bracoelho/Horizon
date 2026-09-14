@@ -1,0 +1,40 @@
+{%- comment -%}
+One shelf of the edition page: its newest items first, up to five, of which
+the reader's depth shows one, three or five (three before any choice).
+Expects include.shelf ({id, name, question}), include.groups (the items
+grouped by edition, newest edition first, each edition in the radar's order),
+include.lead and include.edition. A shelf with no item at all prints nothing.
+Reads an item's shelf from the ladder's `shelf` field, else from `theme`.
+{%- endcomment -%}
+{%- assign s = include.shelf -%}
+{%- assign all = site.items | where: "lang", "en" | where: "shelf", s.id -%}
+{%- if all.size == 0 -%}{%- assign all = site.items | where: "lang", "en" | where: "theme", s.id -%}{%- endif -%}
+{%- if all.size > 0 -%}
+{%- assign here = all | where: "edition_url", include.edition.url -%}
+{%- assign newest = all | sort: "date" | last -%}
+<section class="shelf" data-shelf="{{ s.id }}" aria-labelledby="shelf-{{ s.id }}">
+  <header class="shelf-head">
+    <h2 class="shelf-name" id="shelf-{{ s.id }}"><a href="/{{ s.id }}/">{{ s.name }}</a></h2>
+    <p class="shelf-count">{% if here.size > 0 %}{{ here.size }} in this edition{% else %}Latest {{ newest.date | date: "%-d %b" }}{% endif %}</p>
+  </header>
+  {%- if s.question %}
+  <p class="shelf-q">{{ s.question }}</p>
+  {%- endif %}
+  <ul class="rows">
+  {%- assign n = 0 -%}
+  {%- for g in include.groups -%}
+    {%- for i in g.items -%}
+      {%- assign ishelf = i.shelf | default: i.theme -%}
+      {%- if ishelf == s.id and n < 5 -%}
+        {%- assign n = n | plus: 1 -%}
+        {%- assign islead = false -%}{%- if i.url == include.lead.url -%}{%- assign islead = true -%}{%- endif -%}
+        {%- assign isnew = false -%}{%- if i.edition_url == include.edition.url -%}{%- assign isnew = true -%}{%- endif %}
+    {% include item-row.html item=i n=n lead=islead new=isnew %}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor %}
+  </ul>
+  <p class="shelf-empty" hidden>Nothing on this shelf needs action now.</p>
+  <p class="shelf-all"><a href="/{{ s.id }}/">Shelf archive, {{ all.size }} item{% if all.size != 1 %}s{% endif %}<span class="sr"> in {{ s.name }}</span></a></p>
+</section>
+{%- endif -%}
