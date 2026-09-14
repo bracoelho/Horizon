@@ -1,10 +1,39 @@
 {%- comment -%}
-One item in a list. Used by the homepage and by every theme archive, so the two
-cannot drift apart. Expects: include.item
+One item on a shelf of the edition page. Expects include.item; optional
+include.n (its place on the shelf, from 1), include.lead (true for the item
+that leads the page) and include.new (true when it belongs to the current
+edition). Reads the ladder's fields when an item carries them, and prints
+nothing for a field it lacks: ev, soon, industry (a list), why, act.
 {%- endcomment -%}
-<li class="item-row">
-  <a href="{{ include.item.url | relative_url }}">
-    <span class="item-row-title">{{ include.item.title }}</span>
-  </a>
-  <span class="item-row-meta">{{ include.item.source }} <span aria-hidden="true">·</span> {{ include.item.date | date: "%d %b" }}</span>
+{%- assign i = include.item -%}
+<li class="row{% if include.lead %} row-lead{% endif %}{% if include.new %} row-new{% endif %}" data-n="{{ include.n }}"{% if i.ev %} data-ev="{{ i.ev }}"{% endif %}{% if i.soon %} data-soon="{{ i.soon }}"{% endif %}{% if i.industry %} data-ind="{{ i.industry | join: ' ' }}"{% endif %}>
+  {%- if include.lead %}
+  <p class="row-kicker">{% if include.new %}Leads the edition{% else %}Last published, {{ i.date | date: "%-d %B" }}{% endif %}</p>
+  {%- endif %}
+  <span class="row-mark" hidden></span>
+  <a class="row-title" href="{{ i.url | relative_url }}">{{ i.title }}</a>
+  <span class="row-meta">{{ i.source }} <span aria-hidden="true">·</span> <time datetime="{{ i.date | date_to_xmlschema }}">{{ i.date | date: "%-d %b" }}</time></span>
+  {%- if i.soon or i.ev %}
+  <span class="row-labels">{% if i.soon %}<span class="lab" data-l="soon" data-v="{{ i.soon }}">{% include label.html kind="soon" v=i.soon %}</span>{% endif %}{% if i.ev %}<span class="lab" data-l="ev" data-v="{{ i.ev }}">{% include label.html kind="ev" v=i.ev %}</span>{% endif %}</span>
+  {%- endif %}
+  {%- if include.lead %}
+  <div class="row-brief">
+    {%- if i.why %}
+    <div><p class="brief-h">Why it matters</p><p class="row-brief-text">{{ i.why }}</p></div>
+    {%- else %}
+    {%- assign summary = i.content | split: "</p>" | first | strip_html | strip %}
+    {%- assign summary_words = summary | split: " " %}
+    {%- if summary_words.size > 48 %}
+    {%- assign summary = summary | truncatewords: 48, "" | strip %}
+    {%- assign tail = summary | slice: -1 %}
+    {%- if tail == "." or tail == "," or tail == ";" or tail == ":" %}{% assign cut = summary.size | minus: 1 %}{% assign summary = summary | slice: 0, cut %}{% endif %}
+    {%- assign summary = summary | append: "…" %}
+    {%- endif %}
+    <p class="row-brief-text">{{ summary }}</p>
+    {%- endif %}
+    {%- if i.act %}
+    <div class="brief-act"><p class="brief-h">What a team does</p><p>{{ i.act }}</p></div>
+    {%- endif %}
+  </div>
+  {%- endif %}
 </li>

@@ -1,21 +1,61 @@
 ---
 layout: default
 ---
+{%- comment -%}
+Commentary. The "On" block names what the commentary answers: the anchor
+item (item_url, item_title, edition_url), and under it, when the front matter
+carries `related`, the other stories it is tied to (the owner, 2026-09-14:
+"my comments power goes up if related to several news, not just one").
+
+`related` is the radar master's shape, a list in their order (newest first),
+each entry: title, publisher, url, date (YYYY-MM-DD), evidence (confirmed or
+reported), and item_url only when the radar published that item. An entry
+links to the radar's item page when it has one, else to the original. With
+no `related` the block is exactly the single anchor, as before.
+{%- endcomment -%}
+{%- assign related = page.related -%}
 <article class="commentary">
 
-  <p class="commentary-kicker">Commentary</p>
-  <h1 class="commentary-title">{{ page.title }}</h1>
+  <header class="page-head">
+    <p class="kicker">Commentary</p>
+    <h1 class="page-title">{{ page.title }}</h1>
+    <p class="commentary-meta">
+      <span>Bruno Coelho</span> <span aria-hidden="true">·</span>
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time>
+      {% if page.theme %}<span aria-hidden="true">·</span> <span>{{ page.theme }}</span>{% endif %}
+    </p>
+  </header>
 
-  <p class="commentary-meta">
-    <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d %B %Y" }}</time>
-    {% if page.theme %}<span aria-hidden="true">·</span> <span class="commentary-theme">{{ page.theme }}</span>{% endif %}
-  </p>
+  {% if page.item_url or related.size > 0 %}
+  <aside class="commentary-on" aria-labelledby="commentary-on-h">
+    {% if page.item_url %}
+    <p class="brief-h" id="commentary-on-h">On</p>
+    <p class="commentary-item"><a href="{{ page.item_url }}">{{ page.item_title | default: page.item_url }}</a></p>
+    {% if page.edition_url %}<p class="commentary-edition">Surfaced in the <a href="{{ page.edition_url | relative_url }}">edition of {{ page.edition_date | default: page.date | date: "%-d %B" }}</a></p>{% endif %}
+    {% endif %}
 
-  {% if page.item_url %}
-  <p class="commentary-on">
-    On: <a href="{{ page.item_url }}">{{ page.item_title | default: page.item_url }}</a>
-    {% if page.edition_url %}<br><span class="commentary-edition">Surfaced in the <a href="{{ page.edition_url | relative_url }}">edition of {{ page.edition_date | default: page.date | date: "%d %B" }}</a></span>{% endif %}
-  </p>
+    {% if related.size > 0 %}
+    {%- assign by_date = related | sort: "date", "last" -%}
+    {%- assign first_day = by_date.first.date | date: "%-d %B" -%}
+    {%- assign last_day = by_date.last.date | date: "%-d %B" -%}
+    <p class="brief-h related-h"{% unless page.item_url %} id="commentary-on-h"{% endunless %}>{% if page.item_url %}Related{% else %}On{% endif %}: {{ related.size }} stor{% if related.size == 1 %}y{% else %}ies{% endif %}{% if by_date.first.date and by_date.last.date and first_day != last_day %}, {{ first_day }} to {{ last_day }}{% endif %}</p>
+    <ol class="related">
+      {%- for r in related %}
+      <li class="related-item">
+        <a class="related-title" href="{% if r.item_url %}{{ r.item_url | relative_url }}{% else %}{{ r.url }}{% endif %}">{{ r.title | default: r.url }}</a>
+        <span class="related-meta">
+          {%- if r.publisher %}{{ r.publisher }}{% endif -%}
+          {%- if r.publisher and r.date %} <span aria-hidden="true">·</span> {% endif -%}
+          {%- if r.date %}<time datetime="{{ r.date | date_to_xmlschema }}">{{ r.date | date: "%-d %b %Y" }}</time>{% endif -%}
+          {%- if r.item_url and r.url %} <span aria-hidden="true">·</span> <a href="{{ r.url }}">Original</a>{% endif -%}
+          {%- assign r_ev = r.evidence | default: r.ev -%}
+          {%- if r_ev %} <span class="lab" data-l="ev" data-v="{{ r_ev }}">{% include label.html kind="ev" v=r_ev %}</span>{% endif -%}
+        </span>
+      </li>
+      {%- endfor %}
+    </ol>
+    {% endif %}
+  </aside>
   {% endif %}
 
   <div class="commentary-body">

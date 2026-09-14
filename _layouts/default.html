@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: 'en' }}">
+<html lang="{{ site.lang | default: 'en' }}" data-ground="ink">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,35 +20,22 @@
   </head>
 
   <body>
-    <header class="page-header" role="banner">
-      <h1 class="project-name"><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
-      <p class="project-tagline">{{ site.description }}</p>
-      <nav class="site-nav" aria-label="Main">
-        <a href="{{ '/' | relative_url }}">Latest</a>
-        <a href="{{ '/#commentary' | relative_url }}">Commentary</a>
-        <a href="{{ '/subscribe/' | relative_url }}">Subscribe</a>
-        <a href="{{ '/method/' | relative_url }}">Method</a>
-      </nav>
-      <nav class="site-nav-sub" aria-label="Playbook">
-        <a href="{{ '/playbook/' | relative_url }}">Firsthand Playbook</a>
-      </nav>
-    </header>
+    <a class="skip" href="#main">Skip to content</a>
+    {% include masthead.html %}
 
-    <main class="main-content" role="main">
+    <main id="main" class="main-content" role="main">
       {{ content }}
-
-      <footer class="site-footer">
-        <p class="site-footer-owner">
-          <strong>{{ site.title }}</strong>, curated by Bruno Coelho. Technology leadership across Europe, Asia-Pacific and the Middle East.
-        </p>
-        <p class="site-footer-meta">
-          <a href="{{ '/subscribe/' | relative_url }}">Subscribe</a>
-          <span aria-hidden="true">·</span>
-          <a href="{{ '/feed-en.xml' | relative_url }}">RSS</a>
-          <span aria-hidden="true">·</span>
-          <a href="https://www.linkedin.com/in/bracoelho/">LinkedIn</a>
-        </p>
-      </footer>
     </main>
+
+    <footer class="site-foot" role="contentinfo">
+      <div class="site-foot-in">
+        <p class="site-foot-owner"><strong>{{ site.title }}</strong>, curated by Bruno Coelho. Technology leadership across Europe, Asia-Pacific and the Middle East.</p>
+        <nav class="site-foot-links" aria-label="Follow">
+          <a href="{{ '/subscribe/' | relative_url }}">Subscribe</a>
+          <a href="{{ '/feed-en.xml' | relative_url }}">RSS</a>
+          <a href="https://www.linkedin.com/in/bracoelho/">LinkedIn</a>
+        </nav>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,11 @@
+{%- comment -%}
+The reader-facing name of a label value. Expects include.kind (soon or ev) and
+include.v. The values are the ladder's; an unknown value prints as written.
+{%- endcomment -%}
+{%- case include.kind -%}
+{%- when "soon" -%}
+{%- case include.v -%}{%- when "now" -%}Now{%- when "dated" -%}Has a date{%- when "eventually" -%}Eventually{%- else -%}{{ include.v }}{%- endcase -%}
+{%- when "ev" -%}
+{%- case include.v -%}{%- when "confirmed" -%}Confirmed{%- when "reported" -%}Reported{%- when "unconfirmed" -%}Unconfirmed{%- else -%}{{ include.v }}{%- endcase -%}
+{%- else -%}{{ include.v }}
+{%- endcase -%}
