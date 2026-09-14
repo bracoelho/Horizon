@@ -11,7 +11,7 @@ edition published. Expects include.items, already in published rank.
 {%- assign items = include.items -%}
 {%- assign first = 6 -%}
 <section class="in-edition" aria-labelledby="in-edition-h">
-  <h2 class="in-edition-h" id="in-edition-h">In this edition <span aria-hidden="true">·</span> {{ items.size }} published</h2>
+  <h2 class="in-edition-h" id="in-edition-h">In this edition <span aria-hidden="true">·</span> {{ items.size }} article{% if items.size != 1 %}s{% endif %}</h2>
   <ol class="in-list">
     {%- for i in items limit: first %}
     {%- assign ishelf = i.shelf | default: i.theme %}

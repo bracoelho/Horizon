@@ -31,7 +31,7 @@ colours. Shelf colours are on by default and the reader can turn them off
   </section>
 
   <section class="fg" aria-labelledby="fg-depth">
-    <div class="fg-head"><h2 class="fg-name" id="fg-depth">Items per shelf</h2><span class="fg-kind">Pick one</span></div>
+    <div class="fg-head"><h2 class="fg-name" id="fg-depth">Articles per shelf</h2><span class="fg-kind">Pick one</span></div>
     <span class="seg" role="group" aria-labelledby="fg-depth">
       <button type="button" data-act="depth" data-v="1" aria-pressed="false">1</button><button type="button" data-act="depth" data-v="3" aria-pressed="true">3</button><button type="button" data-act="depth" data-v="5" aria-pressed="false">5</button>
     </span>
@@ -66,11 +66,11 @@ colours. Shelf colours are on by default and the reader can turn them off
       <button class="chip" type="button" data-act="ind" data-v="{{ x.id }}" data-name="{{ x.short | default: x.name }}" aria-pressed="false">{{ x.name }} <span class="n"></span></button>
       {%- endfor %}
     </div>
-    <p class="fg-help">Marks matching items with a rule and a label, and hides nothing. A zero means nothing in this edition; the mark stays for the next.</p>
+    <p class="fg-help">Marks matching articles with a rule and a label, and hides nothing. A zero means nothing in this edition; the mark stays for the next.</p>
   </section>
 
   <section class="fg" data-needs="labels" aria-labelledby="fg-labels" hidden>
-    <div class="fg-head"><h2 class="fg-name" id="fg-labels">Labels on each item</h2><span class="fg-kind">Pick any</span></div>
+    <div class="fg-head"><h2 class="fg-name" id="fg-labels">Labels on each article</h2><span class="fg-kind">Pick any</span></div>
     <div class="chips">
       <button class="chip" type="button" data-act="label" data-v="soon" data-needs="soon" aria-pressed="true">How soon</button>
       <button class="chip" type="button" data-act="label" data-v="ev" data-needs="ev" aria-pressed="true">Evidence</button>
