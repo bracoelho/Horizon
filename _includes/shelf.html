@@ -5,36 +5,47 @@ Expects include.shelf ({id, name, question}), include.groups (the items
 grouped by edition, newest edition first, each edition in the radar's order),
 include.lead and include.edition. A shelf with no item at all prints nothing.
 Reads an item's shelf from the ladder's `shelf` field, else from `theme`.
+
+Rule 5 of the reader's page rules (the owner, 2026-09-14, OS N-222): one
+article once on a shelf, until stage 2's story merge. An article is its link;
+the newest copy stays, and the counts count articles, not copies.
 {%- endcomment -%}
 {%- assign s = include.shelf -%}
 {%- assign all = site.items | where: "lang", "en" | where: "shelf", s.id -%}
 {%- if all.size == 0 -%}{%- assign all = site.items | where: "lang", "en" | where: "theme", s.id -%}{%- endif -%}
 {%- if all.size > 0 -%}
 {%- assign here = all | where: "edition_url", include.edition.url -%}
+{%- assign here_n = here | map: "link" | uniq | size -%}
+{%- assign all_n = all | map: "link" | uniq | size -%}
 {%- assign newest = all | sort: "date" | last -%}
 <section class="shelf" data-shelf="{{ s.id }}" aria-labelledby="shelf-{{ s.id }}">
   <header class="shelf-head">
     <h2 class="shelf-name" id="shelf-{{ s.id }}"><a class="shelf-sq" href="/{{ s.id }}/">{{ s.name }}</a></h2>
-    <p class="shelf-count">{% if here.size > 0 %}{{ here.size }} in this edition{% else %}Latest {{ newest.date | date: "%-d %b" }}{% endif %}</p>
+    <p class="shelf-count">{% if here_n > 0 %}{{ here_n }} in this edition{% else %}Latest {{ newest.date | date: "%-d %b" }}{% endif %}</p>
   </header>
   {%- if s.question %}
   <p class="shelf-q">{{ s.question }}</p>
   {%- endif %}
   <ul class="rows">
   {%- assign n = 0 -%}
+  {%- assign seen = "|" -%}
   {%- for g in include.groups -%}
     {%- for i in g.items -%}
       {%- assign ishelf = i.shelf | default: i.theme -%}
+      {%- assign probe = "|" | append: i.link | append: "|" -%}
       {%- if ishelf == s.id and n < 5 -%}
+      {%- unless seen contains probe -%}
+        {%- assign seen = seen | append: i.link | append: "|" -%}
         {%- assign n = n | plus: 1 -%}
         {%- assign islead = false -%}{%- if i.url == include.lead.url -%}{%- assign islead = true -%}{%- endif -%}
         {%- assign isnew = false -%}{%- if i.edition_url == include.edition.url -%}{%- assign isnew = true -%}{%- endif %}
-    {% include item-row.html item=i n=n lead=islead new=isnew %}
+    {% include item-row.html item=i n=n lead=islead new=isnew dated=include.dated %}
+      {%- endunless -%}
       {%- endif -%}
     {%- endfor -%}
   {%- endfor %}
   </ul>
   <p class="shelf-empty" hidden>Nothing on this shelf needs action now.</p>
-  <p class="shelf-all"><a href="/{{ s.id }}/">Shelf archive, {{ all.size }} item{% if all.size != 1 %}s{% endif %}<span class="sr"> in {{ s.name }}</span></a></p>
+  <p class="shelf-all"><a href="/{{ s.id }}/">Shelf archive, {{ all_n }} item{% if all_n != 1 %}s{% endif %}<span class="sr"> in {{ s.name }}</span></a></p>
 </section>
 {%- endif -%}

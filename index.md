@@ -9,27 +9,90 @@ lead item opens as a block) and as the shelves on a wide screen (the owner,
 2026-09-14). The radar's order: the shelf holding the lead comes first, then
 the shelves in the order _config.yml gives them; on each shelf, the newest
 edition first and each edition in its published rank.
+
+The reader's page rules govern what it says (the owner, 2026-09-14, OS N-222;
+in full in OS specs/RADAR-PAGE-BRIEF.md): a reader's page states what is
+there, with its date, and how the machine ran stays in the run record.
+Rule 1, "Updated" is the newest edition's run time. Rule 2, the lead order,
+below. Rule 3, no sentence about an absence. Rule 4, no machine numbers: an
+edition's and a shelf's article counts stay, items read do not. Rule 8, an
+edition with zero articles is neither listed nor shown as the latest edition,
+and stays reachable at its address.
 {%- endcomment -%}
 {%- assign en_posts = site.posts | where: "lang", "en" -%}
-{%- assign edition = en_posts.first -%}
+{%- assign newest = en_posts.first -%}
+{%- assign with_items = en_posts | where_exp: "p", "p.items > 0" -%}
+{%- assign edition = with_items.first -%}
 {%- assign en_items = site.items | where: "lang", "en" | sort: "relative_path" -%}
 {%- assign groups = en_items | group_by: "edition_url" | reverse -%}
 {%- assign tonight = en_items | where: "edition_url", edition.url -%}
-{%- comment -%} Only an item from this edition leads. On a night with nothing published no item is promoted, and the sentence under the date leads instead (the outside reviews, 2026-09-14). {%- endcomment -%}
-{%- assign lead = tonight.first -%}
-{%- assign lead_shelf = lead.shelf | default: lead.theme -%}
+{%- assign takes = site.commentary | where_exp: "c", "c.title" | sort: "date" | reverse -%}
 {%- assign shelves = site.shelves | default: site.themes -%}
+
+{%- comment -%}
+Rule 2, the lead until stage 2, in order: the newest edition's top item if
+that edition has an article; else the newest commentary if it is at most
+lead_commentary_days old; else the newest article if it is at most
+lead_article_days old, shown with its date; else no lead. The two limits live
+in _data/reader_rules.yml and count back from the build. In stage 2 the story
+lead the owner picked (S1 and T1) replaces the first step.
+{%- endcomment -%}
+{%- assign now_s = site.time | date: "%s" | plus: 0 -%}
+{%- assign lead = nil -%}
+{%- assign lead_take = nil -%}
+{%- assign lead_dated = false -%}
+{%- if newest.items > 0 -%}
+  {%- assign lead = tonight.first -%}
+{%- else -%}
+  {%- assign take_days = site.data.reader_rules.lead_commentary_days | default: 7 -%}
+  {%- assign item_days = site.data.reader_rules.lead_article_days | default: 7 -%}
+  {%- assign newest_take = takes.first -%}
+  {%- if newest_take -%}
+    {%- assign take_s = newest_take.date | date: "%s" | plus: 0 -%}
+    {%- assign take_age = now_s | minus: take_s -%}
+    {%- assign take_max = take_days | times: 86400 -%}
+    {%- if take_age <= take_max -%}{%- assign lead_take = newest_take -%}{%- endif -%}
+  {%- endif -%}
+  {%- unless lead_take -%}
+    {%- assign cand = groups.first.items.first -%}
+    {%- if cand -%}
+      {%- assign item_s = cand.date | date: "%s" | plus: 0 -%}
+      {%- assign item_age = now_s | minus: item_s -%}
+      {%- assign item_max = item_days | times: 86400 -%}
+      {%- if item_age <= item_max -%}{%- assign lead = cand -%}{%- assign lead_dated = true -%}{%- endif -%}
+    {%- endif -%}
+  {%- endunless -%}
+{%- endif -%}
+{%- assign lead_shelf = lead.shelf | default: lead.theme -%}
 
 {% if edition %}
 <div class="edition" data-edition data-labels="soon ev">
   <header class="edition-head">
     <p class="kicker">Latest edition <span aria-hidden="true">·</span> <a href="#editions-h">Past editions</a></p>
     <h1 class="edition-h"><a href="{{ edition.url | relative_url }}">{{ edition.date | date: "%-d %B %Y" }}</a></h1>
-    {% if tonight.size == 0 %}
-    <p class="edition-lead">Nothing was published in this edition: none of the {{ edition.analyzed | default: 0 }} items read met the bar. Each shelf shows its latest items, with their dates.</p>
-    {% endif %}
-    {% include colophon.html edition=edition tonight=tonight shelves=shelves %}
+    {% include colophon.html edition=edition updated=newest tonight=tonight shelves=shelves %}
   </header>
+
+  {%- if lead_take %}
+  {%- assign on_n = lead_take.related.size | default: 0 -%}
+  {%- if lead_take.item_url -%}{%- assign on_n = on_n | plus: 1 -%}{%- endif -%}
+  {%- assign summary = lead_take.content | split: "</p>" | first | strip_html | strip -%}
+  {%- assign summary_words = summary | split: " " -%}
+  {%- if summary_words.size > 48 -%}
+  {%- assign summary = summary | truncatewords: 48, "" | strip -%}
+  {%- assign tail = summary | slice: -1 -%}
+  {%- if tail == "." or tail == "," or tail == ";" or tail == ":" %}{% assign cut = summary.size | minus: 1 %}{% assign summary = summary | slice: 0, cut %}{% endif -%}
+  {%- assign summary = summary | append: "…" -%}
+  {%- endif %}
+  <section class="lead-take" aria-labelledby="lead-take-h">
+    <p class="row-kicker">Commentary <span aria-hidden="true">·</span> <time datetime="{{ lead_take.date | date_to_xmlschema }}">{{ lead_take.date | date: "%-d %B" }}</time></p>
+    <h2 class="lead-take-title" id="lead-take-h"><a href="{{ lead_take.url | relative_url }}">{{ lead_take.title }}</a></h2>
+    <p class="row-meta">Bruno Coelho{% if on_n > 1 %} <span aria-hidden="true">·</span> on {{ on_n }} stories{% endif %}</p>
+    {%- if summary != "" %}
+    <p class="lead-take-text">{{ summary }}</p>
+    {%- endif %}
+  </section>
+  {%- endif %}
 
   {%- if tonight.size > 1 %}
   {% include in-edition.html items=tonight %}
@@ -37,22 +100,19 @@ edition first and each edition in its published rank.
 
   <div class="shelves">
     {%- for s in shelves -%}{%- if s.id == lead_shelf %}
-    {% include shelf.html shelf=s groups=groups lead=lead edition=edition %}
+    {% include shelf.html shelf=s groups=groups lead=lead dated=lead_dated edition=edition %}
     {%- endif -%}{%- endfor -%}
     {%- for s in shelves -%}{%- unless s.id == lead_shelf %}
-    {% include shelf.html shelf=s groups=groups lead=lead edition=edition %}
+    {% include shelf.html shelf=s groups=groups lead=lead dated=lead_dated edition=edition %}
     {%- endunless -%}{%- endfor %}
   </div>
   <p class="shelves-empty" hidden>Every shelf is hidden. Open Adjust to show one.</p>
 </div>
-{% else %}
-<p class="take-empty">No editions published yet.</p>
 {% endif %}
 
+{% if takes.size > 0 %}
 <section class="home-block" id="commentary" aria-labelledby="commentary-h">
   <h2 class="home-block-h" id="commentary-h">Commentary</h2>
-  {%- assign takes = site.commentary | where_exp: "c", "c.title" | sort: "date" | reverse %}
-  {% if takes.size > 0 %}
   <ul class="takes">
     {%- for take in takes limit:3 %}
     <li class="take">
@@ -61,22 +121,21 @@ edition first and each edition in its published rank.
     </li>
     {%- endfor %}
   </ul>
-  {% else %}
-  <p class="take-empty">Nothing written yet.</p>
-  {% endif %}
 </section>
+{% endif %}
 
+{% if with_items.size > 0 %}
 <section class="home-block" aria-labelledby="editions-h">
   <details class="editions">
     <summary><h2 class="home-block-h" id="editions-h" tabindex="-1">Past editions</h2></summary>
     <ul class="edition-list">
-      {%- for post in en_posts limit:30 %}
-      {%- assign pn = post.items | default: 0 %}
-      <li><a href="{{ post.url | relative_url }}"><span class="ed-date">{{ post.date | date: "%-d %b %Y, %H:%M" }} UTC</span><span class="ed-pub">{% if pn > 0 %}{{ pn }} published{% else %}none published{% endif %}</span><span class="ed-read">{{ post.analyzed | default: 0 }} read</span></a></li>
+      {%- for post in with_items limit:30 %}
+      <li><a href="{{ post.url | relative_url }}"><span class="ed-date">{{ post.date | date: "%-d %b %Y, %H:%M" }} UTC</span><span class="ed-pub">{{ post.items }} article{% if post.items != 1 %}s{% endif %}</span></a></li>
       {%- endfor %}
     </ul>
   </details>
 </section>
+{% endif %}
 
 <section class="home-block about" aria-labelledby="about-h">
   <h2 class="home-block-h" id="about-h">About the radar</h2>
