@@ -17,9 +17,9 @@ shelf id from `shelf_id`, else `theme_id`; an item's shelf from `shelf`, else
 {%- assign cols = 3 -%}{%- if labelled.size > 0 -%}{%- assign cols = 5 -%}{%- endif -%}
 <div class="ledger-page">
 
-  <header class="page-head">
+  <header class="page-head" data-hue="{{ shelf_id }}">
     <p class="kicker">Shelf</p>
-    <h1 class="page-title">{{ page.title }}</h1>
+    <h1 class="page-title shelf-sq">{{ page.title }}</h1>
     {% if page.question %}<p class="shelf-question">{{ page.question }}</p>{% endif %}
     {% if page.scope %}<p class="shelf-scope">{{ page.scope }}</p>{% endif %}
   </header>
