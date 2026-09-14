@@ -9,6 +9,10 @@ It exists because the two do not overlap. A drafted piece passed lint-voice
 cleanly while breaking the negative-to-positive rule three times, and nothing
 caught it until the file was read by hand.
 
+A source's exact words are not the author's, so a `quote:` in the front
+matter's `sources:` list is not checked when its entry carries a web address;
+every claim and the body still are, and the skipped lines are printed.
+
 Usage:
   python scripts/check_voice.py docs/_commentary/some-piece.md
 """
@@ -93,6 +97,103 @@ def _blank_comments(text: str) -> str:
     return COMMENT.sub(lambda m: "\n" * m.group(0).count("\n"), text)
 
 
+# ---------- source quotes ----------
+# A source's exact words are not the author's, so they are not checked. The
+# claims check asks a draft to quote each source verbatim, and a verbatim quote
+# of a source that writes "rather than" failed this gate, so the only way to
+# pass was to misquote. The owner's ruling, 2026-09-14 (design N-011, radar
+# N-352), is the rule Tenure's lint-voice.py carries since v1.4, repeated here
+# because a CI runner does not have that file. It errs toward checking: only a
+# `quote:` in a list entry of the front matter's `sources:` block is skipped,
+# and only when the same entry carries a web address anyone can open to check
+# the quote. Every `claim:` and the whole body are still checked, and the
+# skipped line numbers are printed so an exemption cannot hide in a clean run.
+YAML_KEY = re.compile(r"^(\s*)(-\s+)?([A-Za-z_][\w-]*)\s*:(\s|$)")
+WEB_URL = re.compile(r"^\s*(?:-\s+)?url\s*:\s*[\"']?https?://\S+")
+
+
+def source_quote_lines(lines: list) -> set:
+    """Line numbers of source quotes in a Markdown file's front matter.
+
+    The front matter opens on the first line and closes at the first `---` or
+    `...`. Inside its `sources:` block, a list entry's `quote:` is skipped when
+    the same entry has, at the same indent, a `url:` that is an http or https
+    address (an empty url, `~` or `TODO` does not count). The quote's
+    continuation lines are skipped only while they sit deeper than the `quote:`
+    key, so the next key ends it. Still checked: sources written as a mapping
+    rather than a list, a quote that sets a YAML anchor (its text could be
+    reused in a checked field), and anything outside the front matter.
+    """
+    if not lines or lines[0].strip() != "---":
+        return set()
+    end = next((k for k in range(1, len(lines)) if lines[k].strip() in ("---", "...")), None)
+    if end is None:
+        return set()
+    skip = set()
+
+    def key_of(text):
+        m = YAML_KEY.match(text)
+        return (len(m.group(1)) + len(m.group(2) or ""), m.group(3)) if m else (None, None)
+
+    def close(entry):
+        cols = [c for c, k in (key_of(t) for _, t in entry) if k == "quote"]
+        if not cols:
+            return
+        qc = cols[0]
+        if not any(WEB_URL.match(t) and key_of(t)[0] == qc for _, t in entry):
+            return
+        quoting = False
+        for n, t in entry:
+            c, k = key_of(t)
+            if k == "quote" and c == qc:
+                quoting = not re.match(r"^\s*(?:-\s+)?quote\s*:\s*&", t)
+                if quoting:
+                    skip.add(n)
+            elif quoting and not t.strip():
+                continue
+            elif quoting and len(t) - len(t.lstrip(" \t")) > qc:
+                skip.add(n)
+            else:
+                quoting = False
+
+    k = 1
+    while k < end:
+        if re.match(r"^sources\s*:\s*$", lines[k]):
+            k += 1
+            entry, started = [], False
+            while k < end and (lines[k][:1] in (" ", "\t", "-") or not lines[k].strip()):
+                if re.match(r"^\s*-(\s|$)", lines[k]):
+                    if started:
+                        close(entry)
+                    entry, started = [], True
+                if started:
+                    entry.append((k + 1, lines[k]))
+                k += 1
+            if started:
+                close(entry)
+            continue
+        k += 1
+    return skip
+
+
+def quoted_lines(path: Path) -> set:
+    """The source quote lines of a Markdown file; none for any other kind."""
+    if path.suffix.lower() not in {".md", ".markdown"}:
+        return set()
+    return source_quote_lines(path.read_text(encoding="utf-8").splitlines())
+
+
+def line_ranges(ns) -> str:
+    """1, 2, 3, 7 becomes "1-3, 7"."""
+    out = []
+    for n in sorted(ns):
+        if out and n == out[-1][1] + 1:
+            out[-1][1] = n
+        else:
+            out.append([n, n])
+    return ", ".join(str(a) if a == b else f"{a}-{b}" for a, b in out)
+
+
 def check(path: Path, names: list = ()) -> list:
     findings = []
     # The suppression marker is read from the raw line and the prose from the
@@ -100,8 +201,9 @@ def check(path: Path, names: list = ()) -> list:
     # first would delete the very marker that exempts the line.
     raw = path.read_text(encoding="utf-8").splitlines()
     scanned = _blank_comments("\n".join(raw)).splitlines()
+    quoted = quoted_lines(path)
     for n, (source, line) in enumerate(zip(raw, scanned), 1):
-        if SKIP.search(source):
+        if SKIP.search(source) or n in quoted:
             continue
         if names:
             line = _mask_names(line, names)
@@ -123,6 +225,11 @@ def main() -> int:
         if not path.exists():
             print(f"{path}: missing")
             return 2
+        quoted = quoted_lines(path)
+        if quoted:
+            print(f"{path}: {len(quoted)} source quote line(s) not checked, "
+                  f"lines {line_ranges(quoted)}: each is a sources: quote "
+                  f"with a web address beside it.")
         for n, name, found, remedy in check(path, names):
             total += 1
             print(f"{path}:{n}: [{name}] {found!r}. {remedy}")
