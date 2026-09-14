@@ -76,13 +76,35 @@ lead the owner picked (S1 and T1) replaces the first step.
   {%- if lead_take %}
   {%- assign on_n = lead_take.related.size | default: 0 -%}
   {%- if lead_take.item_url -%}{%- assign on_n = on_n | plus: 1 -%}{%- endif -%}
-  {%- assign summary = lead_take.content | split: "</p>" | first | strip_html | strip -%}
+  {%- comment -%}
+  The excerpt opens on what happened (the owner, 2026-09-15, "What happened"):
+  a paragraph naming who should read the piece is skipped. Past 48 words it
+  ends at the last full sentence, or with an ellipsis when that would leave
+  fewer than 20 words.
+  {%- endcomment -%}
+  {%- assign summary = "" -%}
+  {%- assign paras = lead_take.content | split: "</p>" -%}
+  {%- for p in paras -%}
+    {%- assign t = p | strip_html | strip -%}
+    {%- assign head = t | slice: 0, 20 | downcase -%}
+    {%- if t != "" and head != "who should read this" -%}{%- assign summary = t -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
   {%- assign summary_words = summary | split: " " -%}
   {%- if summary_words.size > 48 -%}
-  {%- assign summary = summary | truncatewords: 48, "" | strip -%}
-  {%- assign tail = summary | slice: -1 -%}
-  {%- if tail == "." or tail == "," or tail == ";" or tail == ":" %}{% assign cut = summary.size | minus: 1 %}{% assign summary = summary | slice: 0, cut %}{% endif -%}
-  {%- assign summary = summary | append: "…" -%}
+    {%- assign cut_text = summary | truncatewords: 48, "" | strip -%}
+    {%- assign parts = cut_text | split: ". " -%}
+    {%- assign whole = "" -%}
+    {%- for part in parts -%}{%- unless forloop.last -%}{%- assign whole = whole | append: part | append: ". " -%}{%- endunless -%}{%- endfor -%}
+    {%- assign whole = whole | strip -%}
+    {%- assign whole_words = whole | split: " " -%}
+    {%- if whole_words.size >= 20 -%}
+      {%- assign summary = whole -%}
+    {%- else -%}
+      {%- assign summary = cut_text -%}
+      {%- assign tail = summary | slice: -1 -%}
+      {%- if tail == "." or tail == "," or tail == ";" or tail == ":" %}{% assign cut = summary.size | minus: 1 %}{% assign summary = summary | slice: 0, cut %}{% endif -%}
+      {%- assign summary = summary | append: "…" -%}
+    {%- endif -%}
   {%- endif %}
   <section class="lead-take" aria-labelledby="lead-take-h">
     <p class="row-kicker">Commentary <span aria-hidden="true">·</span> <time datetime="{{ lead_take.date | date_to_xmlschema }}">{{ lead_take.date | date: "%-d %B" }}</time></p>
