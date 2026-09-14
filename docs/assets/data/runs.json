@@ -3104,5 +3104,152 @@
   "degraded": 0,
   "warnings": 13,
   "zero_sources": []
+ },
+ {
+  "run_id": "34901737518",
+  "event": "schedule",
+  "utc": "2026-09-14T22:23:19Z",
+  "funnel": {
+   "fetched": 213,
+   "gated": 97,
+   "analyzed": 97,
+   "ranked": 97,
+   "floor_rejected": 6,
+   "below_score": 1,
+   "published": 3,
+   "enriched": 3,
+   "tokens": 641106
+  },
+  "score_distribution": {
+   "1": 3,
+   "2": 9,
+   "3": 16,
+   "4": 23,
+   "5": 13,
+   "6": 19,
+   "7": 11,
+   "8": 3
+  },
+  "setwise": {
+   "picks": 74,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "reliability-assurance": 1,
+   "practice": 2
+  },
+  "published_scores": [
+   8.0,
+   7.0,
+   8.0
+  ],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "gregnavis",
+    "score": 8.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.CL",
+    "score": 7.0
+   },
+   {
+    "theme": "practice",
+    "source": "arXiv cs.SE",
+    "score": 8.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    4,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    2,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    12,
+    false
+   ],
+   "Hugging Face Blog": [
+    0,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    4,
+    false
+   ],
+   "Latitude Media": [
+    1,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    2,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    2,
+    false
+   ],
+   "Simon Willison": [
+    5,
+    false
+   ],
+   "TLDR AI": [
+    1,
+    false
+   ],
+   "The Verge - AI": [
+    4,
+    false
+   ],
+   "Utility Dive": [
+    5,
+    false
+   ],
+   "arXiv cs.AI": [
+    20,
+    false
+   ],
+   "arXiv cs.CL": [
+    20,
+    false
+   ],
+   "arXiv cs.LG": [
+    20,
+    false
+   ],
+   "arXiv cs.SE": [
+    20,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 16,
+  "zero_sources": []
  }
 ]
