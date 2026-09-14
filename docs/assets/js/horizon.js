@@ -1,23 +1,19 @@
 (function () {
   'use strict';
 
-  /** Replace ⭐️ N/10 with a colored badge in h2, h3, and li elements */
-  function processScoreBadges() {
-    var scoreRe = /⭐️\s*(\d+(?:\.\d+)?)\/10/;
+  /**
+   * Remove the "⭐️ N/10" text the edition renderer still writes beside each
+   * headline. No score is shown to readers (BACKLOG #36, option c). A stopgap:
+   * the renderer keeps writing it until the notifier is decoupled (N-212), and
+   * the redesign's theme replaces this file.
+   */
+  function stripScores() {
+    var scoreRe = /\s*⭐️?\s*\d+(?:\.\d+)?\/10/g;
     var targets = document.querySelectorAll('.main-content h2, .main-content h3, .main-content li');
     targets.forEach(function (el) {
-      var m = el.innerHTML.match(scoreRe);
-      if (!m) return;
-      var score = parseFloat(m[1]);
-      var tier;
-      if (score >= 9) tier = 'high';
-      else if (score >= 7) tier = 'good';
-      else if (score >= 5) tier = 'mid';
-      else tier = 'low';
-      el.innerHTML = el.innerHTML.replace(
-        scoreRe,
-        '<span class="score-badge" data-tier="' + tier + '">' + m[1] + '</span>'
-      );
+      if (!scoreRe.test(el.innerHTML)) return;
+      scoreRe.lastIndex = 0;
+      el.innerHTML = el.innerHTML.replace(scoreRe, '');
     });
   }
 
@@ -42,7 +38,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    processScoreBadges();
+    stripScores();
     markSemanticElements();
   });
 })();
