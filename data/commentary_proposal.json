@@ -1,26 +1,26 @@
 {
-  "title": "AI agents implicated in RubyGems credential-harvesting exploit chain",
+  "title": "Live GitHub admin token found in Baseten's public Docker image",
   "theme": "Reliability & Assurance",
   "score": 8.0,
-  "url": "https://tenderlovemaking.com/2026/09/11/what-a-time-to-be-alive/",
-  "item_url": "/item/2026-09-14-2223-01-ai-agents-implicated-in-rubygems-credential-harvesting-exploit-chain-en/",
-  "edition_url": "/2026/09/14/2223-summary-en.html",
-  "plain": "A technical writeup, publicized via a report on rubyhack.ai and covered by Reuters and the Wall Street Journal, describes gems (dubbed the 'GemStuffer Campaign' by socket.dev in May) that used a YARD documentation loader (.yardopts pointing to a script) to achieve remote code execution when RubyDoc.info processed newly",
+  "url": "https://www.strix.ai/blog/baseten-harbor-github-pat-takeover",
+  "item_url": "/item/2026-09-15-2224-01-live-github-admin-token-found-in-baseten-s-public-en/",
+  "edition_url": "/2026/09/15/2224-summary-en.html",
+  "plain": "An autonomous security-testing agent (Strix), run without credentials or source code access against Baseten's public-facing infrastructure, discovered a public Harbor container registry project and pulled an image named baseten/baseten-app. Inside the image's build history metadata it found a live GitHub personal acces",
   "angles": [
     {
-      "claim": "Any pipeline that executes package-supplied config like .yardopts inside a networked container is a code execution vector, not just RubyDoc.info's.",
-      "audience": "AI engineering leads running internal documentation, build, or artifact-processing pipelines for open source dependencies",
-      "rank_reason": "Directly changes what to check Monday: audit any automated tooling that processes untrusted package metadata inside containers with egress, a concrete and actionable control gap the source documents in detail."
+      "claim": "Any vendor whose Docker images you pull should be audited for secrets in build history metadata, not just final image layers.",
+      "audience": "AI engineering leads who vet and integrate third-party AI infrastructure vendors",
+      "rank_reason": "Directly actionable check that changes what an engineering leader inspects before or after onboarding a vendor, grounded in the article's own remediation guidance."
     },
     {
-      "claim": "Whether the RubyGems exploit was autonomous agent discovery or scripted misuse routed through agent infrastructure remains unresolved, and that ambiguity itself is the governance problem to plan for.",
-      "audience": "Directors and AI governance leads deciding what to ask about agent attribution and incident response",
-      "rank_reason": "Reaches the director's Thursday question about accountability and disclosure, but is one step more abstract than the direct pipeline fix, so it ranks below the concrete engineering action."
+      "claim": "A three-year-old credential still granting admin access shows that rotation on schedule, not just on incident, must be a governed control for vendor and internal tokens.",
+      "audience": "AI platform and security leads who set credential lifecycle policy",
+      "rank_reason": "Reaches the reader and changes policy, but is a narrower inference than the audit claim since the article documents discovery and remediation, not a rotation-cadence failure specifically."
     },
     {
-      "claim": "Teams should treat agents with tool use and internet access as capable of probing known vulnerabilities and harvesting credentials regardless of the operator's stated intent for those agents.",
-      "audience": "AI engineering leaders governing what agent tool permissions and internet access are granted in production",
-      "rank_reason": "Reaches the target reader and is grounded in the source's own framing, but is more general than the first two and offers less specific action to take this week."
+      "claim": "Fast vendor response to a disclosed breach does not substitute for verifying that build pipelines never persisted secrets in the first place.",
+      "audience": "Directors deciding what to ask vendors about security posture",
+      "rank_reason": "Useful boardroom question but softer on decision-changing force since it restates the article's contrast between responsiveness and direct testing rather than adding a new obligation."
     }
   ]
 }
