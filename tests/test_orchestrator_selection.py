@@ -329,3 +329,179 @@ def test_fixture_records_the_decisions_not_only_the_field(
     # candidates it judged, so a replay never rebuilds the sift's input from `summary`
     assert {e["id"]: (e["sift_input"]["title"], e["sift_input"]["source"], e["sift_input"]["brief"])
             for e in record["fetched"]} == shown
+
+
+# NEWS-Radar N-341 (the record carries no item dates). Recording only: each
+# fetched entry gains `published_at` and the contract gains the window's bounds.
+# The keys a fixture carried before it, so a test can say nothing else moved.
+_FIXTURE_KEYS = {"version", "contract", "fetched", "candidates", "gate",
+                 "ranked", "shortlist", "defend", "published", "rank_rounds"}
+_RECORDED_KEYS = _FIXTURE_KEYS - {"version", "contract"}
+_FETCHED_ENTRY_KEYS = {"id", "title", "source", "url", "author", "summary",
+                       "sift_input", "content"}
+
+
+def _record_a_night(orchestrator, monkeypatch, directory, items):
+    """Run ranked selection over `items` with stand-in stages; return (ids, result, record).
+
+    The gate keeps all but the last item, the defender refuses the first it
+    reads, and the analysis scores every survivor 8.0, so the funnel has a cut
+    at each stage for a comparison to notice.
+    """
+    from src.selection.contract import DefendVerdict, GateVerdict, SelectionResult
+
+    monkeypatch.chdir(directory)
+    (directory / "data").mkdir(exist_ok=True)
+    orchestrator.config.selection.min_score = 7.0
+
+    async def fake_analyze(subjects):
+        for item in subjects:
+            item.processing = _analysis(8.0)
+
+    async def fake_select(candidates, client, questions, settings, after_gate=None):
+        cands = list(candidates)
+        verdicts = [GateVerdict(id=c.id, keep=k < len(cands) - 1, theme="practice",
+                                reason="kept" if k < len(cands) - 1 else "dropped")
+                    for k, c in enumerate(cands)]
+        kept = cands[:-1]
+        if after_gate is not None:
+            kept = await after_gate(kept)
+        defended = [DefendVerdict(id=c.id, publish=k > 0, why="w", ai_nexus="about-ai")
+                    for k, c in enumerate(kept)]
+        return SelectionResult(
+            selected=[c for c, v in zip(kept, defended) if v.publish],
+            ranked_ids=[c.id for c in kept],
+            gate_kept=len(kept),
+            gate_dropped=len(cands) - len(kept),
+            defend_rejected=sum(1 for v in defended if not v.publish),
+            defend_verdicts=defended,
+            gate_verdicts=verdicts,
+            rank_rounds=[{"group": [c.id for c in kept], "winner": kept[0].id, "how": "first"}],
+        )
+
+    monkeypatch.setattr(orchestrator, "analyze_items", fake_analyze)
+    monkeypatch.setattr("src.orchestrator.create_ai_client", lambda cfg: object())
+    monkeypatch.setattr("src.orchestrator.run_selection", fake_select)
+
+    selected, result = asyncio.run(orchestrator.select_by_ranking(items))
+    written = list((directory / "data").glob("rank_fixture-*.json"))
+    assert len(written) == 1
+    return [i.id for i in selected], result, json.loads(written[0].read_text(encoding="utf-8"))
+
+
+def _dated_items(first, second):
+    """Three items: one dated in UTC, one in another zone, one with no date at all."""
+    from datetime import timedelta
+
+    items = _items(2)
+    items[0].published_at = first
+    items[1].published_at = second
+    undated = ContentItem.model_construct(
+        id="i2", source_type=SourceType.RSS, title="Item 2",
+        url="https://example.com/2", content="body 2",
+        metadata={"feed_name": "Utility Dive"}, profile=None, processing=None,
+    )
+    assert not hasattr(undated, "published_at")
+    return items + [undated]
+
+
+def test_every_fetched_entry_records_its_publication_time(
+    orchestrator, monkeypatch, tmp_path
+) -> None:
+    """(a) Each fetched entry carries `published_at`, in UTC, and null when the item has none."""
+    from datetime import timedelta
+
+    tokyo = timezone(timedelta(hours=9))
+    items = _dated_items(datetime(2026, 9, 14, 21, 0, tzinfo=timezone.utc),
+                         datetime(2026, 9, 14, 21, 0, tzinfo=tokyo))
+    _, _, record = _record_a_night(orchestrator, monkeypatch, tmp_path, items)
+
+    assert all("published_at" in e for e in record["fetched"])
+    by_id = {e["id"]: e["published_at"] for e in record["fetched"]}
+    assert by_id == {"i0": "2026-09-14T21:00:00+00:00",
+                     "i1": "2026-09-14T12:00:00+00:00",
+                     "i2": None}
+    for value in filter(None, by_id.values()):
+        assert datetime.fromisoformat(value).utcoffset() == timedelta(0)
+    # No window was computed on a direct call, so the bounds are null, not now.
+    assert record["contract"]["window_start"] is None
+    assert record["contract"]["window_end"] is None
+
+
+def test_the_contract_records_the_window_the_fetch_used(
+    orchestrator, monkeypatch, tmp_path
+) -> None:
+    """(b) window_start <= window_end, both parseable, and start is the `since` handed to the fetch."""
+    from datetime import timedelta
+
+    since = orchestrator._determine_time_window(force_hours=30)
+    items = _dated_items(datetime(2026, 9, 14, tzinfo=timezone.utc),
+                         datetime(2026, 9, 14, tzinfo=timezone.utc))
+    _, _, record = _record_a_night(orchestrator, monkeypatch, tmp_path, items)
+
+    start = datetime.fromisoformat(record["contract"]["window_start"])
+    end = datetime.fromisoformat(record["contract"]["window_end"])
+    assert start <= end
+    assert start == since
+    assert end - start == timedelta(hours=30)
+    assert start.utcoffset() == end.utcoffset() == timedelta(0)
+    assert set(record["contract"]["stamps"]) == {"window_start", "window_end"}
+
+
+def test_the_dates_change_no_other_key_and_no_funnel_value(
+    orchestrator, monkeypatch, tmp_path
+) -> None:
+    """(c) Recording only: wildly different dates and windows leave every decision and every other key alone."""
+    from datetime import timedelta
+
+    def strip(record):
+        record = json.loads(json.dumps(record))
+        for key in ("written_at", "window_start", "window_end", "stamps"):
+            record["contract"].pop(key)
+        for entry in record["fetched"]:
+            entry.pop("published_at")
+        return record
+
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    orchestrator._determine_time_window(force_hours=30)
+    ids_a, result_a, record_a = _record_a_night(
+        orchestrator, monkeypatch, tmp_path / "a",
+        _dated_items(datetime(2026, 9, 14, tzinfo=timezone.utc),
+                     datetime(2026, 9, 14, tzinfo=timezone(timedelta(hours=9)))))
+    orchestrator._determine_time_window(force_hours=1)
+    ids_b, result_b, record_b = _record_a_night(
+        orchestrator, monkeypatch, tmp_path / "b",
+        _dated_items(datetime(1999, 1, 1, tzinfo=timezone.utc),
+                     datetime(2031, 6, 30, tzinfo=timezone.utc)))
+
+    # The funnel: the same items published, gated, ranked, refused.
+    assert ids_a == ids_b == ["i1"]
+    assert (result_a.gate_kept, result_a.gate_dropped, result_a.defend_rejected,
+            result_a.ranked_ids) == (result_b.gate_kept, result_b.gate_dropped,
+                                     result_b.defend_rejected, result_b.ranked_ids)
+    # The record, less the new fields and the clock stamp, is identical.
+    assert record_a["contract"]["window_start"] != record_b["contract"]["window_start"]
+    assert strip(record_a) == strip(record_b)
+    # And its shape is the shape it had before N-341, plus exactly the new fields.
+    assert set(record_a) == _FIXTURE_KEYS
+    assert record_a["version"] == 3 and record_a["contract"]["version"] == 4
+    assert set(record_a["contract"]) == {"version", "written_at", "records",
+                                         "window_start", "window_end", "stamps"}
+    assert set(record_a["contract"]["records"]) == _RECORDED_KEYS
+    assert all(set(e) == _FETCHED_ENTRY_KEYS | {"published_at"}
+               for e in record_a["fetched"])
+
+
+def test_the_recorded_time_is_utc_or_null_and_never_raises() -> None:
+    """The helper sits inside a write that catches only OSError, so it must not raise."""
+    from datetime import timedelta
+
+    from src.orchestrator import _fixture_time
+
+    assert _fixture_time(datetime(2026, 9, 14, 21, 0, tzinfo=timezone(timedelta(hours=9)))) \
+        == "2026-09-14T12:00:00+00:00"
+    assert _fixture_time(datetime(2026, 9, 14, 21, 0)) == "2026-09-14T21:00:00+00:00"
+    assert _fixture_time(None) is None
+    assert _fixture_time("2026-09-14") is None
+    assert _fixture_time(datetime(1, 1, 1, tzinfo=timezone(timedelta(hours=9)))) is None

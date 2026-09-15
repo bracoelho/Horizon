@@ -200,6 +200,31 @@ def _fixture_summary(item: object) -> str:
     if summary.strip():
         return summary
     return (getattr(item, "content", "") or "")[:6000]
+
+
+def _fixture_time(value: object) -> Optional[str]:
+    """A moment as an ISO 8601 UTC string for the fixture's record, or None (NEWS-Radar N-341).
+
+    None when there is no datetime at all, never the fetch time in its place: a
+    record that fills a gap with "now" states a publication date nobody gave.
+    A value with no zone is recorded as UTC, which is how the scrapers build
+    their dates; the RSS window's own comparison with an aware `since` would
+    have failed the whole feed on a zoneless one before it reached here.
+
+    Never raises: the first fixture write catches only OSError, so an exception
+    here would cost the run rather than the record. A moment that cannot be
+    expressed in UTC (year 1 with a positive offset overflows) records null.
+    """
+    if not isinstance(value, datetime):
+        return None
+    try:
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc).isoformat()
+    except (OverflowError, ValueError):
+        return None
+
+
 class HorizonOrchestrator:
     """Orchestrates the complete workflow for content aggregation and analysis."""
 
@@ -251,6 +276,10 @@ class HorizonOrchestrator:
             else None
         )
         self.last_fetch_report: Optional[FetchReport] = None
+        # The collection window this run computed, as (start, end), for the rank
+        # fixture's contract only (NEWS-Radar N-341). No stage reads it; None
+        # until `_determine_time_window` runs, so a direct call records null.
+        self._window: Optional[tuple] = None
 
     async def run(self, force_hours: int = None) -> None:
         """Execute the complete workflow.
@@ -549,11 +578,15 @@ class HorizonOrchestrator:
             raise
 
     def _determine_time_window(self, force_hours: int = None) -> datetime:
+        # One clock read, so the recorded end is the very moment `since` was
+        # counted back from (NEWS-Radar N-341). `since` is unchanged.
+        now = datetime.now(timezone.utc)
         if force_hours:
-            since = datetime.now(timezone.utc) - timedelta(hours=force_hours)
+            since = now - timedelta(hours=force_hours)
         else:
             hours = self.config.collection.time_window_hours
-            since = datetime.now(timezone.utc) - timedelta(hours=hours)
+            since = now - timedelta(hours=hours)
+        self._window = (since, now)
         return since
 
     async def fetch_all_sources(self, since: datetime) -> List[ContentItem]:
@@ -1068,11 +1101,24 @@ class HorizonOrchestrator:
                      # number of merged duplicates (N-102). Nothing is lost, a
                      # merged item was caught under another id, but a key that
                      # is not what it is named misleads every future reader.
+                     # N-341 (the record carries no item dates): the window's
+                     # bounds sit here beside `written_at`, because they
+                     # describe the run rather than a data key. Their sentences
+                     # go in `stamps`, not `records`, so `records` still
+                     # documents exactly the data keys the file carries.
                      "contract": {
                          "version": 4,
                          "written_at": datetime.now().isoformat(timespec="seconds"),
+                         "window_start": _fixture_time(
+                             (getattr(self, "_window", None) or (None, None))[0]),
+                         "window_end": _fixture_time(
+                             (getattr(self, "_window", None) or (None, None))[1]),
+                         "stamps": {
+                             "window_start": "SINCE 2026-09-17 (N-341): the start of the collection window this run fetched from, the same `since` every scraper was handed, as ISO 8601 UTC. A feed declaring its own `window_hours` reads back further than this. Null when the run computed no window",
+                             "window_end": "SINCE 2026-09-17 (N-341): the moment that window was counted back from, as ISO 8601 UTC. Scrapers apply no upper cut, so an item dated after it is not an error. Null when the run computed no window",
+                         },
                          "records": {
-                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged. SINCE VERSION 4 each entry also carries `summary` (the analysis summary for an item the gate kept, the item's text for one it dropped), `content` (the article text capped at 6000 characters) and `author` (the publisher), FOR EVERY ITEM INCLUDING THE ONES THE GATE DROPPED. SINCE 2026-09-12 (N-281) each entry also carries `sift_input`: the title, source and 400-character brief the gate was shown, taken from the candidates it judged",
+                             "fetched": "every item that survived CROSS-SOURCE DEDUP, fewer than the funnel's fetched count by the number merged. SINCE VERSION 4 each entry also carries `summary` (the analysis summary for an item the gate kept, the item's text for one it dropped), `content` (the article text capped at 6000 characters) and `author` (the publisher), FOR EVERY ITEM INCLUDING THE ONES THE GATE DROPPED. SINCE 2026-09-12 (N-281) each entry also carries `sift_input`: the title, source and 400-character brief the gate was shown, taken from the candidates it judged. SINCE 2026-09-17 (N-341) each entry also carries `published_at`: the item's own publication time as its scraper set it, as ISO 8601 UTC, or null when the item has none, never the fetch time in its place. For a merged duplicate it is the kept copy's time",
                              "gate": "one entry per fetched item: the gate's verdict, its theme and its reason",
                              "candidates": "the gate's survivors, each with the analysis score and the article text the defender reads, capped at 6000 characters",
                              "ranked": "the full ranked order, longer than the shortlist by the leads held back",
@@ -1109,6 +1155,8 @@ class HorizonOrchestrator:
                           or getattr(getattr(i, "source_type", None),
                                      "value", ""),
                           "url": str(getattr(i, "url", "") or ""),
+                          "published_at": _fixture_time(
+                              getattr(i, "published_at", None)),
                           "author": getattr(i, "author", None) or "",
                           "summary": _fixture_summary(i),
                           "sift_input": sift_shown.get(i.id),
