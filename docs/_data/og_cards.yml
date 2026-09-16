@@ -1,0 +1,31 @@
+# The radar's link preview pictures (radar N-360, the radar's link previews
+# carry no picture). Four cards, all built and all real, on the owner's "Build
+# all four, then I chose what goes where and how".
+#
+# WHICH CARD GOES WHERE IS HIS. On 2026-09-16 he set the first assignment in
+# the radar master's seat: "Wordmark as the default now, refine after". So every
+# page carries the wordmark until he refines it, which is this one line, and any
+# page may override it in its front matter with `og_card: <key>`.
+#
+# Each picture is 1200 x 627, the size LinkedIn shows a link at, and sits in
+# assets/img/. The alt text says what the picture shows, for a reader who
+# cannot see it.
+
+default: "wordmark"
+
+cards:
+  wordmark:
+    file: /assets/img/og-wordmark-1200x627.png
+    alt: "AI Radar, curated by Bruno Coelho"
+  shelves:
+    file: /assets/img/og-shelves-1200x627.png
+    alt: "AI Radar and its five shelves: Reliability and Assurance, Critical Infrastructure, Business and Markets, Practice, and Horizon"
+  field:
+    file: /assets/img/og-field-1200x627.png
+    alt: "AI Radar, beside a field of squares with a few marked in the shelf colours"
+  # A PLACEHOLDER until he supplies his own photograph. Do not assign this key
+  # to a page before the photograph replaces the grey panel, and rename the
+  # file when it does.
+  portrait:
+    file: /assets/img/og-portrait-placeholder-1200x627.png
+    alt: "AI Radar, curated by Bruno Coelho, beside his photograph"
