@@ -1,26 +1,26 @@
 {
-  "title": "Live GitHub admin token found in Baseten's public Docker image",
+  "title": "Bias Audit Scores Disagree on Model Ranking Across Ten Instruments",
   "theme": "Reliability & Assurance",
   "score": 8.0,
-  "url": "https://www.strix.ai/blog/baseten-harbor-github-pat-takeover",
-  "item_url": "/item/2026-09-15-2224-01-live-github-admin-token-found-in-baseten-s-public-en/",
-  "edition_url": "/2026/09/15/2224-summary-en.html",
-  "plain": "An autonomous security-testing agent (Strix), run without credentials or source code access against Baseten's public-facing infrastructure, discovered a public Harbor container registry project and pulled an image named baseten/baseten-app. Inside the image's build history metadata it found a live GitHub personal acces",
+  "url": "https://arxiv.org/abs/2609.15995",
+  "item_url": "/item/2026-09-16-2151-01-bias-audit-scores-disagree-on-model-ranking-across-ten-en/",
+  "edition_url": "/2026/09/16/2151-summary-en.html",
+  "plain": "A study ran ten extrinsic bias audit instruments over a shared panel of ten frontier language models through a single pooled inference gateway, testing occupational gender bias and then replicating on age and socioeconomic status. Eight of the ten tools detected bias with confidence intervals clear of zero, but cross-t",
   "angles": [
     {
-      "claim": "Any vendor whose Docker images you pull should be audited for secrets in build history metadata, not just final image layers.",
-      "audience": "AI engineering leads who vet and integrate third-party AI infrastructure vendors",
-      "rank_reason": "Directly actionable check that changes what an engineering leader inspects before or after onboarding a vendor, grounded in the article's own remediation guidance."
+      "claim": "A single bias audit score used to certify or rank vendors during procurement is not valid evidence, regardless of which tool produced it.",
+      "audience": "AI governance and procurement leads inside utilities certifying vendor models for fairness compliance",
+      "rank_reason": "Directly changes a procurement and compliance decision: certification on one instrument must stop, and the study's own concordance test (W=0.07) supports this without extrapolation."
     },
     {
-      "claim": "A three-year-old credential still granting admin access shows that rotation on schedule, not just on incident, must be a governed control for vendor and internal tokens.",
-      "audience": "AI platform and security leads who set credential lifecycle policy",
-      "rank_reason": "Reaches the reader and changes policy, but is a narrower inference than the audit claim since the article documents discovery and remediation, not a rotation-cadence failure specifically."
+      "claim": "Detection and ranking are separate claims, so a tool that reliably flags bias cannot be trusted to say which of two models is fairer.",
+      "audience": "Engineers building or selecting bias evaluation pipelines for production model governance",
+      "rank_reason": "Gives engineers a concrete Monday check (does our pipeline conflate detection with ranking) but is narrower than the procurement-level decision above."
     },
     {
-      "claim": "Fast vendor response to a disclosed breach does not substitute for verifying that build pipelines never persisted secrets in the first place.",
-      "audience": "Directors deciding what to ask vendors about security posture",
-      "rank_reason": "Useful boardroom question but softer on decision-changing force since it restates the article's contrast between responsiveness and direct testing rather than adding a new obligation."
+      "claim": "Audit format, not just tool choice, determines the direction of a bias finding, so switching from forced-choice to free-generation testing can flip the reported bias.",
+      "audience": "Teams designing or auditing bias test suites who must choose which instrument format to standardize on",
+      "rank_reason": "Actionable and specific to the study's format-split finding, but it informs a technical design choice rather than a governance or procurement decision, so it ranks last."
     }
   ]
 }
