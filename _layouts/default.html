@@ -3,8 +3,68 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.title and page.title != 'Home' %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-    <meta name="description" content="{{ page.description | default: site.description }}">
+    {%- comment -%}
+    Which page is the home page is decided by its ADDRESS, not by its title.
+    Both this tag and og:title below used to key on the literal string "Home",
+    which is front matter a person can rename: renaming it would have sent the
+    home page's link preview back to reading "Home", and any other page ever
+    titled "Home" would have inherited the site's sentence. The radar master
+    flagged it, 2026-09-17, as a mutable surface used as a key. `page.url` is
+    "/" for the home page and for nothing else.
+    {%- endcomment -%}
+    {%- assign is_home = false -%}
+    {%- if page.url == "/" -%}{%- assign is_home = true -%}{%- endif -%}
+    {%- comment -%} A page with no title of its own reads as the site too. {%- endcomment -%}
+    {%- assign own_title = false -%}
+    {%- if page.title and is_home == false -%}{%- assign own_title = true -%}{%- endif -%}
+    <title>{% if own_title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+    {%- comment -%}
+    The description tags, and only these, take the long sentence in
+    _data/site_text.yml when a page carries none of its own (LinkedIn's Post
+    Inspector asks for at least 100 characters; site.description is 58). The
+    masthead's visible line and the home page's og:title below keep
+    site.description, because lengthening that field would rewrite the
+    reader's tagline and truncate the card headline. The data file says why.
+    {%- endcomment -%}
+    {%- assign long_desc = site.data.site_text.search_description | default: site.description -%}
+    {%- comment -%}
+    A page of its own describes itself, radar N-379 (pages inherit the site's
+    description). Counted on the deploy branch by the radar master, 2026-09-17:
+    110 item documents, none carrying a description, so every one of them
+    advertised the site rather than the article on it.
+
+    An ITEM's body opens with the one sentence that characterises it, so the
+    description is taken from the body's own words and never written here.
+    An EDITION composes from two facts its front matter already carries, the
+    articles published and the items read.
+    A COMMENTARY derives NOTHING. Its summary sits under a heading in the
+    owner's prose, and his standing rule is that the structure in his final
+    version is input rather than deviation: the radar master counted three of
+    the five headings the template prescribes already gone from the published
+    pieces. A layout keyed on that would silently describe every commentary
+    with the wrong paragraph. A commentary describes itself with a
+    `description:` in its front matter, written by whoever writes the piece,
+    or it inherits the site sentence as it does today.
+    {%- endcomment -%}
+    {%- assign own_desc = page.description -%}
+    {%- unless own_desc -%}
+      {%- if page.layout == "item" -%}
+        {%- comment -%}
+        The span is the item's FIRST PARAGRAPH, capped at 22 words. Not the
+        first sentence, and not the first 25 words of the body: that earlier
+        cut ran past a short opening paragraph into the line that names the
+        feed and the date. Nothing is padded when the paragraph is short. An
+        item whose enrichment failed publishes thin by the pipeline's own
+        design, so a minimum length is not a property of the radar and must
+        not be manufactured here.
+        {%- endcomment -%}
+        {%- assign own_desc = page.content | markdownify | split: "</p>" | first | strip_html | normalize_whitespace | truncatewords: 22 -%}
+      {%- elsif page.collection == "posts" and page.items and page.analyzed -%}
+        {%- capture own_desc -%}{{ site.title }}, edition of {{ page.date | date: "%-d %B %Y" }}: {{ page.items }} articles published from {{ page.analyzed }} items read, each with what changed and who should check it.{%- endcapture -%}
+      {%- endif -%}
+    {%- endunless -%}
+    {%- assign meta_desc = own_desc | default: long_desc -%}
+    <meta name="description" content="{{ meta_desc }}">
     <meta name="author" content="Bruno Coelho">
 
     <link rel="canonical" href="{{ page.url | absolute_url }}">
@@ -14,19 +74,25 @@
     {%- comment -%}
     The home page's og:title read "Home", because its front matter says so
     (radar N-360). A link to the site now carries the site's own title and
-    line; every other page keeps its own title.
+    line; every other page keeps its own title. The home branch takes the
+    SHORT site.description on purpose: with the long sentence this headline
+    would run past 170 characters and a card would cut it mid-word. The owner
+    chose that split, 2026-09-17, relayed from the radar master's seat.
     {%- endcomment -%}
-    <meta property="og:title" content="{% if page.title and page.title != 'Home' %}{{ page.title }}{% else %}{{ site.title }} · {{ site.description }}{% endif %}">
-    <meta property="og:description" content="{{ page.description | default: site.description }}">
+    <meta property="og:title" content="{% if own_title %}{{ page.title }}{% else %}{{ site.title }} · {{ site.description }}{% endif %}">
+    <meta property="og:description" content="{{ meta_desc }}">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     {%- comment -%}
-    The link preview picture (radar N-360). _data/og_cards.yml holds the four
-    cards; a page names one in its front matter as `og_card: wordmark`, else
-    the file's `default` applies. WHICH CARD GOES WHERE IS THE OWNER'S: until
-    he names it, `default` is empty, no og:image is written, and the card
-    stays "summary", exactly as the site reads today.
+    The link preview picture (radar N-360). _data/og_cards.yml holds the
+    cards. Three ways a page gets one, first match winning: its own front
+    matter (`og_card: wordmark`), then the card set for its KIND of page in
+    `by_layout` (the owner gave the commentary pages the portrait), then the
+    file's `default`. WHICH CARD GOES WHERE IS THE OWNER'S. With no card
+    named at any of the three, no og:image is written and the card stays
+    "summary".
     {%- endcomment -%}
-    {%- assign og_key = page.og_card | default: site.data.og_cards.default -%}
+    {%- assign og_kind = site.data.og_cards.by_layout[page.layout] -%}
+    {%- assign og_key = page.og_card | default: og_kind | default: site.data.og_cards.default -%}
     {%- assign og = site.data.og_cards.cards[og_key] -%}
     {%- if og and og.file -%}
     <meta property="og:image" content="{{ og.file | absolute_url }}">
