@@ -1,0 +1,19 @@
+# The site's own sentences, where one string was doing several jobs.
+#
+# `description:` in _config.yml has three consumers in this theme, and only one
+# of them is metadata:
+#   _includes/masthead.html  the visible tagline under the wordmark, on every page
+#   _layouts/default.html:19 the home page's og:title, "AI Radar · <description>"
+#   _layouts/default.html:7 and :20  the meta description and og:description
+# So lengthening that one field to satisfy a search result would also rewrite
+# the reader's tagline and push the home page's link headline past the length a
+# card draws. The radar master measured both, 2026-09-17, before anything was
+# changed. The field stays short and the long sentence lives here instead.
+#
+# `search_description` is read ONLY by the two description tags, and only when a
+# page carries no description of its own. LinkedIn's Post Inspector asks for at
+# least 100 characters; the short line is 58 and this is 161. The words are the
+# owner's, chosen 2026-09-17, and follow the site's register: items for what
+# arrives, articles for what the radar publishes, stories for what a commentary
+# ties together, since some of those were published elsewhere.
+search_description: "Early warning on AI and agentic AI. Several hundred items are read each day, a handful publish as articles, and the commentary ties the related stories together."

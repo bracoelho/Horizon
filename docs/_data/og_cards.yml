@@ -13,6 +13,15 @@
 
 default: "wordmark"
 
+# A KIND of page can carry its own card without anything being written into
+# each page's front matter, which the pipeline writes and design does not
+# touch. The key is the layout the page names. The owner, 2026-09-17: the
+# portrait "earns its place" on the commentary pages, where the piece is his
+# judgement and the link often travels without him attached to it. Every other
+# page kind still takes `default` above.
+by_layout:
+  commentary: "portrait"
+
 cards:
   wordmark:
     file: /assets/img/og-wordmark-1200x627.png
@@ -23,9 +32,10 @@ cards:
   field:
     file: /assets/img/og-field-1200x627.png
     alt: "AI Radar, beside a field of squares with a few marked in the shelf colours"
-  # A PLACEHOLDER until he supplies his own photograph. Do not assign this key
-  # to a page before the photograph replaces the grey panel, and rename the
-  # file when it does.
+  # His own photograph, sent 2026-09-17, in the treatment he picked: the
+  # picture runs the full height of the card with one hairline where it meets
+  # the ink. The grey placeholder it replaces is gone. The source and the card
+  # that draws it are in cards/2026-09-16-radar-og-portrait/.
   portrait:
-    file: /assets/img/og-portrait-placeholder-1200x627.png
+    file: /assets/img/og-portrait-1200x627.png
     alt: "AI Radar, curated by Bruno Coelho, beside his photograph"
