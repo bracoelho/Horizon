@@ -1,26 +1,26 @@
 {
-  "title": "Bias Audit Scores Disagree on Model Ranking Across Ten Instruments",
+  "title": "Paper Proposes Label-Efficient Statistical Test for Model Update Regressions",
   "theme": "Reliability & Assurance",
-  "score": 8.0,
-  "url": "https://arxiv.org/abs/2609.15995",
-  "item_url": "/item/2026-09-16-2151-01-bias-audit-scores-disagree-on-model-ranking-across-ten-en/",
-  "edition_url": "/2026/09/16/2151-summary-en.html",
-  "plain": "A study ran ten extrinsic bias audit instruments over a shared panel of ten frontier language models through a single pooled inference gateway, testing occupational gender bias and then replicating on age and socioeconomic status. Eight of the ten tools detected bias with confidence intervals clear of zero, but cross-t",
+  "score": 7.0,
+  "url": "https://arxiv.org/abs/2609.17560",
+  "item_url": "/item/2026-09-17-2153-01-paper-proposes-label-efficient-statistical-test-for-model-update-en/",
+  "edition_url": "/2026/09/17/2153-summary-en.html",
+  "plain": "A newly posted arXiv paper introduces DISCERN, a sequential two-tier statistical protocol for certifying whether a model update (retraining, fine-tuning, quantization, or vendor swap) is at least as good as the model it replaces, using mostly unlabeled traffic. The method exploits the fact that risk differences between",
   "angles": [
     {
-      "claim": "A single bias audit score used to certify or rank vendors during procurement is not valid evidence, regardless of which tool produced it.",
-      "audience": "AI governance and procurement leads inside utilities certifying vendor models for fairness compliance",
-      "rank_reason": "Directly changes a procurement and compliance decision: certification on one instrument must stop, and the study's own concordance test (W=0.07) supports this without extrapolation."
+      "claim": "Sign-off on a model update should require a disagreement-rate certificate, not a passed spot-check against a fixed metric threshold.",
+      "audience": "AI engineering leads who approve model promotions in utilities and critical infrastructure",
+      "rank_reason": "Directly changes what an engineer checks before promoting an update, and is exactly what the paper's zero-label tier supports."
     },
     {
-      "claim": "Detection and ranking are separate claims, so a tool that reliably flags bias cannot be trusted to say which of two models is fairer.",
-      "audience": "Engineers building or selecting bias evaluation pipelines for production model governance",
-      "rank_reason": "Gives engineers a concrete Monday check (does our pipeline conflate detection with ranking) but is narrower than the procurement-level decision above."
+      "claim": "Ask what fraction of promoted updates were certified with zero labels versus how many were rubber-stamped on partial manual review.",
+      "audience": "Directors who oversee model update governance",
+      "rank_reason": "Gives a concrete Thursday question a director can ask, grounded in the paper's 56% zero-label certification figure, though it acts on a single unreplicated study."
     },
     {
-      "claim": "Audit format, not just tool choice, determines the direction of a bias finding, so switching from forced-choice to free-generation testing can flip the reported bias.",
-      "audience": "Teams designing or auditing bias test suites who must choose which instrument format to standardize on",
-      "rank_reason": "Actionable and specific to the study's format-split finding, but it informs a technical design choice rather than a governance or procurement decision, so it ranks last."
+      "claim": "A vendor swap or quantization pass should be treated as a regression risk requiring a labeling budget plan, not a deployment formality.",
+      "audience": "AI engineering leads managing vendor model swaps and quantization pipelines",
+      "rank_reason": "Reframes a routine operational step as a governed decision point, weaker than the first two because it restates the paper's scope list rather than its statistical result."
     }
   ]
 }
