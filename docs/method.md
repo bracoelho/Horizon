@@ -15,7 +15,7 @@ description: How items are found, scored, compared and written up, and what has 
 
 <div class="pipeline" markdown="1">
 
-`read` → `deduplicate` → `sift on title and summary` → `score what survives` → `rank the survivors against each other` → `argue the case for the strongest` → `research` → `publish what clears the floor`
+`read` → `deduplicate` → `sift on title and summary` → `score what survives` → `rank the survivors against each other` → `set aside anything that came through a news aggregator` → `carry the strongest few forward` → `argue the case for each` → `research` → `publish what clears the floor`
 
 </div>
 
@@ -44,6 +44,8 @@ description: How items are found, scored, compared and written up, and what has 
 
 <p class="method-note">A first pass reads every item's title and summary and drops what has no bearing on the radar's subject. What survives is scored 0 to 10 for significance against its theme's rubric. The scored items are then ranked against each other, so what publishes depends on the strength of that day's field. The strongest few are taken one at a time and argued individually, each on the single question of whether a reader would act on it, and most are refused at that stage. A significance floor applies last, so nothing reaches the page on rank alone.</p>
 
+<p class="method-note">Some items reach the radar through a news aggregator, which passes on a headline, a publisher's name and a link rather than the article itself. Anything arriving that way is set aside before the arguing starts. The rule reads where an item came from and nothing else, so it also holds back an aggregator item that does carry an article, and it leaves alone a bare headline that arrived from anywhere else. Ten items are argued, as things stand, and a place an aggregator item loses passes to the next item that did not arrive that way. The cost is worth stating plainly: on one night in September a story carried by twelve separate publishers reached the radar entirely through one aggregator, and the ranking had placed one of its items fourth out of 133 before the rule set it aside. On a thin night the rule can take more than the field can spare, and once in eleven nights of full records it left seven items to argue over ten places. No score can override it.</p>
+
 <p class="method-note">A rigorous negative result scores above a marginal positive one. Popularity is not evidence of importance, and a confident headline is not evidence of anything. Research is the largest category by volume and the smallest by decisions changed: on a normal weekday, arXiv alone supplies more than five hundred items.</p>
 
 <p class="method-note">Most editions carry very few items and some carry none, which is a judgement and not a fault.</p>
@@ -53,5 +55,7 @@ description: How items are found, scored, compared and written up, and what has 
 <h2 class="section-label">The point</h2>
 
 <p class="method-note">Reading everything is cheap now. Judgement is the scarce part, so the effort goes there: choosing what earns attention, and saying why. The commentary is where that judgement gets argued in public.</p>
+
+<p class="method-note">The stages above were filmed on one night, 9 September 2026, from the first feed to the four articles it published: <a href="{{ '/versions/v1/' | relative_url }}">one night, end to end</a>. It records the selection as it runs today, including what it got wrong that night.</p>
 
 <p class="method-note">The sources, the themes, the scoring rubrics and the selection stage that decides what publishes are my own. A model does the scoring and the background research, against those rubrics. Collection and delivery run on <a href="https://github.com/Thysrael/Horizon">Horizon</a>, an open source pipeline. <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a>.</p>

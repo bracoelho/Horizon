@@ -91,6 +91,17 @@ img { max-width: 100%; height: auto; }
 .lab[data-v="now"] { color: var(--accent); border-color: var(--accent); }
 .page-head { max-width: var(--measure); margin-bottom: var(--s-8); }
 .page-title { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: 500; line-height: 1.08; letter-spacing: -0.01em; margin: 0 0 var(--s-3); text-wrap: balance; }
+/* The film on a version page. It is the page's one heavy asset, so it loads
+   nothing until a reader asks: poster, preload none, no autoplay and no loop.
+   There is no audio track and every word is on screen, so muted costs the
+   reader nothing. The caption carries what the film cannot say about itself. */
+.film { margin: 0 0 var(--s-8); }
+.film-video { display: block; width: 100%; height: auto; background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); }
+.film-caption { max-width: var(--measure); margin-top: var(--s-4); font-size: var(--text-sm); line-height: 1.6; color: var(--graphite); }
+.sub-facts + .method-note { margin-top: var(--s-6); }
+.film-close-label { max-width: var(--measure); margin: var(--s-8) 0 var(--s-2); font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.08em; color: var(--graphite); }
+.film-close-label + .film-close { margin-top: 0; }
+.film-close { max-width: var(--measure); margin: var(--s-8) 0 0; font-family: var(--font-display); font-size: var(--text-xl); font-weight: 500; line-height: 1.25; color: var(--ink); }
 .page-back { margin-top: var(--s-12); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--graphite); }
 .take-empty { color: var(--graphite); }
 
