@@ -54,4 +54,4 @@ description: How items are found, scored, compared and written up, and what has 
 
 <p class="method-note">Reading everything is cheap now. Judgement is the scarce part, so the effort goes there: choosing what earns attention, and saying why. The commentary is where that judgement gets argued in public.</p>
 
-<p class="method-note">Built on <a href="https://github.com/Thysrael/Horizon">Horizon</a>, an open source pipeline, with Claude doing the scoring and background research. The sources, the themes, the scoring rubrics and the selection stage built on top are my own. <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a>.</p>
+<p class="method-note">The sources, the themes, the scoring rubrics and the selection stage that decides what publishes are my own. A model does the scoring and the background research, against those rubrics. Collection and delivery run on <a href="https://github.com/Thysrael/Horizon">Horizon</a>, an open source pipeline. <a href="{{ '/subscribe/' | relative_url }}">Follow the radar</a>.</p>
