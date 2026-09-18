@@ -1,26 +1,26 @@
 {
-  "title": "Paper Proposes Label-Efficient Statistical Test for Model Update Regressions",
+  "title": "AI-Hallucinated Intelligence Report Nearly Triggered US Military Strike on Chinese Ship",
   "theme": "Reliability & Assurance",
-  "score": 7.0,
-  "url": "https://arxiv.org/abs/2609.17560",
-  "item_url": "/item/2026-09-17-2153-01-paper-proposes-label-efficient-statistical-test-for-model-update-en/",
-  "edition_url": "/2026/09/17/2153-summary-en.html",
-  "plain": "A newly posted arXiv paper introduces DISCERN, a sequential two-tier statistical protocol for certifying whether a model update (retraining, fine-tuning, quantization, or vendor swap) is at least as good as the model it replaces, using mostly unlabeled traffic. The method exploits the fact that risk differences between",
+  "score": 9.0,
+  "url": "https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
+  "item_url": "/item/2026-09-18-2126-01-ai-hallucinated-intelligence-report-nearly-triggered-us-military-strik-en/",
+  "edition_url": "/2026/09/18/2126-summary-en.html",
+  "plain": "According to a CNN investigation citing four sources familiar with the episode, a US special operations command analyst used a chatbot this spring, during the war with Iran, to analyze intelligence on a Chinese ship's manifest, and the tool fused open-source intelligence with classified signals intelligence to produce ",
   "angles": [
     {
-      "claim": "Sign-off on a model update should require a disagreement-rate certificate, not a passed spot-check against a fixed metric threshold.",
-      "audience": "AI engineering leads who approve model promotions in utilities and critical infrastructure",
-      "rank_reason": "Directly changes what an engineer checks before promoting an update, and is exactly what the paper's zero-label tier supports."
+      "claim": "Formatting an AI output into a standard report template is itself a risk control failure, since it launders unverified content into a trusted document class.",
+      "audience": "AI engineering leads governing intelligence and operational reporting pipelines in critical infrastructure",
+      "rank_reason": "Directly actionable: it tells engineers to audit whether their systems let AI outputs auto-populate authoritative templates without a provenance flag, which changes what gets built and reviewed."
     },
     {
-      "claim": "Ask what fraction of promoted updates were certified with zero labels versus how many were rubber-stamped on partial manual review.",
-      "audience": "Directors who oversee model update governance",
-      "rank_reason": "Gives a concrete Thursday question a director can ask, grounded in the paper's 56% zero-label certification figure, though it acts on a single unreplicated study."
+      "claim": "Human-in-the-loop review should not be certified as a safety control unless the reviewer's time, training, and incentive to doubt the tool are documented and tested.",
+      "audience": "Directors and engineering leaders who sign off on AI governance controls",
+      "rank_reason": "Reaches the director's Thursday question directly, but is one step more general than the specific formatting failure, so it ranks second."
     },
     {
-      "claim": "A vendor swap or quantization pass should be treated as a regression risk requiring a labeling budget plan, not a deployment formality.",
-      "audience": "AI engineering leads managing vendor model swaps and quantization pipelines",
-      "rank_reason": "Reframes a routine operational step as a governed decision point, weaker than the first two because it restates the paper's scope list rather than its statistical result."
+      "claim": "Decentralized AI adoption without a shared verification standard means the same failure can recur differently in every unit, so central engineering must own a minimum bar rather than leaving it to local practice.",
+      "audience": "AI engineering and governance leads at multi-unit critical infrastructure operators",
+      "rank_reason": "Still actionable and grounded in the reporting's point about no unified standard, but it is an organizational policy claim rather than a technical check, so it goes third."
     }
   ]
 }
