@@ -68,21 +68,38 @@ CONTENT_CHARS = 6000
 # AND THE PRICE TABLE THEY WERE COMPUTED FROM, which is the part that cannot be
 # checked for staleness without being named here (NEWS-Radar N-491). Both rates
 # are a TOKEN COUNT multiplied by 2 and 10 USD per million synchronous, halved
-# on the Batch API. No bill anchors that table. The lab prices the same model,
-# claude-sonnet-5 by each receipt's own `models_served`, at 3 and 15, exactly
-# 1.5 times these, and the only bill-anchored rate in the constellation sits
-# above both (NEWS-Radar N-320, N-481). So this estimator is anchored to the
-# LOWER of two tables for one model, and hardening a rate against its own
-# measured spread cannot detect an error in the table every member of that
-# spread was computed from.
+# on the Batch API. NO BILL ANCHORS THAT TABLE, and that is the defect: hardening
+# a rate against its own measured spread cannot detect an error in the table
+# every member of that spread was computed from.
 #
-# WHAT THAT COSTS THE CEILING, measured over the 21 retained nights rather than
-# argued: at six runs this table admits 128 candidates as 3.98 USD, and those
-# same 128 cost 5.96 at the lab's table, a 49 per cent breach that never fires.
-# The ceiling refuses 5 of 21 nights on this table and 15 of 21 on the lab's.
-# AT THREE RUNS IT REFUSES 0 OF 21 ON EITHER, which is the coupling worth
-# carrying: the 4 USD ceiling is only safe under a price table nobody has
-# anchored IF the run count is three. One console reading re-anchors both.
+# CORRECTED 2026-09-18 19:13 JST (NEWS-Radar N-495), AND THE SENTENCES THIS REPLACES
+# ARE NAMED RATHER THAN QUIETLY DROPPED. This block said the lab prices the same
+# model at 3 and 15, that this estimator is therefore "anchored to the LOWER of
+# two tables", and that at six runs the ceiling "refuses 5 of 21 nights on this
+# table and 15 of 21 on the lab's". THE FRAMING WAS WRONG AND IT CAME FROM ONE
+# FILE. Read across that home rather than in it: `e1_analyse.py` and
+# `e24_analyse.py` both price sonnet at (2.0, 10.0), the first carrying its own
+# provenance ("read at the router 2026-09-13"), and OS `tools/ledger.py` records
+# Sonnet 5 at $2/$10 "Read 2026-09-05 from platform.claude.com/docs/en/models/
+# overview". Only `lab_cost.py` holds (3.00, 15.00), with no provenance at all,
+# and it is the file that pointed here. So this pair is what two homes and two
+# dated readings agree on, and 3/15 is a lone unsourced outlier rather than a
+# considered second position.
+#
+# THE RULE IT EARNS: READING THE FILE A POINTER NAMES IS NOT ENOUGH, BECAUSE A
+# FILE CAN MISREPRESENT ITS OWN NEIGHBOURHOOD. What settles a cross-home
+# disagreement is a grep across the home, never a read of the file that started
+# it.
+#
+# THE BRACKET STILL OPENS UPWARD, on N-481's evidence rather than on 3/15: the
+# production leg is the only leg in the composed night anchored to a BILL, and it
+# reads about 4.34 USD per million blended, above this table. A console reading
+# at row 3.8 re-anchors the estimator, the ceiling and every night figure at once.
+#
+# WHAT DOES NOT CHANGE, and it is why the owner's decision stands: over the 21
+# retained nights the 4 USD ceiling refuses 5 of 21 at six runs on this table and
+# 0 OF 21 AT THREE RUNS ON EITHER TABLE. He ruled three runs with Night A, so the
+# guard's firing no longer rests on which pair is right.
 USD_PER_CANDIDATE_PER_VOTE_RUN = 0.004840
 USD_PER_CANDIDATE_JUDGE = 0.002021
 
