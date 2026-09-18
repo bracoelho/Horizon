@@ -37,7 +37,7 @@ from .ai.tokens import get_usage_snapshot
 from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
 from .selection import select as run_selection
-from .selection.ladder import LadderSettings, run_ladder
+from .selection.ladder import LadderSettings, estimate_usd, run_ladder
 from .extractors.pull import run_pull
 
 
@@ -1243,7 +1243,36 @@ class HorizonOrchestrator:
         # unless `selection.ladder_enabled` says otherwise. A failure is printed
         # and costs the run nothing.
         ladder_block = None
+        ladder_refused = None
         if self.config.selection.ladder_enabled and analysed_kept:
+            # The per-leg ceiling, BEFORE the call rather than after it (NEWS-Radar
+            # N-485, the owner's word "4 USD per leg"; N-484, this leg had no stop
+            # at all). The estimate knows the run count, because the vote is asked
+            # once per run and a flat per-candidate rate is only true at the run
+            # count it was measured on.
+            runs = self.config.selection.ladder_runs
+            ceiling = self.config.selection.ladder_max_usd
+            estimate = estimate_usd(len(analysed_kept), runs)
+            if estimate > ceiling:
+                # Refused, and the refusal is RECORDED rather than only printed:
+                # a night whose ladder declined must be readable from the fixture
+                # in the morning, or the absence of a ladder block is indis-
+                # tinguishable from a night that never turned it on.
+                ladder_refused = {
+                    "candidates": len(analysed_kept),
+                    "runs": runs,
+                    "estimate_usd": round(estimate, 3),
+                    "ceiling_usd": ceiling,
+                    "reason": "the estimate for this leg is above its ceiling; the ladder was not called",
+                }
+                self.console.print(
+                    f"[yellow]Ladder REFUSED: {len(analysed_kept)} candidates at {runs} runs "
+                    f"estimate {estimate:.2f} USD, above this leg's ceiling of {ceiling:.2f}. "
+                    f"Nothing was sent. Production's own stages have already run and are "
+                    f"uncapped by decision, so this bounds the ladder leg and not the night."
+                    f"[/yellow]"
+                )
+        if self.config.selection.ladder_enabled and analysed_kept and ladder_refused is None:
             try:
                 ladder_block = await run_ladder(
                     create_ai_client(self.config.ai),
@@ -1347,6 +1376,15 @@ class HorizonOrchestrator:
                         "the clustered ladder's first stage, recording only: per candidate the "
                         "taxonomy v2.3 theme voted RUNS times (majority, margin, tie, runner-up) and "
                         "one judgement for the CTO seat inside that cluster; read by no stage"
+                    )
+                if ladder_refused is not None:
+                    record["ladder_refused"] = ladder_refused
+                    record.setdefault("contract", {}).setdefault("records", {})["ladder_refused"] = (
+                        "present only when the ladder leg was NOT called because its estimate stood "
+                        "above selection.ladder_max_usd: the candidate count, the run count, the "
+                        "estimate and the ceiling it exceeded. Its presence is why a ladder block is "
+                        "absent, which nothing else in this record would distinguish from a night "
+                        "that never enabled the ladder"
                     )
                 path.write_text(
                     json.dumps(record, ensure_ascii=False, indent=1),

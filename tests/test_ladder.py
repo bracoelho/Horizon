@@ -112,3 +112,51 @@ def test_the_vote_goes_synchronously_by_default_and_the_judgement_by_batch():
     assert [u.custom_id for u in client.units] == ["b0000"]
     assert block["paths"] == {"vote": "synchronous", "judge": "batch"}
     assert block["items"][0]["theme"] == "vendor-dependency"
+
+
+# The per-leg ceiling (NEWS-Radar N-485, the owner's word "4 USD per leg"; N-484,
+# this leg carried no stop at all until now). Each of these was proven able to
+# fail before it was believed: see the controls run in the radar's session record.
+
+
+def test_the_estimate_reproduces_the_recorded_night_it_was_measured_on():
+    # 16 September: 117 candidates at six vote runs cost 3.471 USD by its own
+    # receipt (research/replays/nightly/ladder-20260916-2147.json). The estimator
+    # is deliberately conservative, so it must land at or above that, and within
+    # ten per cent of it rather than anywhere above.
+    got = L.estimate_usd(117, 6)
+    assert got >= 3.471, f"the estimate must not read below a night that really cost 3.471: {got}"
+    assert got < 3.471 * 1.10, f"conservative is not the same as useless: {got}"
+
+
+def test_the_estimate_knows_the_run_count_and_does_not_read_a_flat_rate():
+    # The whole reason the estimator takes `runs`: the vote is asked once per run
+    # and the judgement once per candidate, so three runs is a little over half of
+    # six and nowhere near equal to it. A flat per-candidate rate measured at six
+    # runs reads 3.64 on this field where the truth is about 1.94.
+    six, three = L.estimate_usd(117, 6), L.estimate_usd(117, 3)
+    assert three < six / 1.7, f"three runs must be well under half of six: {three} against {six}"
+    assert three > six / 2.2, f"the judgement does not halve with the runs: {three} against {six}"
+
+
+def test_the_estimate_is_zero_for_an_empty_or_impossible_leg():
+    assert L.estimate_usd(0, 6) == 0.0
+    assert L.estimate_usd(117, 0) == 0.0
+    assert L.estimate_usd(-1, 6) == 0.0
+
+
+def test_the_ceiling_defaults_to_the_ceiling_and_never_to_unlimited():
+    # A guard whose default is no guard is not a guard. The owner set 4 USD.
+    from src.models import SelectionConfig
+
+    assert SelectionConfig().ladder_max_usd == 4.0
+
+
+def test_the_ceiling_admits_every_recent_field_and_refuses_the_largest_on_record():
+    # Measured across the retained fixtures: recent nights run 23 to 117
+    # candidates and early September reached 144. At six runs the ceiling must
+    # clear the first and refuse the second, which is what the owner was told.
+    assert L.estimate_usd(117, 6) <= 4.0
+    assert L.estimate_usd(144, 6) > 4.0
+    # And once E39's three runs land, the same 144-candidate night fits.
+    assert L.estimate_usd(144, 3) <= 4.0

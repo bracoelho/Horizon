@@ -42,6 +42,43 @@ TAXONOMY_VERSION = "v2.3"
 DEFAULT_RUNS = 6
 CONTENT_CHARS = 6000
 
+# What a leg of this ladder costs, so a caller can refuse one before it runs
+# (NEWS-Radar N-485, the owner's per-leg ceiling of 4 USD).
+#
+# TWO COMPONENTS AND NOT ONE, because the vote is asked `runs` times per
+# candidate while the judgement is asked once, so a flat per-candidate rate is
+# only true at the run count it was measured on. Measured on the SIX nights
+# recorded 2026-09-12 to 2026-09-17 at SIX vote runs, the vote synchronous and
+# the judgement on the Batch API, from each night's own receipt: the vote ran
+# 0.004348 to 0.004840 USD per candidate per run and the judgement 0.001783 to
+# 0.002021 per candidate. These are the HIGHEST of each, because a ceiling
+# compared against a low estimate passes a leg it should refuse.
+#
+# The date and the mix belong in these lines: a measured constant without them
+# cannot be checked for staleness (NEWS-Radar N-481). Re-measure when the mix,
+# the model or the prices move. At three runs this estimator reads 1.94 USD on a
+# 117-candidate field where a flat six-run rate would read 3.64, which is the
+# defect it exists to prevent.
+#
+# UNVERIFIED ON THE IN-RUN LEG, said plainly: every measurement behind these
+# numbers comes from the MORNING REPLAY on the experiments key. The passes that
+# run inside production have never run, so their first receipt is their first
+# measurement, and these figures are transferred rather than observed there.
+USD_PER_CANDIDATE_PER_VOTE_RUN = 0.004840
+USD_PER_CANDIDATE_JUDGE = 0.002021
+
+
+def estimate_usd(candidates: int, runs: int = DEFAULT_RUNS) -> float:
+    """What one leg of the ladder is expected to cost, in USD.
+
+    `candidates` items, each voted `runs` times and judged once. Returns a
+    float rather than a rounded figure so a caller can compare it against a
+    ceiling without a rounding step deciding the verdict.
+    """
+    if candidates <= 0 or runs <= 0:
+        return 0.0
+    return candidates * (USD_PER_CANDIDATE_PER_VOTE_RUN * runs + USD_PER_CANDIDATE_JUDGE)
+
 INTENT = (
     "For the executive who must govern AI in his industry: what changed this week, anywhere AI and its agentic forms are in broad use, in whether they can be trusted with a mission-critical job, in the security risks they bring or expose, and what he must now govern differently. Everything read is kept and labelled: what is lost, who is in the path, how well evidenced, how soon. One score orders the reading, on whether it changes what he does or asks next week, higher where the ground is high integrity or the risk is to security; it enables a smooth adaptation to the reader's feedback on that order, and never decides what is kept. One story, one thread across nights; the score reads the story as well as the article, such as how many carry it, how fast, and over what window. The few that lead, over the whole index."
 )

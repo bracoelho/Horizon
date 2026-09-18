@@ -616,6 +616,17 @@ class SelectionConfig(BaseModel):
     ladder_max_wait_seconds: float = Field(default=1800.0, gt=0)
     # The vote is synchronous unless this says otherwise (NEWS-Radar N-344, B1).
     ladder_vote_use_batch: bool = False
+    # The per-leg ceiling in USD, the owner's word 2026-09-18 ("4 USD per leg")
+    # (NEWS-Radar N-485). The in-run ladder is estimated from the candidate count
+    # and the run count BEFORE it is called, and refuses rather than running when
+    # the estimate is above this. It DEFAULTS TO THE CEILING rather than to
+    # unlimited on purpose: a guard whose default is no guard is not a guard, and
+    # this branch had none at all until now (NEWS-Radar N-484).
+    # WHAT IT DOES NOT BOUND, stated so nobody reads it as a cap on the night:
+    # production's own gate, ranker and defender have already run and spent by the
+    # time this is evaluated, and they are uncapped by the owner's decision, which
+    # treats production as the product and the ladder as the experiment.
+    ladder_max_usd: float = Field(default=4.0, gt=0)
     # Pass 0, the pull (NEWS-Radar N-344): recording only, off until declared.
     pull_enabled: bool = False
     pull_spacing_seconds: float = Field(default=1.0, ge=0)
