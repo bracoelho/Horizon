@@ -64,6 +64,25 @@ CONTENT_CHARS = 6000
 # numbers comes from the MORNING REPLAY on the experiments key. The passes that
 # run inside production have never run, so their first receipt is their first
 # measurement, and these figures are transferred rather than observed there.
+#
+# AND THE PRICE TABLE THEY WERE COMPUTED FROM, which is the part that cannot be
+# checked for staleness without being named here (NEWS-Radar N-491). Both rates
+# are a TOKEN COUNT multiplied by 2 and 10 USD per million synchronous, halved
+# on the Batch API. No bill anchors that table. The lab prices the same model,
+# claude-sonnet-5 by each receipt's own `models_served`, at 3 and 15, exactly
+# 1.5 times these, and the only bill-anchored rate in the constellation sits
+# above both (NEWS-Radar N-320, N-481). So this estimator is anchored to the
+# LOWER of two tables for one model, and hardening a rate against its own
+# measured spread cannot detect an error in the table every member of that
+# spread was computed from.
+#
+# WHAT THAT COSTS THE CEILING, measured over the 21 retained nights rather than
+# argued: at six runs this table admits 128 candidates as 3.98 USD, and those
+# same 128 cost 5.96 at the lab's table, a 49 per cent breach that never fires.
+# The ceiling refuses 5 of 21 nights on this table and 15 of 21 on the lab's.
+# AT THREE RUNS IT REFUSES 0 OF 21 ON EITHER, which is the coupling worth
+# carrying: the 4 USD ceiling is only safe under a price table nobody has
+# anchored IF the run count is three. One console reading re-anchors both.
 USD_PER_CANDIDATE_PER_VOTE_RUN = 0.004840
 USD_PER_CANDIDATE_JUDGE = 0.002021
 
