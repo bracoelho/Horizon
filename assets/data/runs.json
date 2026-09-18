@@ -3704,5 +3704,170 @@
   "degraded": 0,
   "warnings": 16,
   "zero_sources": []
+ },
+ {
+  "run_id": "35395438024",
+  "event": "schedule",
+  "utc": "2026-09-18T21:26:16Z",
+  "funnel": {
+   "fetched": 228,
+   "gated": 120,
+   "analyzed": 120,
+   "ranked": 120,
+   "floor_rejected": 5,
+   "below_score": 0,
+   "published": 5,
+   "enriched": 5,
+   "tokens": 765816
+  },
+  "score_distribution": {
+   "1": 2,
+   "2": 13,
+   "3": 25,
+   "4": 25,
+   "5": 15,
+   "6": 21,
+   "7": 14,
+   "8": 4,
+   "9": 1
+  },
+  "setwise": {
+   "picks": 92,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "reliability-assurance": 2,
+   "critical-infrastructure": 2,
+   "business-markets": 1
+  },
+  "published_scores": [
+   9.0,
+   7.0,
+   8.0,
+   7.0,
+   7.0
+  ],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "realsarm",
+    "score": 9.0
+   },
+   {
+    "theme": "reliability-assurance",
+    "source": "arXiv cs.AI",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "csmantle",
+    "score": 8.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "The Verge - AI",
+    "score": 7.0
+   },
+   {
+    "theme": "business-markets",
+    "source": "Utility Dive",
+    "score": 7.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    1,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    3,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    20,
+    false
+   ],
+   "Google Research Blog": [
+    2,
+    false
+   ],
+   "Hugging Face Blog": [
+    0,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    0,
+    false
+   ],
+   "Latitude Media": [
+    3,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    1,
+    false
+   ],
+   "NIST News": [
+    1,
+    false
+   ],
+   "OpenAI News": [
+    0,
+    false
+   ],
+   "Simon Willison": [
+    6,
+    false
+   ],
+   "TLDR AI": [
+    1,
+    false
+   ],
+   "The Verge - AI": [
+    7,
+    false
+   ],
+   "Utility Dive": [
+    3,
+    false
+   ],
+   "arXiv cs.AI": [
+    20,
+    false
+   ],
+   "arXiv cs.CL": [
+    20,
+    false
+   ],
+   "arXiv cs.LG": [
+    20,
+    false
+   ],
+   "arXiv cs.SE": [
+    20,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 18,
+  "zero_sources": []
  }
 ]
