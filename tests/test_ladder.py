@@ -152,6 +152,34 @@ def test_the_ceiling_defaults_to_the_ceiling_and_never_to_unlimited():
     assert SelectionConfig().ladder_max_usd == 4.0
 
 
+def test_the_run_count_carries_the_owners_decision_so_night_a_needs_one_key():
+    # "three runs with Night A" (the owner, 2026-09-18; NEWS-Radar N-492), on
+    # E39's measured 0.9652 agreement against the shipped six-run majority.
+    #
+    # The default is where the decision lives, and that is deliberate: Night A
+    # turns the ladder on with ONE config key, so the night keeps its
+    # one-variable rule. A silent return to six would spend the night's rule a
+    # second time without anyone declaring it, and this test is what refuses it.
+    from src.models import SelectionConfig
+
+    assert SelectionConfig().ladder_runs == 3
+
+
+def test_three_runs_is_what_makes_the_ceiling_independent_of_the_price_table():
+    # N-491: both rates rest on a price table no bill anchors, and the lab
+    # prices the same model 1.5x higher. At the DEFAULT run count the ceiling
+    # must hold under BOTH tables, or the guard's firing depends on an
+    # unanswered question rather than on the field.
+    from src.models import SelectionConfig
+
+    runs = SelectionConfig().ladder_runs
+    ceiling = SelectionConfig().ladder_max_usd
+    largest_on_record = 144
+    assert L.estimate_usd(largest_on_record, runs) <= ceiling
+    # The same leg priced at the lab's table, which is exactly 1.5 times ours.
+    assert L.estimate_usd(largest_on_record, runs) * 1.5 <= ceiling
+
+
 def test_the_ceiling_admits_every_recent_field_and_refuses_the_largest_on_record():
     # Measured across the retained fixtures: recent nights run 23 to 117
     # candidates and early September reached 144. At six runs the ceiling must

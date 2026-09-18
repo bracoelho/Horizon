@@ -611,7 +611,31 @@ class SelectionConfig(BaseModel):
     # The clustered ladder's first stage (NEWS-Radar N-344): recorded into the
     # fixture and read by nothing. Off until a declared night turns it on.
     ladder_enabled: bool = False
-    ladder_runs: int = Field(default=6, gt=0)
+    # THREE and not six, on the owner's word 2026-09-18: "three runs with Night A"
+    # (NEWS-Radar N-492). The default carries the decision so Night A turns the
+    # ladder on with ONE config key rather than two, which keeps that night's
+    # one-variable rule intact.
+    #
+    # WHY THREE IS FAITHFUL, measured rather than assumed: the lab's E39 put the
+    # three-run majority against the shipped six-run majority on a real night and
+    # read 0.9652 agreement, 111 of 115 items, against a floor of 0.93 registered
+    # before the calls. The four disagreements are all different-shelf, none is a
+    # no-majority, and none is a security item leaving the security shelf.
+    #
+    # THE CONDITION THAT MAKES IT E39 RATHER THAN A RESEMBLANCE, and it is the
+    # one that could have broken: the three runs must be FRESH, because E39's
+    # offline arm predicted 0.0017 disagreement and its live arm measured 0.0348,
+    # twenty times more, so subsampling a recorded vote does not predict a fresh
+    # one. `run_ladder` builds one call per (item, run) pair and tallies each run
+    # separately, so this value issues three independent votes per candidate and
+    # no subsampling path exists. Verified at the pinned harness, not inferred.
+    #
+    # AND IT IS WHAT MAKES THE 4 USD LEG CEILING HONEST (N-491): the estimator
+    # rests on a price table no bill anchors, and at six runs that ceiling refuses
+    # 5 of 21 retained nights on one table and 15 of 21 on the other. At three it
+    # refuses 0 of 21 on either, so the unanchored table stops deciding whether
+    # the guard fires. The run count and the ceiling are one decision.
+    ladder_runs: int = Field(default=3, gt=0)
     ladder_model: Optional[str] = None
     ladder_max_wait_seconds: float = Field(default=1800.0, gt=0)
     # The vote is synchronous unless this says otherwise (NEWS-Radar N-344, B1).
