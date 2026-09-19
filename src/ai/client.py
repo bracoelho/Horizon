@@ -15,7 +15,7 @@ from google.genai import types
 import logging
 
 from ..models import AIConfig, AIProvider, AI_PROVIDER_DEFAULTS
-from .tokens import record_usage
+from .tokens import key_identifier, record_call, record_usage
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +157,10 @@ class AnthropicClient(AIClient):
         self.config = config
 
         api_key = _resolve_api_key(config)
+        # The key the calls will ACTUALLY use, fingerprinted from its value at
+        # construction and never from a name a config claims (TOKENOMICS v2
+        # clause 1; the keychain item that lied is OS N-533).
+        self.key_id = key_identifier(config.api_key_env, api_key)
 
         kwargs = {"api_key": api_key}
         if config.base_url:
@@ -219,7 +223,7 @@ class AnthropicClient(AIClient):
 
         return params
 
-    def _record(self, message: Any) -> None:
+    def _record(self, message: Any, *, batch: bool = False) -> None:
         usage = getattr(message, "usage", None)
         if usage is not None:
             record_usage(
@@ -229,6 +233,22 @@ class AnthropicClient(AIClient):
                 # The response says which model served it, so this is measured
                 # rather than inferred from what we asked for.
                 model=getattr(message, "model", None),
+            )
+            # The per-call record (clause 1): the same numbers, plus the two
+            # cache counts and the batch flag clause 7 calls techniques, keyed
+            # on the stage that asked. `input_tokens` on this API EXCLUDES the
+            # cache reads and writes, so the three are recorded apart and never
+            # summed here; whoever prices them applies each its own rate.
+            record_call(
+                self.config.provider.value,
+                getattr(message, "model", None),
+                getattr(self, "key_id", ""),
+                input_tokens=getattr(usage, "input_tokens", 0) or 0,
+                output_tokens=getattr(usage, "output_tokens", 0) or 0,
+                cache_read_tokens=getattr(usage, "cache_read_input_tokens", 0) or 0,
+                cache_write_tokens=getattr(usage, "cache_creation_input_tokens", 0) or 0,
+                batch=batch,
+                stop_reason=getattr(message, "stop_reason", "") or "",
             )
 
     @staticmethod
@@ -335,6 +355,7 @@ class AnthropicClient(AIClient):
         *,
         poll_seconds: float = 20.0,
         max_wait_seconds: float = 3600.0,
+        label: Optional[str] = None,
     ) -> Dict[str, str]:
         """Run many independent completions through the Batch API at half price.
 
@@ -401,7 +422,7 @@ class AnthropicClient(AIClient):
                 )
                 continue
             message = entry.result.message
-            self._record(message)
+            self._record(message, batch=True)
             # Carried out rather than dropped (NEWS-Radar N-267): a response cut
             # at the token ceiling still arrives as text here and is only lost a
             # call later, in the gate, so why it stopped is the only evidence.
@@ -420,8 +441,13 @@ class AnthropicClient(AIClient):
 
         missing = {r.custom_id for r in requests} - set(collected)
         if missing:
+            # A labelled batch belongs to a recording stage (NEWS-Radar N-344, the
+            # ladder), and the label sits between the id and "returned" so the
+            # health check's collapse pattern, which fails the job, reads only
+            # the unlabelled batches of the stages that decide.
             logger.warning(
-                "Batch %s returned %d of %d results", batch.id, len(collected), len(requests)
+                "Batch %s%s returned %d of %d results", batch.id,
+                f" ({label})" if label else "", len(collected), len(requests)
             )
         self.last_batch_stops = stops
         return collected
@@ -475,6 +501,7 @@ class OpenAIClient(AIClient):
 
         fallback = "no_key" if config.provider == AIProvider.OLLAMA else None
         api_key = _resolve_api_key(config, fallback=fallback)
+        self.key_id = key_identifier(config.api_key_env, api_key)
 
         kwargs = {"api_key": api_key}
         base_url = self._resolve_base_url(config)
@@ -572,6 +599,13 @@ class OpenAIClient(AIClient):
                 self.provider,
                 input_tokens=getattr(usage, "prompt_tokens", 0),
                 output_tokens=getattr(usage, "completion_tokens", 0),
+            )
+            record_call(
+                self.provider, getattr(response, "model", None) or model or self.model,
+                getattr(self, "key_id", ""),
+                input_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+                output_tokens=getattr(usage, "completion_tokens", 0) or 0,
+                cache_read_tokens=getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0,
             )
         return response.choices[0].message.content
 

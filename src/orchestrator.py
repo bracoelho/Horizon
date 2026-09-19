@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -33,10 +34,13 @@ from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
 from .ai.synthesis import synthesise
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
-from .ai.tokens import get_usage_snapshot
+from .edition_contract import build_edition
+from .ai.tokens import get_usage_snapshot, reconcile as reconcile_costs, stage as cost_stage, stage_summary, write_ledger
 from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
 from .selection import select as run_selection
+from .selection.ladder import LadderSettings, estimate_usd, run_ladder
+from .extractors.pull import run_pull
 
 
 _TRACKING_QUERY_PARAMETERS = {
@@ -81,6 +85,23 @@ def _deduplication_url_key(url: str) -> tuple[str, str, str, str, Optional[int],
         path,
         "&".join(query_parts),
     )
+
+
+def ladder_switches(selection) -> dict:
+    """Which of the ladder's switches were ON for this run, read from the config
+    the run executed (the owner, 2026-09-19, in the radar seat: `Record which
+    switches were on, in the fixture and in the metrics row. I accepted a second
+    variable on a booked night, so I want a bad night attributed rather than
+    argued about.`). One key per switch, the value the run used; the run count
+    and the ceiling ride along because they are the same decision (N-491)."""
+    return {
+        "ladder_enabled": bool(getattr(selection, "ladder_enabled", False)),
+        "ladder_labels_enabled": bool(getattr(selection, "ladder_labels_enabled", False)),
+        "pull_enabled": bool(getattr(selection, "pull_enabled", False)),
+        "ladder_runs": getattr(selection, "ladder_runs", None),
+        "ladder_max_usd": getattr(selection, "ladder_max_usd", None),
+        "ladder_model": getattr(selection, "ladder_model", None),
+    }
 
 
 @dataclass
@@ -391,7 +412,8 @@ class HorizonOrchestrator:
             self.console.print("")
 
             # 6. Search related stories + enrich with background knowledge (2nd AI pass)
-            await self.enrich_items(important_items)
+            with cost_stage("enrich", "second pass: related stories and background per published item"):
+                await self.enrich_items(important_items)
 
             # 6b. Synthesise the edition. One call over the whole selected set,
             # which is the only stage that reads the items as a group.
@@ -400,11 +422,12 @@ class HorizonOrchestrator:
                 self.console.print(
                     f"{self.icons['summary']} Synthesising the edition..."
                 )
-                preamble = await synthesise(
-                    important_items,
-                    create_ai_client(self.config.ai),
-                    model=self.config.digest.synthesis_model,
-                )
+                with cost_stage("synthesis", "one call over the selected set: the edition's opening"):
+                    preamble = await synthesise(
+                        important_items,
+                        create_ai_client(self.config.ai),
+                        model=self.config.digest.synthesis_model,
+                    )
                 if preamble:
                     self.console.print(
                         f"   Wrote a {len(preamble.split())}-word opening\n"
@@ -426,13 +449,14 @@ class HorizonOrchestrator:
                     profile_order=self.config.digest.profile_order,
                     block_titles=self.profiles.block_titles,
                 )
-                summary = await summarizer.generate_summary(
-                    important_items,
-                    today,
-                    len(all_items),
-                    language=lang,
-                    preamble=preamble,
-                )
+                with cost_stage("summary", "render the edition text"):
+                    summary = await summarizer.generate_summary(
+                        important_items,
+                        today,
+                        len(all_items),
+                        language=lang,
+                        preamble=preamble,
+                    )
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
@@ -515,6 +539,7 @@ class HorizonOrchestrator:
                                 f"{run_time}-summary-{lang}.html"
                             )
                         )
+                        self._write_edition_contract(important_items, today)
                 except Exception as e:
                     self.console.print(
                         f"[yellow]{self.icons['warning']} Failed to copy "
@@ -562,6 +587,7 @@ class HorizonOrchestrator:
                         f"   {self.icons['detail']} {provider}: {u.total} tokens "
                         f"(in: {u.input_tokens}, out: {u.output_tokens})"
                     )
+            self._write_cost_ledger()
 
         except Exception as e:
             self.console.print(
@@ -974,6 +1000,7 @@ class HorizonOrchestrator:
     def _selection_settings(self) -> SelectionSettings:
         config = self.config.selection
         return SelectionSettings(
+            stage_hook=cost_stage,
             gate_model=config.gate_model,
             rank_model=config.rank_model,
             defend_model=config.defend_model,
@@ -1023,6 +1050,10 @@ class HorizonOrchestrator:
 
         by_id = {item.id: item for item in items}
 
+        # The candidates the ranker saw, with their analysis summaries, kept for
+        # the ladder's recording (NEWS-Radar N-344); empty when the gate kept nothing.
+        analysed_kept: list = []
+
         async def analyse_survivors(kept):
             """Score only what the gate kept, then hand the results back.
 
@@ -1048,6 +1079,7 @@ class HorizonOrchestrator:
                 for c in kept
                 if c.id in refreshed
             ]
+            analysed_kept[:] = result
             # Observer write for the replay harness (PLAN-S1 step 1): the
             # exact candidates the ranker is about to see, so a recorded day
             # can be replayed through either ranker with identical input. A
@@ -1229,6 +1261,71 @@ class HorizonOrchestrator:
                 kept_above.append(item)
             selected = kept_above
 
+        # The clustered ladder's first stage (NEWS-Radar N-344, the owner's
+        # decision OS N-193): the v2.3 theme vote and the judgement inside the
+        # cluster, on the candidates the ranker saw, RECORDING ONLY. It runs after
+        # the floor so nothing it returns can reach `selected`, and it is off
+        # unless `selection.ladder_enabled` says otherwise. A failure is printed
+        # and costs the run nothing.
+        ladder_block = None
+        ladder_refused = None
+        if self.config.selection.ladder_enabled and analysed_kept:
+            # The per-leg ceiling, BEFORE the call rather than after it (NEWS-Radar
+            # N-485, the owner's word "4 USD per leg"; N-484, this leg had no stop
+            # at all). The estimate knows the run count, because the vote is asked
+            # once per run and a flat per-candidate rate is only true at the run
+            # count it was measured on.
+            runs = self.config.selection.ladder_runs
+            ceiling = self.config.selection.ladder_max_usd
+            labels_on = self.config.selection.ladder_labels_enabled
+            estimate = estimate_usd(len(analysed_kept), runs, labels=labels_on)
+            if estimate > ceiling:
+                # Refused, and the refusal is RECORDED rather than only printed:
+                # a night whose ladder declined must be readable from the fixture
+                # in the morning, or the absence of a ladder block is indis-
+                # tinguishable from a night that never turned it on.
+                ladder_refused = {
+                    "candidates": len(analysed_kept),
+                    "runs": runs,
+                    "estimate_usd": round(estimate, 3),
+                    "ceiling_usd": ceiling,
+                    "reason": "the estimate for this leg is above its ceiling; the ladder was not called",
+                }
+                self.console.print(
+                    f"[yellow]Ladder REFUSED: {len(analysed_kept)} candidates at {runs} runs "
+                    f"estimate {estimate:.2f} USD, above this leg's ceiling of {ceiling:.2f}. "
+                    f"Nothing was sent. Production's own stages have already run and are "
+                    f"uncapped by decision, so this bounds the ladder leg and not the night."
+                    f"[/yellow]"
+                )
+        if self.config.selection.ladder_enabled and analysed_kept and ladder_refused is None:
+            try:
+                ladder_block = await run_ladder(
+                    create_ai_client(self.config.ai),
+                    list(analysed_kept),
+                    LadderSettings(
+                        runs=self.config.selection.ladder_runs,
+                        model=self.config.selection.ladder_model or self.config.ai.model,
+                        use_batch=self.config.selection.use_batch,
+                        vote_use_batch=self.config.selection.ladder_vote_use_batch,
+                        max_wait_seconds=self.config.selection.ladder_max_wait_seconds,
+                        stage_hook=cost_stage,
+                        labels_enabled=self.config.selection.ladder_labels_enabled,
+                    ),
+                    authors={c.id: (by_id[c.id].author or "") for c in analysed_kept if c.id in by_id},
+                )
+                calls = ladder_block["calls"]
+                self.console.print(
+                    f"Ladder recorded: {len(ladder_block['items'])} items, "
+                    f"{calls['vote_returned']} of {calls['vote_asked']} votes, "
+                    f"{calls['judge_returned']} of {calls['judge_asked']} judgements, "
+                    f"{calls['label_returned']} of {calls['label_asked']} labels ({ladder_block['labels']}), "
+                    f"taxonomy {ladder_block['taxonomy']}"
+                )
+            except Exception as exc:  # noqa: BLE001
+                ladder_block = None
+                self.console.print(f"[yellow]Ladder not recorded: {exc}[/yellow]")
+
         # The second half of the fixture: what the ranker and the defender
         # decided on the field recorded above. It lives HERE, after the floor,
         # and the position is the whole point: written 2026-09-05 at the top of
@@ -1281,6 +1378,57 @@ class HorizonOrchestrator:
                 # nowhere else, while the defender's verdicts above already
                 # carry its decision item by item.
                 record["published"] = [item.id for item in selected]
+                # Pass 0, the pull (NEWS-Radar N-344, the lab's E14): the article
+                # behind every short or Google News item, RECORDING ONLY and off
+                # unless `selection.pull_enabled`; nothing reads it.
+                if self.config.selection.pull_enabled:
+                    try:
+                        pulled = await run_pull(
+                            record.get("fetched", []),
+                            spacing=self.config.selection.pull_spacing_seconds,
+                        )
+                        record["pull"] = pulled
+                        record.setdefault("contract", {}).setdefault("records", {})["pull"] = (
+                            "Pass 0, recording only: for every fetched item of 600 characters or fewer or "
+                            "behind a Google News link, the route to the publisher, the status, the length "
+                            "before and after, the publisher, the page's byline and the article capped at 6000 "
+                            "characters; read by no stage and never sent to a model"
+                        )
+                        self.console.print(
+                            f"Pull recorded: {pulled['with_article']} of {pulled['wanted']} short or "
+                            f"aggregator items carry their article; routes {pulled['routes']}"
+                        )
+                    except Exception as exc:  # noqa: BLE001
+                        self.console.print(f"[yellow]Pull not recorded: {exc}[/yellow]")
+                self._last_ladder_block = ladder_block
+                # Which switches were ON, in the RESULT and not only in the config
+                # (the owner, 2026-09-19): a booked night carrying two variables
+                # is attributed from this block, never argued from memory.
+                record["switches"] = ladder_switches(self.config.selection)
+                record.setdefault("contract", {}).setdefault("records", {})["switches"] = (
+                    "the ladder's switches as the run executed them: ladder_enabled, "
+                    "ladder_labels_enabled, pull_enabled, ladder_runs, ladder_max_usd, "
+                    "ladder_model; written so a night with two variables is attributed "
+                    "from the record and not from the config history; read by no stage"
+                )
+                if ladder_block is not None:
+                    record["ladder"] = ladder_block
+                    record.setdefault("contract", {}).setdefault("records", {})["ladder"] = (
+                        "the clustered ladder's first stage, recording only: per candidate the "
+                        "taxonomy v2.3 theme voted RUNS times (majority, margin, tie, runner-up) and "
+                        "one judgement for the CTO seat inside that cluster, and since 2026-09-19 "
+                        "Pass L's seven labels by majority over RUNS calls (null when the pass is "
+                        "off or its prompt file absent, `labels` naming which); read by no stage"
+                    )
+                if ladder_refused is not None:
+                    record["ladder_refused"] = ladder_refused
+                    record.setdefault("contract", {}).setdefault("records", {})["ladder_refused"] = (
+                        "present only when the ladder leg was NOT called because its estimate stood "
+                        "above selection.ladder_max_usd: the candidate count, the run count, the "
+                        "estimate and the ceiling it exceeded. Its presence is why a ladder block is "
+                        "absent, which nothing else in this record would distinguish from a night "
+                        "that never enabled the ladder"
+                    )
                 path.write_text(
                     json.dumps(record, ensure_ascii=False, indent=1),
                     encoding="utf-8",
@@ -1867,6 +2015,74 @@ class HorizonOrchestrator:
                     )
         return written
 
+    def _write_edition_contract(self, published: List[ContentItem], night: str) -> None:
+        """Write the edition contract v1 beside the fixture (NEWS-Radar
+        specs/EDITION-CONTRACT.json). Written and read by no stage; a failure
+        is printed and costs the run nothing. The ladder block is the one the
+        fixture's second write recorded, kept on `self._last_ladder_block`."""
+        try:
+            themes = self._theme_questions()
+            order = list(self.config.digest.profile_order or themes)
+            rows: List[dict] = []
+            for item in published:
+                analysis = item.processing.analysis if item.processing else None
+                profile = item.processing.classification.profile if item.processing else ""
+                rows.append({
+                    "id": item.id, "title": item.title, "url": str(item.url),
+                    "item_url": self._published_item_url(item),
+                    "source": self._sub_source_label(item), "publisher": item.author,
+                    "published_at": item.published_at.isoformat() if item.published_at else None,
+                    "theme": profile, "score": analysis.score if analysis else None,
+                })
+            run_id = os.environ.get("GITHUB_RUN_ID") or datetime.now().strftime("local-%Y%m%d-%H%M")
+            edition = build_edition(
+                run_id=run_id, night=night,
+                generated_at=datetime.now().astimezone().isoformat(timespec="seconds"),
+                fork_commit=os.environ.get("GITHUB_SHA", ""), taxonomy="v2_3",
+                seat="production", themes=themes, theme_order=order, published=rows,
+                ladder=getattr(self, "_last_ladder_block", None), cost=stage_summary(),
+            )
+            path = Path("data") / f"edition-{run_id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(edition, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(f"Edition contract v{edition['contract_version']}: {len(edition['rank'])} articles on "
+                  f"{len(edition['shelves'])} shelves, rank by {edition['rank_basis']}, to {path}")
+        except Exception as exc:  # noqa: BLE001 - the contract must never cost the run
+            print(f"Edition contract not written: {exc}")
+
+    def _write_cost_ledger(self) -> None:
+        """Write the per-call cost record beside the fixture and reconcile it.
+
+        NEWS-Radar, TOKENOMICS v2 (2026-09-19): one JSONL line per model call
+        with stage, purpose, provider, key id, model, tokens in and out, the
+        two cache counts and the batch flag. Written and never read by any
+        stage of the run, so it can change no decision; uploaded as its own
+        artifact by the workflow. The line it prints carries clause 3: the
+        ledger's sums against the totals the `Token usage this run` line
+        prints, so a call the ledger missed is a printed difference and never
+        a silence, and the count of calls made outside any stage is printed
+        for the same reason.
+        """
+        try:
+            rec = reconcile_costs()
+            if rec["calls"] == 0:
+                print("Cost record: 0 calls, nothing written")
+                return
+            path = Path("data") / f"cost_ledger-{datetime.now().strftime('%Y%m%d-%H%M')}.jsonl"
+            n = write_ledger(path)
+            by_stage = stage_summary()
+            stages = ", ".join(
+                f"{k} {v['calls']} calls {v['input_tokens']}/{v['output_tokens']}"
+                for k, v in sorted(by_stage.items())
+            )
+            print(
+                f"Cost record: {n} calls to {path}; ledger {rec['ledger_input']}/{rec['ledger_output']} "
+                f"against totals {rec['totals_input']}/{rec['totals_output']}, "
+                f"{'agree' if rec['agree'] else 'DISAGREE'}; {rec['unattributed']} unattributed; {stages}"
+            )
+        except Exception as exc:  # noqa: BLE001 - a record must never cost the run
+            print(f"Cost record not written: {exc}")
+
     async def enrich_items(self, items: List[ContentItem]) -> EnrichmentBatchResult:
         """Enrich items with background knowledge (2nd AI pass).
 
@@ -1915,7 +2131,8 @@ class HorizonOrchestrator:
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
 
-        analyzed = await analyzer.analyze_batch(items)
+        with cost_stage("analysis", "score and summarise each item"):
+            analyzed = await analyzer.analyze_batch(items)
         # One line the health check and the metrics row can read. The published
         # scores turned out to have taken four values in the radar's entire
         # history, and nobody could see it because the distribution was never

@@ -608,6 +608,56 @@ class SelectionConfig(BaseModel):
     # because enabling selection retired the per-theme thresholds without
     # putting anything in their place.
     min_score: Optional[float] = Field(default=6.0, ge=0, le=10)
+    # The clustered ladder's first stage (NEWS-Radar N-344): recorded into the
+    # fixture and read by nothing. Off until a declared night turns it on.
+    ladder_enabled: bool = False
+    # THREE and not six, on the owner's word 2026-09-18: "three runs with Night A"
+    # (NEWS-Radar N-492). The default carries the decision so Night A turns the
+    # ladder on with ONE config key rather than two, which keeps that night's
+    # one-variable rule intact.
+    #
+    # WHY THREE IS FAITHFUL, measured rather than assumed: the lab's E39 put the
+    # three-run majority against the shipped six-run majority on a real night and
+    # read 0.9652 agreement, 111 of 115 items, against a floor of 0.93 registered
+    # before the calls. The four disagreements are all different-shelf, none is a
+    # no-majority, and none is a security item leaving the security shelf.
+    #
+    # THE CONDITION THAT MAKES IT E39 RATHER THAN A RESEMBLANCE, and it is the
+    # one that could have broken: the three runs must be FRESH, because E39's
+    # offline arm predicted 0.0017 disagreement and its live arm measured 0.0348,
+    # twenty times more, so subsampling a recorded vote does not predict a fresh
+    # one. `run_ladder` builds one call per (item, run) pair and tallies each run
+    # separately, so this value issues three independent votes per candidate and
+    # no subsampling path exists. Verified at the pinned harness, not inferred.
+    #
+    # AND IT IS WHAT MAKES THE 4 USD LEG CEILING HONEST (N-491): the estimator
+    # rests on a price table no bill anchors, and at six runs that ceiling refuses
+    # 5 of 21 retained nights on one table and 15 of 21 on the other. At three it
+    # refuses 0 of 21 on either, so the unanchored table stops deciding whether
+    # the guard fires. The run count and the ceiling are one decision.
+    ladder_runs: int = Field(default=3, gt=0)
+    ladder_model: Optional[str] = None
+    ladder_max_wait_seconds: float = Field(default=1800.0, gt=0)
+    # The vote is synchronous unless this says otherwise (NEWS-Radar N-344, B1).
+    ladder_vote_use_batch: bool = False
+    # The per-leg ceiling in USD, the owner's word 2026-09-18 ("4 USD per leg")
+    # (NEWS-Radar N-485). The in-run ladder is estimated from the candidate count
+    # and the run count BEFORE it is called, and refuses rather than running when
+    # the estimate is above this. It DEFAULTS TO THE CEILING rather than to
+    # unlimited on purpose: a guard whose default is no guard is not a guard, and
+    # this branch had none at all until now (NEWS-Radar N-484).
+    # WHAT IT DOES NOT BOUND, stated so nobody reads it as a cap on the night:
+    # production's own gate, ranker and defender have already run and spent by the
+    # time this is evaluated, and they are uncapped by the owner's decision, which
+    # treats production as the product and the ladder as the experiment.
+    ladder_max_usd: float = Field(default=4.0, gt=0)
+    # Pass L, the labels (NEWS-Radar, 2026-09-19): recording only, off until a
+    # declared night; the inertness denominator the 21 Sep pre-flight prints is
+    # NINE with this key, and it prints the names beside the count (N-489).
+    ladder_labels_enabled: bool = False
+    # Pass 0, the pull (NEWS-Radar N-344): recording only, off until declared.
+    pull_enabled: bool = False
+    pull_spacing_seconds: float = Field(default=1.0, ge=0)
 
 
 class ProcessingConfig(BaseModel):

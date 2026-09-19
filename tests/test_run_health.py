@@ -279,3 +279,15 @@ def test_a_fatal_crash_is_an_error_even_without_a_level_column(tmp_path):
 def test_a_traceback_is_an_error_too(tmp_path):
     result = _parse(tmp_path, "Traceback (most recent call last)\n  File x\n")
     assert "Traceback" in repr(result)
+
+
+def test_a_labelled_recording_batch_that_returns_nothing_is_not_fatal(tmp_path):
+    """NEWS-Radar N-344: the ladder records and decides nothing, so a whole
+    batch of its calls refused must not turn the night red. The unlabelled
+    batch of a deciding stage stays fatal (test_a_batch_returning_nothing_is_fatal)."""
+    body = HEALTHY + (
+        "[09/15/26 21:54:09] WARNING  Batch msgbatch_01GAJX (ladder) returned 0 of 6 "
+        "results\n"
+    )
+    *_, collapsed = _parse(tmp_path, body)
+    assert collapsed == []
