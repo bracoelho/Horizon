@@ -3869,5 +3869,147 @@
   "degraded": 0,
   "warnings": 18,
   "zero_sources": []
+ },
+ {
+  "run_id": "35468925350",
+  "event": "schedule",
+  "utc": "2026-09-19T21:01:45Z",
+  "funnel": {
+   "fetched": 112,
+   "gated": 23,
+   "analyzed": 23,
+   "ranked": 23,
+   "floor_rejected": 6,
+   "below_score": 2,
+   "published": 2,
+   "enriched": 2,
+   "tokens": 205616
+  },
+  "score_distribution": {
+   "2": 2,
+   "3": 12,
+   "4": 3,
+   "6": 3,
+   "7": 3
+  },
+  "setwise": {
+   "picks": 33,
+   "retried": 0,
+   "fallbacks": 0
+  },
+  "published_by_theme": {
+   "reliability-assurance": 1,
+   "critical-infrastructure": 1
+  },
+  "published_scores": [
+   7.0,
+   7.0
+  ],
+  "items": [
+   {
+    "theme": "reliability-assurance",
+    "source": "The Verge - AI",
+    "score": 7.0
+   },
+   {
+    "theme": "critical-infrastructure",
+    "source": "The Verge - AI",
+    "score": 7.0
+   }
+  ],
+  "per_feed": {
+   "Anthropic News (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Claude Blog (RSSHub mirror)": [
+    0,
+    false
+   ],
+   "Cursor Changelog": [
+    0,
+    false
+   ],
+   "Google AI Blog": [
+    0,
+    false
+   ],
+   "Google DeepMind Blog": [
+    0,
+    false
+   ],
+   "Google Developers Blog": [
+    0,
+    false
+   ],
+   "Google News — AI & energy": [
+    5,
+    false
+   ],
+   "Google Research Blog": [
+    1,
+    false
+   ],
+   "Hugging Face Blog": [
+    0,
+    false
+   ],
+   "IEEE Spectrum — AI": [
+    0,
+    false
+   ],
+   "Latitude Media": [
+    1,
+    false
+   ],
+   "MIT Technology Review - AI": [
+    0,
+    false
+   ],
+   "NIST News": [
+    0,
+    false
+   ],
+   "OpenAI News": [
+    0,
+    false
+   ],
+   "Simon Willison": [
+    4,
+    false
+   ],
+   "TLDR AI": [
+    0,
+    false
+   ],
+   "The Verge - AI": [
+    9,
+    false
+   ],
+   "Utility Dive": [
+    0,
+    false
+   ],
+   "arXiv cs.AI": [
+    0,
+    false
+   ],
+   "arXiv cs.CL": [
+    0,
+    false
+   ],
+   "arXiv cs.LG": [
+    0,
+    false
+   ],
+   "arXiv cs.SE": [
+    0,
+    false
+   ]
+  },
+  "errors": 0,
+  "degraded": 0,
+  "warnings": 16,
+  "zero_sources": []
  }
 ]
