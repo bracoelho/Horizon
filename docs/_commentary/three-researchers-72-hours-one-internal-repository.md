@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 title: "Three researchers, 72 hours, one internal repository"
 date: 2026-09-19 21:22:37 +0000
 theme: Reliability & Assurance
@@ -8,16 +8,6 @@ item_url: "https://www.theverge.com/ai-artificial-intelligence/997444/openai-hac
 item_score: "7.0"
 edition_url: /2026/09/19/2101-summary-en.html
 ---
-<!-- VOICE CHECK. Read this, then delete this whole block.
-
-  negative to positive: ', not'
-  negative to positive: 'instead of'
-
-"rather than" and "instead of" are only banned in their
-rhetorical use, so a plain comparison here is fine and this note
-is wrong about it. ", not" and "not just" are the flourish
-itself, and the title is where they do the most damage.
--->
 
 **What happened.** Three independent security researchers used Anthropic's Claude Opus models to break into OpenAI employee accounts and reach OpenAI's internal code repository in under 72 hours, according to a Wall Street Journal report cited by The Verge. The researchers reportedly chained several steps, credential access, session use, and lateral movement toward the internal repository, into a single fast run. No detail in the reporting suggests a lone unpatched flaw. It reads as ordinary technique executed at a pace no human attacker sustains.'
 
