@@ -651,6 +651,10 @@ class SelectionConfig(BaseModel):
     # time this is evaluated, and they are uncapped by the owner's decision, which
     # treats production as the product and the ladder as the experiment.
     ladder_max_usd: float = Field(default=4.0, gt=0)
+    # Pass L, the labels (NEWS-Radar, 2026-09-19): recording only, off until a
+    # declared night; the inertness denominator the 21 Sep pre-flight prints is
+    # NINE with this key, and it prints the names beside the count (N-489).
+    ladder_labels_enabled: bool = False
     # Pass 0, the pull (NEWS-Radar N-344): recording only, off until declared.
     pull_enabled: bool = False
     pull_spacing_seconds: float = Field(default=1.0, ge=0)

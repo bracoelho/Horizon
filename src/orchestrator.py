@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -33,6 +34,7 @@ from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
 from .ai.synthesis import synthesise
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
+from .edition_contract import build_edition
 from .ai.tokens import get_usage_snapshot, reconcile as reconcile_costs, stage as cost_stage, stage_summary, write_ledger
 from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
@@ -520,6 +522,7 @@ class HorizonOrchestrator:
                                 f"{run_time}-summary-{lang}.html"
                             )
                         )
+                        self._write_edition_contract(important_items, today)
                 except Exception as e:
                     self.console.print(
                         f"[yellow]{self.icons['warning']} Failed to copy "
@@ -1257,7 +1260,8 @@ class HorizonOrchestrator:
             # count it was measured on.
             runs = self.config.selection.ladder_runs
             ceiling = self.config.selection.ladder_max_usd
-            estimate = estimate_usd(len(analysed_kept), runs)
+            labels_on = self.config.selection.ladder_labels_enabled
+            estimate = estimate_usd(len(analysed_kept), runs, labels=labels_on)
             if estimate > ceiling:
                 # Refused, and the refusal is RECORDED rather than only printed:
                 # a night whose ladder declined must be readable from the fixture
@@ -1289,13 +1293,16 @@ class HorizonOrchestrator:
                         vote_use_batch=self.config.selection.ladder_vote_use_batch,
                         max_wait_seconds=self.config.selection.ladder_max_wait_seconds,
                         stage_hook=cost_stage,
+                        labels_enabled=self.config.selection.ladder_labels_enabled,
                     ),
+                    authors={c.id: (by_id[c.id].author or "") for c in analysed_kept if c.id in by_id},
                 )
                 calls = ladder_block["calls"]
                 self.console.print(
                     f"Ladder recorded: {len(ladder_block['items'])} items, "
                     f"{calls['vote_returned']} of {calls['vote_asked']} votes, "
                     f"{calls['judge_returned']} of {calls['judge_asked']} judgements, "
+                    f"{calls['label_returned']} of {calls['label_asked']} labels ({ladder_block['labels']}), "
                     f"taxonomy {ladder_block['taxonomy']}"
                 )
             except Exception as exc:  # noqa: BLE001
@@ -1376,12 +1383,15 @@ class HorizonOrchestrator:
                         )
                     except Exception as exc:  # noqa: BLE001
                         self.console.print(f"[yellow]Pull not recorded: {exc}[/yellow]")
+                self._last_ladder_block = ladder_block
                 if ladder_block is not None:
                     record["ladder"] = ladder_block
                     record.setdefault("contract", {}).setdefault("records", {})["ladder"] = (
                         "the clustered ladder's first stage, recording only: per candidate the "
                         "taxonomy v2.3 theme voted RUNS times (majority, margin, tie, runner-up) and "
-                        "one judgement for the CTO seat inside that cluster; read by no stage"
+                        "one judgement for the CTO seat inside that cluster, and since 2026-09-19 "
+                        "Pass L's seven labels by majority over RUNS calls (null when the pass is "
+                        "off or its prompt file absent, `labels` naming which); read by no stage"
                     )
                 if ladder_refused is not None:
                     record["ladder_refused"] = ladder_refused
@@ -1977,6 +1987,41 @@ class HorizonOrchestrator:
                         f"page for {item.id}: {exc}[/yellow]"
                     )
         return written
+
+    def _write_edition_contract(self, published: List[ContentItem], night: str) -> None:
+        """Write the edition contract v1 beside the fixture (NEWS-Radar
+        specs/EDITION-CONTRACT.json). Written and read by no stage; a failure
+        is printed and costs the run nothing. The ladder block is the one the
+        fixture's second write recorded, kept on `self._last_ladder_block`."""
+        try:
+            themes = self._theme_questions()
+            order = list(self.config.digest.profile_order or themes)
+            rows: List[dict] = []
+            for item in published:
+                analysis = item.processing.analysis if item.processing else None
+                profile = item.processing.classification.profile if item.processing else ""
+                rows.append({
+                    "id": item.id, "title": item.title, "url": str(item.url),
+                    "item_url": self._published_item_url(item),
+                    "source": self._sub_source_label(item), "publisher": item.author,
+                    "published_at": item.published_at.isoformat() if item.published_at else None,
+                    "theme": profile, "score": analysis.score if analysis else None,
+                })
+            run_id = os.environ.get("GITHUB_RUN_ID") or datetime.now().strftime("local-%Y%m%d-%H%M")
+            edition = build_edition(
+                run_id=run_id, night=night,
+                generated_at=datetime.now().astimezone().isoformat(timespec="seconds"),
+                fork_commit=os.environ.get("GITHUB_SHA", ""), taxonomy="v2_3",
+                seat="production", themes=themes, theme_order=order, published=rows,
+                ladder=getattr(self, "_last_ladder_block", None), cost=stage_summary(),
+            )
+            path = Path("data") / f"edition-{run_id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(edition, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+            print(f"Edition contract v{edition['contract_version']}: {len(edition['rank'])} articles on "
+                  f"{len(edition['shelves'])} shelves, rank by {edition['rank_basis']}, to {path}")
+        except Exception as exc:  # noqa: BLE001 - the contract must never cost the run
+            print(f"Edition contract not written: {exc}")
 
     def _write_cost_ledger(self) -> None:
         """Write the per-call cost record beside the fixture and reconcile it.

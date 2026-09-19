@@ -34,6 +34,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, ContextManager, Dict, List, Optional, Sequence
 
 from .contract import BatchUnit, Candidate
@@ -106,7 +107,88 @@ USD_PER_CANDIDATE_PER_VOTE_RUN = 0.004840
 USD_PER_CANDIDATE_JUDGE = 0.002021
 
 
-def estimate_usd(candidates: int, runs: int = DEFAULT_RUNS) -> float:
+# Pass L, the labels (NEWS-Radar, 2026-09-19; RADAR-REDESIGN's Pass L row: form,
+# evidence, research horizon, action, how soon, topic; Sonnet, three runs).
+# The rate is E42's own receipt, the only measured figure for this prompt on
+# this model: 351 calls, 2.244 USD (OS research/ladder-lab/E42-RESULTS.md,
+# line 5). That file does not name its price table, and the lab's lab_cost.py
+# prices Sonnet at 3/15 where this estimator's other two rates are 2/10
+# (N-495), so this constant may sit 1.5x above the table its neighbours use.
+# It is kept as measured rather than scaled by a guess, and it errs upward,
+# which for a ceiling is the safe direction; the first recorded night replaces
+# it with its own receipt.
+USD_PER_CANDIDATE_LABEL_RUN = 2.244 / 351
+
+LABEL_KEYS = ("form", "evidence", "research_horizon", "horizon_basis",
+              "action_a_team_might_take", "how_soon", "topic")
+# The four the lab scores as categories (e45_score.py); the other three are
+# free text and take the answer of the run that agrees with the majority.
+LABEL_CATEGORICAL = ("form", "evidence", "research_horizon", "how_soon")
+# The prompt file: a byte-for-byte copy of the lab's committed shipping prompt
+# (E42's corrected system with the form repair, `confirmed` kept, sitting 2.9c).
+# It is a FILE and not a generator so the fork carries no lab code and the
+# radar's `tools/replay_ladder.py --check-prompts` can compare bytes against
+# the lab's commit. Absent until the orchestrator commits that file: then
+# Pass L records `skipped` and every item's labels stay null.
+LABEL_PROMPT_PATH = Path(__file__).with_name("ladder_labels.txt")
+
+
+class LabelPromptMissing(RuntimeError):
+    """The labels prompt file is not on disk, so Pass L cannot be sent."""
+
+
+def label_system() -> str:
+    if not LABEL_PROMPT_PATH.exists():
+        raise LabelPromptMissing(f"{LABEL_PROMPT_PATH.name} is absent: Pass L has no prompt to send")
+    return LABEL_PROMPT_PATH.read_text(encoding="utf-8")
+
+
+def label_user(candidate: Candidate, author: Optional[str] = None) -> str:
+    """The item as the label pass reads it: e1_run.user_prompt with the BYLINE and no summary.
+
+    Unlike `item_user`, the byline is sent when the record has one, because the
+    form clause judges the document by who published it (E17, e42_run.py:83
+    sends `dict(it, summary="")` with the author kept).
+    """
+    parts = [f"Title: {candidate.title}", f"Source: {candidate.source}", f"URL: {candidate.url}"]
+    if author:
+        parts.append(f"Author: {author}")
+    content = (candidate.content or "")[:CONTENT_CHARS]
+    if content:
+        parts.append(f"Content: {content}")
+    return "\n".join(parts)
+
+
+def label_tally(answers: Sequence[Optional[dict]]) -> dict:
+    """Majority per categorical field over the runs; free text from the agreeing run.
+
+    Returns {"labels": {...seven keys} or None, "label_runs": returned count,
+    "label_agree": the smallest majority share across the four categorical
+    fields, or None}. Labels are None, never a partial dict, when no run
+    returned a parseable answer carrying all seven keys, so a night with the
+    pass off and a night whose calls all failed both read null and the
+    `calls` block tells them apart.
+    """
+    good = [a for a in answers if isinstance(a, dict) and all(k in a for k in LABEL_KEYS)]
+    if not good:
+        return {"labels": None, "label_runs": sum(1 for a in answers if a is not None), "label_agree": None}
+    labels: dict = {}
+    shares = []
+    for k in LABEL_CATEGORICAL:
+        counts = collections.Counter(str(a[k]) for a in good)
+        value, n = counts.most_common(1)[0]
+        labels[k] = value
+        shares.append(n / len(good))
+    # the free-text fields come from the first run that matches the majority on
+    # every categorical field, else from the first good run
+    agreeing = next((a for a in good if all(str(a[k]) == labels[k] for k in LABEL_CATEGORICAL)), good[0])
+    for k in LABEL_KEYS:
+        if k not in labels:
+            labels[k] = str(agreeing[k])
+    return {"labels": labels, "label_runs": len(good), "label_agree": min(shares)}
+
+
+def estimate_usd(candidates: int, runs: int = DEFAULT_RUNS, labels: bool = False) -> float:
     """What one leg of the ladder is expected to cost, in USD.
 
     `candidates` items, each voted `runs` times and judged once. Returns a
@@ -115,7 +197,10 @@ def estimate_usd(candidates: int, runs: int = DEFAULT_RUNS) -> float:
     """
     if candidates <= 0 or runs <= 0:
         return 0.0
-    return candidates * (USD_PER_CANDIDATE_PER_VOTE_RUN * runs + USD_PER_CANDIDATE_JUDGE)
+    per = USD_PER_CANDIDATE_PER_VOTE_RUN * runs + USD_PER_CANDIDATE_JUDGE
+    if labels:
+        per += USD_PER_CANDIDATE_LABEL_RUN * runs
+    return candidates * per
 
 INTENT = (
     "For the executive who must govern AI in his industry: what changed this week, anywhere AI and its agentic forms are in broad use, in whether they can be trusted with a mission-critical job, in the security risks they bring or expose, and what he must now govern differently. Everything read is kept and labelled: what is lost, who is in the path, how well evidenced, how soon. One score orders the reading, on whether it changes what he does or asks next week, higher where the ground is high integrity or the risk is to security; it enables a smooth adaptation to the reader's feedback on that order, and never decides what is kept. One story, one thread across nights; the score reads the story as well as the article, such as how many carry it, how fast, and over what window. The few that lead, over the whole index."
@@ -259,6 +344,8 @@ class LadderSettings:
     # The cost record's stage boundary, a hook for the same reason as in
     # SelectionSettings: this package imports nothing from the engine.
     stage_hook: Callable[..., ContextManager] = lambda name, purpose="": nullcontext()
+    # Pass L, off until a declared night; needs the prompt file on disk.
+    labels_enabled: bool = False
 
 
 async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSettings, *, batch: bool) -> tuple[Dict[str, str], Dict[str, str]]:
@@ -281,7 +368,8 @@ async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSet
     return texts, {}
 
 
-async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: LadderSettings = LadderSettings()) -> dict:
+async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: LadderSettings = LadderSettings(),
+                     authors: Optional[Dict[str, str]] = None) -> dict:
     """Pass A then Pass B on `candidates`; returns the fixture's `ladder` block.
 
     Never changes a candidate. The caller catches any exception, because a
@@ -317,16 +405,50 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
             continue
         row["judgement"], row["judgement_flag"] = judgement(parse_json(texts_b[key]) if key in texts_b else None)
 
-    stops = collections.Counter(list(stops_a.values()) + list(stops_b.values()))
+    # --- Pass L: the labels, on every item that has a theme, RUNS times ------
+    label_note = "off"
+    units_l: List[BatchUnit] = []
+    texts_l: Dict[str, str] = {}
+    stops_l: Dict[str, str] = {}
+    if settings.labels_enabled:
+        try:
+            system_l = label_system()
+        except LabelPromptMissing as exc:
+            label_note = f"skipped: {exc}"
+            system_l = None
+        if system_l is not None:
+            import hashlib as _hashlib
+            label_note = "prompt md5 " + _hashlib.md5(system_l.encode("utf-8")).hexdigest()
+            authors = authors or {}
+            units_l = [
+                BatchUnit(custom_id=f"l{i:04d}r{r}", system=system_l,
+                          user=label_user(c, authors.get(c.id)), model=settings.model)
+                for i, (c, row) in enumerate(zip(items, rows)) if row["theme"]
+                for r in range(1, settings.runs + 1)
+            ]
+            with settings.stage_hook("ladder_label", "Pass L: the seven labels, one call per candidate per run"):
+                texts_l, stops_l = await _complete_all(client, units_l, settings, batch=settings.use_batch)
+    for i, row in enumerate(rows):
+        if not settings.labels_enabled or not row["theme"] or not units_l:
+            row.update({"labels": None, "label_runs": 0, "label_agree": None})
+            continue
+        answers = [parse_json(texts_l[f"l{i:04d}r{r}"]) if f"l{i:04d}r{r}" in texts_l else None
+                   for r in range(1, settings.runs + 1)]
+        row.update(label_tally(answers))
+
+    stops = collections.Counter(list(stops_a.values()) + list(stops_b.values()) + list(stops_l.values()))
     return {
         "taxonomy": TAXONOMY_VERSION,
         "runs": settings.runs,
         "model": settings.model,
         "seat": "cto",
         "paths": {"vote": "batch" if settings.use_batch and settings.vote_use_batch else "synchronous",
-                  "judge": "batch" if settings.use_batch else "synchronous"},
+                  "judge": "batch" if settings.use_batch else "synchronous",
+                  "label": "batch" if settings.use_batch else "synchronous"},
         "calls": {"vote_asked": len(units_a), "vote_returned": len(texts_a),
-                  "judge_asked": len(units_b), "judge_returned": len(texts_b)},
+                  "judge_asked": len(units_b), "judge_returned": len(texts_b),
+                  "label_asked": len(units_l), "label_returned": len(texts_l)},
+        "labels": label_note,
         "stops": dict(stops),
         "items": rows,
     }

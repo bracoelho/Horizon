@@ -81,7 +81,8 @@ def test_run_ladder_records_and_leaves_candidates_untouched():
     block = asyncio.run(L.run_ladder(client, items, L.LadderSettings(runs=6, model="m", vote_use_batch=True)))
     assert items == before
     assert block["taxonomy"] == "v2.3" and block["seat"] == "cto"
-    assert block["calls"] == {"vote_asked": 12, "vote_returned": 12, "judge_asked": 2, "judge_returned": 2}
+    assert block["calls"] == {"vote_asked": 12, "vote_returned": 12, "judge_asked": 2, "judge_returned": 2,
+                              "label_asked": 0, "label_returned": 0}
     assert [r["theme"] for r in block["items"]] == ["governance-regulation"] * 2
     assert block["items"][0]["judgement"]["relevance"] == 6
     assert all(u.model == "m" for u in client.units)
@@ -110,7 +111,7 @@ def test_the_vote_goes_synchronously_by_default_and_the_judgement_by_batch():
     block = asyncio.run(L.run_ladder(client, [cand(1)], L.LadderSettings(runs=3)))
     assert len(client.sync_ids) == 3
     assert [u.custom_id for u in client.units] == ["b0000"]
-    assert block["paths"] == {"vote": "synchronous", "judge": "batch"}
+    assert block["paths"] == {"vote": "synchronous", "judge": "batch", "label": "batch"}
     assert block["items"][0]["theme"] == "vendor-dependency"
 
 

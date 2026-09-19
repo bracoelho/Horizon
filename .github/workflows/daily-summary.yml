@@ -92,6 +92,18 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
 
+      # The edition contract v1 (NEWS-Radar specs/EDITION-CONTRACT.json): the
+      # one file the page, Telegram and the proposal will read once each moves
+      # to it. Kept under its run id, read by no consumer yet.
+      - name: Upload the edition contract
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: edition-contract
+          path: data/edition-*.json
+          if-no-files-found: ignore
+          retention-days: 90
+
       - name: "Run health check (BACKLOG #5/#6 - distinguish quiet from broken)"
         env:
           # Lets the check read the previous scheduled run's start time, so it
