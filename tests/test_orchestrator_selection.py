@@ -335,7 +335,11 @@ def test_fixture_records_the_decisions_not_only_the_field(
 # fetched entry gains `published_at` and the contract gains the window's bounds.
 # The keys a fixture carried before it, so a test can say nothing else moved.
 _FIXTURE_KEYS = {"version", "contract", "fetched", "candidates", "gate",
-                 "ranked", "shortlist", "defend", "published", "rank_rounds"}
+                 "ranked", "shortlist", "defend", "published", "rank_rounds",
+                 # the ladder's switches as the run executed them, written on
+                 # every night since 2026-09-19 on the owner's word, so a night
+                 # carrying two variables is attributed from the record
+                 "switches"}
 _RECORDED_KEYS = _FIXTURE_KEYS - {"version", "contract"}
 _FETCHED_ENTRY_KEYS = {"id", "title", "source", "url", "author", "summary",
                        "sift_input", "content"}

@@ -41,7 +41,7 @@ def _client(key_id="ANTHROPIC_API_KEY:deadbeef"):
 
 
 def test_key_identifier_never_carries_the_key():
-    key = "sk-ant-THIS-IS-A-SECRET-VALUE-0123456789"
+    key = "placeholder-not-a-key-THIS-IS-A-TEST-VALUE-0123456789"
     ident = key_identifier("ANTHROPIC_API_KEY", key)
     assert ident.startswith("ANTHROPIC_API_KEY:")
     assert len(ident.split(":")[1]) == 8
@@ -161,3 +161,24 @@ def test_selection_enters_the_stage_hook_in_pass_order():
         pass  # the fake client's answers need not satisfy every pass; the boundaries were entered before any of them answered
     assert entered[:1] == ["gate"], entered
     assert "rank" in entered and "defend" in entered, entered
+
+
+def test_the_switches_the_run_executed_are_recorded_and_reach_the_metrics_row(tmp_path: Path):
+    """The owner, 2026-09-19: a booked night with two variables is attributed from
+    the record. `ladder_switches` reads the executed config; the metrics row
+    reads the fixture's block through its own function; a night without a
+    fixture reads null, never a default."""
+    import importlib.util
+    from src.orchestrator import ladder_switches
+    sel = SimpleNamespace(ladder_enabled=True, ladder_labels_enabled=True, pull_enabled=False,
+                          ladder_runs=3, ladder_max_usd=4.0, ladder_model=None)
+    sw = ladder_switches(sel)
+    assert sw == {"ladder_enabled": True, "ladder_labels_enabled": True, "pull_enabled": False,
+                  "ladder_runs": 3, "ladder_max_usd": 4.0, "ladder_model": None}
+    assert ladder_switches(SimpleNamespace())["ladder_labels_enabled"] is False
+    spec = importlib.util.spec_from_file_location("record_metrics", Path("scripts/record_metrics.py"))
+    rm = importlib.util.module_from_spec(spec); spec.loader.exec_module(rm)
+    d = tmp_path / "data"; d.mkdir()
+    assert rm.switches_from_fixture(d) is None
+    (d / "rank_fixture-20260922-0337.json").write_text(json.dumps({"version": 4, "switches": sw}), encoding="utf-8")
+    assert rm.switches_from_fixture(d) == sw

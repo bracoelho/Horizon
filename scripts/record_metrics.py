@@ -86,6 +86,19 @@ def cost_by_stage(data_dir: Path) -> dict | None:
     return out
 
 
+def switches_from_fixture(data_dir: Path) -> dict | None:
+    """The `switches` block of the newest rank fixture, or None."""
+    fixtures = sorted(data_dir.glob("rank_fixture-*.json"))
+    if not fixtures:
+        return None
+    try:
+        d = json.loads(fixtures[-1].read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    s = d.get("switches")
+    return s if isinstance(s, dict) else None
+
+
 def build_row(health: dict, items: list[dict]) -> dict:
     totals = health.get("totals", {})
     themes: dict[str, int] = {}
@@ -123,6 +136,9 @@ def build_row(health: dict, items: list[dict]) -> dict:
         # fixture. Absent on a night that wrote none, and absent is recorded
         # as null rather than as zeros, so silence and a free night differ.
         "cost_by_stage": cost_by_stage(Path("data")),
+        # The ladder's switches as the run executed them (the owner, 2026-09-19),
+        # read from the night's own fixture; null on a night that wrote none.
+        "switches": switches_from_fixture(Path("data")),
         "per_feed": health.get("per_feed"),
         "errors": health.get("errors", 0),
         "degraded": health.get("degraded", 0),

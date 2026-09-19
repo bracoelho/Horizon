@@ -87,6 +87,23 @@ def _deduplication_url_key(url: str) -> tuple[str, str, str, str, Optional[int],
     )
 
 
+def ladder_switches(selection) -> dict:
+    """Which of the ladder's switches were ON for this run, read from the config
+    the run executed (the owner, 2026-09-19, in the radar seat: `Record which
+    switches were on, in the fixture and in the metrics row. I accepted a second
+    variable on a booked night, so I want a bad night attributed rather than
+    argued about.`). One key per switch, the value the run used; the run count
+    and the ceiling ride along because they are the same decision (N-491)."""
+    return {
+        "ladder_enabled": bool(getattr(selection, "ladder_enabled", False)),
+        "ladder_labels_enabled": bool(getattr(selection, "ladder_labels_enabled", False)),
+        "pull_enabled": bool(getattr(selection, "pull_enabled", False)),
+        "ladder_runs": getattr(selection, "ladder_runs", None),
+        "ladder_max_usd": getattr(selection, "ladder_max_usd", None),
+        "ladder_model": getattr(selection, "ladder_model", None),
+    }
+
+
 @dataclass
 class BalancedDigestResult:
     """Items and selection statistics from balanced digest filtering."""
@@ -1384,6 +1401,16 @@ class HorizonOrchestrator:
                     except Exception as exc:  # noqa: BLE001
                         self.console.print(f"[yellow]Pull not recorded: {exc}[/yellow]")
                 self._last_ladder_block = ladder_block
+                # Which switches were ON, in the RESULT and not only in the config
+                # (the owner, 2026-09-19): a booked night carrying two variables
+                # is attributed from this block, never argued from memory.
+                record["switches"] = ladder_switches(self.config.selection)
+                record.setdefault("contract", {}).setdefault("records", {})["switches"] = (
+                    "the ladder's switches as the run executed them: ladder_enabled, "
+                    "ladder_labels_enabled, pull_enabled, ladder_runs, ladder_max_usd, "
+                    "ladder_model; written so a night with two variables is attributed "
+                    "from the record and not from the config history; read by no stage"
+                )
                 if ladder_block is not None:
                     record["ladder"] = ladder_block
                     record.setdefault("contract", {}).setdefault("records", {})["ladder"] = (
