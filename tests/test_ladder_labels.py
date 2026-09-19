@@ -91,3 +91,16 @@ def test_pass_l_sends_the_file_bytes_once_per_item_per_run_and_records_the_major
 def test_pass_l_off_by_default_records_null_and_no_calls():
     block = asyncio.run(L.run_ladder(_Client(), _cands(), L.LadderSettings(runs=1, use_batch=False)))
     assert block["labels"] == "off" and block["calls"]["label_asked"] == 0 and block["items"][0]["labels"] is None
+
+
+def test_the_labels_prompt_file_is_the_lab_commit_byte_for_byte():
+    """The file is a copy of OS research/ladder-lab/NIGHT-A-PASS-L-PROMPT-SHIPPED.txt's
+    body (OS commit 71377ec, 2026-09-19), whose generator night_a_prompt.py is the
+    master. The md5 is the one that commit's header states; the radar's
+    tools/replay_ladder.py --check-prompts compares the live bytes against the
+    generator, and this test only says the copy has not moved since it landed."""
+    import hashlib
+    body = L.LABEL_PROMPT_PATH.read_bytes()
+    assert len(body) == 5352 and hashlib.md5(body).hexdigest() == "cb8bb22f1b8cab894225e397543dd860"
+    assert b"confirmed = an independent party" in body, "sitting 2.9c kept confirmed"
+    assert L.label_system() == body.decode("utf-8")
