@@ -60,6 +60,32 @@ def published_items(items_dir: Path) -> list[dict]:
     return out
 
 
+def cost_by_stage(data_dir: Path) -> dict | None:
+    """Sum the newest cost ledger per stage: calls, tokens, cache, batch."""
+    ledgers = sorted(data_dir.glob("cost_ledger-*.jsonl"))
+    if not ledgers:
+        return None
+    out: dict = {}
+    for line in ledgers[-1].read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            c = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        row = out.setdefault(str(c.get("stage", "")), {
+            "calls": 0, "batch_calls": 0, "input_tokens": 0, "output_tokens": 0,
+            "cache_read_tokens": 0, "cache_write_tokens": 0, "models": {}, "keys": {},
+        })
+        row["calls"] += 1
+        row["batch_calls"] += int(bool(c.get("batch")))
+        for k in ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens"):
+            row[k] += int(c.get(k) or 0)
+        row["models"][str(c.get("model", ""))] = row["models"].get(str(c.get("model", "")), 0) + 1
+        row["keys"][str(c.get("key_id", ""))] = row["keys"].get(str(c.get("key_id", "")), 0) + 1
+    return out
+
+
 def build_row(health: dict, items: list[dict]) -> dict:
     totals = health.get("totals", {})
     themes: dict[str, int] = {}
@@ -92,6 +118,11 @@ def build_row(health: dict, items: list[dict]) -> dict:
         # judgment map and the reader-side lens; per_feed feeds the source
         # ledger. Old rows lack these and every view must degrade to that.
         "items": items,
+        # TOKENOMICS v2 clause 1, per stage (NEWS-Radar, 2026-09-19): read from
+        # the run's cost ledger, the JSONL the orchestrator writes beside the
+        # fixture. Absent on a night that wrote none, and absent is recorded
+        # as null rather than as zeros, so silence and a free night differ.
+        "cost_by_stage": cost_by_stage(Path("data")),
         "per_feed": health.get("per_feed"),
         "errors": health.get("errors", 0),
         "degraded": health.get("degraded", 0),

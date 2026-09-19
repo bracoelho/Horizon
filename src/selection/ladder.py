@@ -26,13 +26,15 @@ which fails on a single byte of difference.
 
 from __future__ import annotations
 
+from contextlib import nullcontext
+
 import asyncio
 import collections
 import json
 import logging
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Callable, ContextManager, Dict, List, Optional, Sequence
 
 from .contract import BatchUnit, Candidate
 
@@ -254,6 +256,9 @@ class LadderSettings:
     vote_use_batch: bool = False
     max_wait_seconds: float = 3600.0
     concurrency: int = 6
+    # The cost record's stage boundary, a hook for the same reason as in
+    # SelectionSettings: this package imports nothing from the engine.
+    stage_hook: Callable[..., ContextManager] = lambda name, purpose="": nullcontext()
 
 
 async def _complete_all(client: Any, units: List[BatchUnit], settings: LadderSettings, *, batch: bool) -> tuple[Dict[str, str], Dict[str, str]]:
@@ -289,7 +294,8 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
         BatchUnit(custom_id=f"a{i:04d}r{r}", system=system_a, user=users[i], model=settings.model)
         for i in range(len(items)) for r in range(1, settings.runs + 1)
     ]
-    texts_a, stops_a = await _complete_all(client, units_a, settings, batch=settings.use_batch and settings.vote_use_batch)
+    with settings.stage_hook("ladder_vote", "Pass A: the theme vote, one call per candidate per run"):
+        texts_a, stops_a = await _complete_all(client, units_a, settings, batch=settings.use_batch and settings.vote_use_batch)
     rows: List[dict] = []
     for i, c in enumerate(items):
         answers = [parse_json(texts_a[f"a{i:04d}r{r}"]) if f"a{i:04d}r{r}" in texts_a else None
@@ -302,7 +308,8 @@ async def run_ladder(client: Any, candidates: Sequence[Candidate], settings: Lad
         BatchUnit(custom_id=f"b{i:04d}", system=within_system(row["theme"]), user=users[i], model=settings.model)
         for i, row in enumerate(rows) if row["theme"]
     ]
-    texts_b, stops_b = await _complete_all(client, units_b, settings, batch=settings.use_batch)
+    with settings.stage_hook("ladder_judge", "Pass B: the judgement inside the voted theme"):
+        texts_b, stops_b = await _complete_all(client, units_b, settings, batch=settings.use_batch)
     for i, row in enumerate(rows):
         key = f"b{i:04d}"
         if not row["theme"]:

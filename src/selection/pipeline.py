@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from contextlib import nullcontext
+
 import logging
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable, Dict, List, Optional, Protocol, Sequence
+from typing import Awaitable, Callable, ContextManager, Dict, List, Optional, Protocol, Sequence
 
 from .contract import BatchUnit, Candidate, GateVerdict, SelectionResult
 from .defend import defend as defend_pass
@@ -26,6 +28,13 @@ class SelectionSettings:
     Models differ per stage on purpose: routing several hundred items is a cheap
     task, ordering a shortlist is not, and the floor reads full documents.
     """
+    # The cost record's stage boundary (NEWS-Radar, TOKENOMICS v2, 2026-09-19):
+    # a callable returning a context manager, entered around each pass so the
+    # engine's ledger can attribute every call to the stage that asked. It is
+    # a HOOK and not an import because this package must stay engine-free (the
+    # break-away seam pinned in tests); the orchestrator supplies the real one
+    # and the default records nothing.
+    stage_hook: Callable[..., ContextManager] = lambda name, purpose="": nullcontext()
 
     gate_model: Optional[str] = None
     rank_model: Optional[str] = None
@@ -105,36 +114,37 @@ async def select(
         keys = gate_batch_keys(items, settings.gate_batch_size)
         stops: Optional[Dict[str, str]] = None
 
-        if settings.use_batch and hasattr(client, "complete_batch"):
-            responses = await client.complete_batch(
-                [
-                    BatchUnit(
-                        custom_id=custom_id,
-                        system=system,
-                        user=user,
+        with settings.stage_hook("gate", "sift: keep or drop each fetched item, per batch of 40"):
+            if settings.use_batch and hasattr(client, "complete_batch"):
+                responses = await client.complete_batch(
+                    [
+                        BatchUnit(
+                            custom_id=custom_id,
+                            system=system,
+                            user=user,
+                            schema=gate_schema(list(keys[custom_id])),
+                            effort=settings.gate_effort,
+                            model=settings.gate_model,
+                        )
+                        for custom_id, system, user in requests
+                    ]
+                )
+                recorded = getattr(client, "last_batch_stops", None)
+                stops = recorded if isinstance(recorded, dict) else None
+            else:
+                for custom_id, system, user in requests:
+                    responses[custom_id] = await client.complete(
+                        system,
+                        user,
+                        model=settings.gate_model,
                         schema=gate_schema(list(keys[custom_id])),
                         effort=settings.gate_effort,
-                        model=settings.gate_model,
                     )
-                    for custom_id, system, user in requests
-                ]
-            )
-            recorded = getattr(client, "last_batch_stops", None)
-            stops = recorded if isinstance(recorded, dict) else None
-        else:
-            for custom_id, system, user in requests:
-                responses[custom_id] = await client.complete(
-                    system,
-                    user,
-                    model=settings.gate_model,
-                    schema=gate_schema(list(keys[custom_id])),
-                    effort=settings.gate_effort,
-                )
 
-        verdicts = collect_gate(
-            responses, items, themes,
-            batch_size=settings.gate_batch_size, stops=stops,
-        )
+            verdicts = collect_gate(
+                responses, items, themes,
+                batch_size=settings.gate_batch_size, stops=stops,
+            )
         kept = apply_gate(items, verdicts)
         logger.info("Gate kept %d of %d items", len(kept), len(items))
 
@@ -146,7 +156,8 @@ async def select(
             )
 
     if after_gate is not None:
-        refreshed = await after_gate(kept)
+        with settings.stage_hook("analysis", "score and summarise the gate's survivors"):
+            refreshed = await after_gate(kept)
         # Defensive: a hook that loses or invents items would corrupt the
         # counts reported downstream, so fall back rather than trust it.
         if refreshed and len(refreshed) == len(kept):
@@ -181,13 +192,14 @@ async def select(
             )
 
         pick_stats = PickStats()
-        ranked = await setwise_rank(
-            kept,
-            setwise_complete,
-            set_size=settings.rank_set_size,
-            need=settings.consider + 5,
-            stats=pick_stats,
-        )
+        with settings.stage_hook("rank", "setwise tournament over the analysed field"):
+            ranked = await setwise_rank(
+                kept,
+                setwise_complete,
+                set_size=settings.rank_set_size,
+                need=settings.consider + 5,
+                stats=pick_stats,
+            )
         # Printed to stdout, not logged: the CLI's default level is WARNING,
         # so an INFO line never reaches CI's log and the health check recorded
         # setwise: null on the mode's first live night (2026-09-02). The
@@ -203,12 +215,13 @@ async def select(
                 pick_stats.fallbacks, pick_stats.picks,
             )
     else:
-        ranked = await rank_pass(
-            kept,
-            rank_complete,
-            chunk_size=settings.rank_chunk_size,
-            carry=settings.rank_carry,
-        )
+        with settings.stage_hook("rank", "listwise ranking over the analysed field"):
+            ranked = await rank_pass(
+                kept,
+                rank_complete,
+                chunk_size=settings.rank_chunk_size,
+                carry=settings.rank_carry,
+            )
 
     # --- leads are not candidates -------------------------------------------
     # A source that publishes a headline and one sentence can tell us a story
@@ -246,14 +259,15 @@ async def select(
             effort=settings.defend_effort,
         )
 
-    selected, defend_verdicts = await defend_pass(
-        ranked,
-        defend_complete,
-        themes,
-        consider=settings.consider,
-        max_publish=settings.max_publish,
-        concurrency=settings.defend_concurrency,
-    )
+    with settings.stage_hook("defend", "read the shortlist in full and refuse filler"):
+        selected, defend_verdicts = await defend_pass(
+            ranked,
+            defend_complete,
+            themes,
+            consider=settings.consider,
+            max_publish=settings.max_publish,
+            concurrency=settings.defend_concurrency,
+        )
     rejected = sum(1 for v in defend_verdicts if not v.publish)
     # Instrument the strictest judge (2026-09-01): defend cut 7 of 10 on the
     # first clean night and nothing recorded why, making "strict" and

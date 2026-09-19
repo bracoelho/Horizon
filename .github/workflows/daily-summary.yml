@@ -80,6 +80,18 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
 
+      # The per-call cost record (TOKENOMICS v2 clause 1, NEWS-Radar
+      # 2026-09-19): one JSONL line per model call, written by the run beside
+      # the fixture. Its own artifact so a cost claim can be re-read per call.
+      - name: Upload the cost ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cost-ledger
+          path: data/cost_ledger-*.jsonl
+          if-no-files-found: ignore
+          retention-days: 90
+
       - name: "Run health check (BACKLOG #5/#6 - distinguish quiet from broken)"
         env:
           # Lets the check read the previous scheduled run's start time, so it

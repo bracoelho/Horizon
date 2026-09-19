@@ -33,7 +33,7 @@ from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
 from .ai.synthesis import synthesise
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
-from .ai.tokens import get_usage_snapshot
+from .ai.tokens import get_usage_snapshot, reconcile as reconcile_costs, stage as cost_stage, stage_summary, write_ledger
 from .processing import ProfileRegistry
 from .selection import SelectionSettings, to_candidates
 from .selection import select as run_selection
@@ -393,7 +393,8 @@ class HorizonOrchestrator:
             self.console.print("")
 
             # 6. Search related stories + enrich with background knowledge (2nd AI pass)
-            await self.enrich_items(important_items)
+            with cost_stage("enrich", "second pass: related stories and background per published item"):
+                await self.enrich_items(important_items)
 
             # 6b. Synthesise the edition. One call over the whole selected set,
             # which is the only stage that reads the items as a group.
@@ -402,11 +403,12 @@ class HorizonOrchestrator:
                 self.console.print(
                     f"{self.icons['summary']} Synthesising the edition..."
                 )
-                preamble = await synthesise(
-                    important_items,
-                    create_ai_client(self.config.ai),
-                    model=self.config.digest.synthesis_model,
-                )
+                with cost_stage("synthesis", "one call over the selected set: the edition's opening"):
+                    preamble = await synthesise(
+                        important_items,
+                        create_ai_client(self.config.ai),
+                        model=self.config.digest.synthesis_model,
+                    )
                 if preamble:
                     self.console.print(
                         f"   Wrote a {len(preamble.split())}-word opening\n"
@@ -428,13 +430,14 @@ class HorizonOrchestrator:
                     profile_order=self.config.digest.profile_order,
                     block_titles=self.profiles.block_titles,
                 )
-                summary = await summarizer.generate_summary(
-                    important_items,
-                    today,
-                    len(all_items),
-                    language=lang,
-                    preamble=preamble,
-                )
+                with cost_stage("summary", "render the edition text"):
+                    summary = await summarizer.generate_summary(
+                        important_items,
+                        today,
+                        len(all_items),
+                        language=lang,
+                        preamble=preamble,
+                    )
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
@@ -564,6 +567,7 @@ class HorizonOrchestrator:
                         f"   {self.icons['detail']} {provider}: {u.total} tokens "
                         f"(in: {u.input_tokens}, out: {u.output_tokens})"
                     )
+            self._write_cost_ledger()
 
         except Exception as e:
             self.console.print(
@@ -976,6 +980,7 @@ class HorizonOrchestrator:
     def _selection_settings(self) -> SelectionSettings:
         config = self.config.selection
         return SelectionSettings(
+            stage_hook=cost_stage,
             gate_model=config.gate_model,
             rank_model=config.rank_model,
             defend_model=config.defend_model,
@@ -1283,6 +1288,7 @@ class HorizonOrchestrator:
                         use_batch=self.config.selection.use_batch,
                         vote_use_batch=self.config.selection.ladder_vote_use_batch,
                         max_wait_seconds=self.config.selection.ladder_max_wait_seconds,
+                        stage_hook=cost_stage,
                     ),
                 )
                 calls = ladder_block["calls"]
@@ -1972,6 +1978,39 @@ class HorizonOrchestrator:
                     )
         return written
 
+    def _write_cost_ledger(self) -> None:
+        """Write the per-call cost record beside the fixture and reconcile it.
+
+        NEWS-Radar, TOKENOMICS v2 (2026-09-19): one JSONL line per model call
+        with stage, purpose, provider, key id, model, tokens in and out, the
+        two cache counts and the batch flag. Written and never read by any
+        stage of the run, so it can change no decision; uploaded as its own
+        artifact by the workflow. The line it prints carries clause 3: the
+        ledger's sums against the totals the `Token usage this run` line
+        prints, so a call the ledger missed is a printed difference and never
+        a silence, and the count of calls made outside any stage is printed
+        for the same reason.
+        """
+        try:
+            rec = reconcile_costs()
+            if rec["calls"] == 0:
+                print("Cost record: 0 calls, nothing written")
+                return
+            path = Path("data") / f"cost_ledger-{datetime.now().strftime('%Y%m%d-%H%M')}.jsonl"
+            n = write_ledger(path)
+            by_stage = stage_summary()
+            stages = ", ".join(
+                f"{k} {v['calls']} calls {v['input_tokens']}/{v['output_tokens']}"
+                for k, v in sorted(by_stage.items())
+            )
+            print(
+                f"Cost record: {n} calls to {path}; ledger {rec['ledger_input']}/{rec['ledger_output']} "
+                f"against totals {rec['totals_input']}/{rec['totals_output']}, "
+                f"{'agree' if rec['agree'] else 'DISAGREE'}; {rec['unattributed']} unattributed; {stages}"
+            )
+        except Exception as exc:  # noqa: BLE001 - a record must never cost the run
+            print(f"Cost record not written: {exc}")
+
     async def enrich_items(self, items: List[ContentItem]) -> EnrichmentBatchResult:
         """Enrich items with background knowledge (2nd AI pass).
 
@@ -2020,7 +2059,8 @@ class HorizonOrchestrator:
         ai_client = create_ai_client(self.config.ai)
         analyzer = ContentAnalyzer(ai_client, self.profiles, console=self.console)
 
-        analyzed = await analyzer.analyze_batch(items)
+        with cost_stage("analysis", "score and summarise each item"):
+            analyzed = await analyzer.analyze_batch(items)
         # One line the health check and the metrics row can read. The published
         # scores turned out to have taken four values in the radar's entire
         # history, and nobody could see it because the distribution was never
