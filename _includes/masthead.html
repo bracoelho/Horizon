@@ -7,7 +7,7 @@ The masthead on every page. aria-current marks the section the reader is in.
     <p class="mast-line">{{ site.description }}</p>
     <nav class="mast-nav" aria-label="Main">
       <a class="mast-latest" href="{{ '/' | relative_url }}"{% if page.url == '/' or page.collection == 'items' %} aria-current="page"{% endif %}>Latest</a>
-      <a href="{{ '/#commentary' | relative_url }}"{% if page.collection == 'commentary' %} aria-current="page"{% endif %}>Commentary</a>
+      <a href="{{ '/commentary/' | relative_url }}"{% if page.collection == 'commentary' or page.url == '/commentary/' %} aria-current="page"{% endif %}>Commentary</a>
       <a href="{{ '/playbook/' | relative_url }}"{% if page.url == '/playbook/' or page.collection == 'playbook' %} aria-current="page"{% endif %}>Playbook</a>
       <a href="{{ '/method/' | relative_url }}"{% if page.url == '/method/' %} aria-current="page"{% endif %}>Method</a>
       <a class="mast-sub" href="{{ '/subscribe/' | relative_url }}"{% if page.url == '/subscribe/' %} aria-current="page"{% endif %}>Subscribe</a>

@@ -39,6 +39,48 @@ when an item carries them, else `theme` and `theme_name`.
     {{ content }}
   </div>
 
+  {%- comment -%}
+  The commentary written about this story, radar N-554 (the commentary is
+  reachable only forward). A reader arriving on an article could not see that
+  a piece existed about it, which is the direction a LinkedIn post sends them.
+
+  The lookup is by the publisher's link, because that is the one field both
+  sides already carry: a piece's `item_url` and an item page's `link`. Inside
+  a `related` row the names reverse, `url` being the publisher's and
+  `item_url` the radar's own path, so both are read here rather than guessed.
+  Measured on 122 items and 11 published pieces, 2026-09-20: exact string
+  equality matches 6 pieces onto 7 item pages, and every one of the 5 misses
+  is a story that never became an item rather than a near miss, so nothing is
+  normalised away. `site.commentary` already excludes unpublished pieces, and
+  `c.title` drops the README and the template.
+  {%- endcomment -%}
+  {%- capture commentary_rows -%}
+    {%- for c in site.commentary -%}
+      {%- if c.title -%}
+        {%- assign hit = false -%}
+        {%- if page.link and page.link != "" and c.item_url == page.link -%}
+          {%- assign hit = true -%}
+        {%- endif -%}
+        {%- if hit == false and c.related -%}
+          {%- for r in c.related -%}
+            {%- if page.link and page.link != "" and r.url == page.link -%}{%- assign hit = true -%}{%- break -%}{%- endif -%}
+            {%- if r.item_url and r.item_url == page.url -%}{%- assign hit = true -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if hit -%}
+        <li class="take"><a class="take-title" href="{{ c.url | relative_url }}">{{ c.title }}</a><span class="take-meta">{{ c.date | date: "%-d %b %Y" }}{% if c.theme %} <span aria-hidden="true">·</span> {{ c.theme }}{% endif %}</span></li>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- assign commentary_rows = commentary_rows | strip -%}
+  {% if commentary_rows != "" %}
+  <section class="item-commentary" aria-labelledby="item-commentary-h">
+    <h2 class="section-label" id="item-commentary-h">Commentary on this</h2>
+    <ul class="takes">{{ commentary_rows }}</ul>
+  </section>
+  {% endif %}
+
   <footer class="item-foot">
     {% if page.edition_url and page.edition_url != "" %}
     <p><a href="{{ page.edition_url | relative_url }}">Read the full edition of {{ page.edition_title }}</a></p>

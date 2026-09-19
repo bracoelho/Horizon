@@ -264,7 +264,23 @@ img { max-width: 100%; height: auto; }
 .take-title { display: block; font-family: var(--font-display); font-size: var(--text-lg); font-weight: 500; line-height: 1.25; text-decoration: none; text-wrap: balance; }
 .take-title:hover { text-decoration: underline; }
 .take-meta { display: block; margin-top: var(--s-1); font-family: var(--font-mono); font-size: 0.7rem; color: var(--graphite); }
+/* The commentary index and the reverse link from an item page, radar N-554.
+   Both reuse .takes, so a piece is listed the same way wherever it appears. */
+.home-block-more { margin: var(--s-4) 0 0; font-family: var(--font-mono); font-size: var(--text-xs); }
+.takes-index { gap: var(--s-6) var(--s-8); }
+.take-on { display: block; max-width: var(--measure); margin-top: var(--s-2); font-size: var(--text-sm); color: var(--graphite); }
+/* The story link stays graphite so the piece's own title is the one thing
+   reading as the destination; eleven accent links would make the index
+   busier than the three-item block it grew out of. */
+.take-on a { color: var(--graphite); }
+.take-on a:hover, .take-on a:focus-visible { color: var(--accent); }
+.item-commentary { margin-top: var(--s-12); }
+.item-commentary .takes { margin-top: var(--s-4); }
 @media (min-width: 760px) { .takes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* An item usually carries one piece, and a lone card in a three-column grid
+   wraps its title to a third of the width. The reverse link reads as a line
+   at full measure instead. */
+@media (min-width: 760px) { .item-commentary .takes { grid-template-columns: minmax(0, 1fr); max-width: var(--measure); } }
 .editions summary { display: flex; align-items: baseline; gap: var(--s-3); list-style: none; font-family: var(--font-text); text-transform: none; letter-spacing: 0; color: var(--ink); }
 .editions summary::-webkit-details-marker { display: none; }
 .editions summary::after { content: "›"; font-family: var(--font-mono); color: var(--graphite); }
