@@ -39,7 +39,7 @@ def test_label_user_carries_the_byline_and_item_user_does_not():
 
 
 def test_the_estimate_gains_a_labels_term_only_when_asked_and_the_rate_is_e42s_receipt():
-    assert L.USD_PER_CANDIDATE_LABEL_RUN == pytest.approx(2.244 / 351)
+    assert L.USD_PER_CANDIDATE_LABEL_RUN == pytest.approx(2.244 / 351, rel=1e-3), "E42: 818,667 in, 60,642 out, 351 calls, 2/10"
     base = L.estimate_usd(100, 3)
     assert L.estimate_usd(100, 3, labels=False) == base
     assert L.estimate_usd(100, 3, labels=True) == pytest.approx(base + 100 * 3 * L.USD_PER_CANDIDATE_LABEL_RUN)

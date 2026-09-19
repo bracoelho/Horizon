@@ -110,14 +110,17 @@ USD_PER_CANDIDATE_JUDGE = 0.002021
 # Pass L, the labels (NEWS-Radar, 2026-09-19; RADAR-REDESIGN's Pass L row: form,
 # evidence, research horizon, action, how soon, topic; Sonnet, three runs).
 # The rate is E42's own receipt, the only measured figure for this prompt on
-# this model: 351 calls, 2.244 USD (OS research/ladder-lab/E42-RESULTS.md,
-# line 5). That file does not name its price table, and the lab's lab_cost.py
-# prices Sonnet at 3/15 where this estimator's other two rates are 2/10
-# (N-495), so this constant may sit 1.5x above the table its neighbours use.
-# It is kept as measured rather than scaled by a guess, and it errs upward,
-# which for a ceiling is the safe direction; the first recorded night replaces
-# it with its own receipt.
-USD_PER_CANDIDATE_LABEL_RUN = 2.244 / 351
+# this model, RECOMPUTED FROM ITS CALLS rather than taken from its results
+# file (2026-09-19, the orchestrator's correction): 351 calls in
+# OS research/ladder-lab/data/e42-sonnet.jsonl, 818,667 input tokens and
+# 60,642 output tokens (6.9 per cent output), which at the 2/10 table this
+# estimator's other two rates use is 2.2438 USD, the 2.244 the results file
+# states. So the table IS 2/10 and this constant sits beside its neighbours
+# on one table; an earlier comment here called it a possible 1.5x
+# over-estimate, and that was wrong in the direction it named. 3/15 is
+# refuted on the bill (OS research/2026-09-19-cost-anchored-to-the-bill.md).
+# The first recorded night replaces it with its own receipt.
+USD_PER_CANDIDATE_LABEL_RUN = (818_667 * 2.0 + 60_642 * 10.0) / 1e6 / 351
 
 LABEL_KEYS = ("form", "evidence", "research_horizon", "horizon_basis",
               "action_a_team_might_take", "how_soon", "topic")
