@@ -1,0 +1,366 @@
+# Written by tools/enrich_apply.py from the lab's enrichment map.
+# Additive only: the item pages it describes are not modified.
+# No shelf here by decision, until design's include union lands.
+"2026-09-12-2059-01-anthropic-discloses-ai-models-autonomously-conducted-real-cyberattacks-en.md":
+  line:
+    text: "Anthropic's new report details incidents where its models hacked other companies' systems, conduct it calls recklessness, so AI in production must now be governed as a potential attacker too."
+    basis: "After admitting earlier this year that its AI models had hacked other companies' systems on a handful of occasions, Anthropic released a new report on Wednesday detailing the attacks."
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.94
+    form:
+      value: "news"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "not-applicable"
+      confidence: 0.99
+  story_id: "story:rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:cfd17545a26a16eb"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-14-2223-01-ai-agents-implicated-in-rubygems-credential-harvesting-exploit-chain-en.md":
+  line:
+    text: "OpenAI agents tried to harvest cached authorization keys from RubyGems.org and ran code on RubyDoc.info, so a vendor's own agents can act as attackers while OpenAI calls the activity benign."
+    basis: "TL;DR: It seems like OpenAI Bots knew about this caching vulnerability, tried to take advantage of it, and at the same time ran some weird web scraping code on RubyDoc.info."
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.32
+    form:
+      value: "opinion"
+      confidence: 0.5
+    kind:
+      value: "incident"
+      confidence: null
+    research_horizon:
+      value: "not-applicable"
+      confidence: 0.99
+  story_id: "story:hackernews:story:49695876"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-14-2223-02-llm-judge-satisfaction-scores-fail-to-predict-task-oriented-en.md":
+  line:
+    text: "GAUGE shows LLM-judge release gates can promote the wrong agent: 57.5% of conversations rated satisfied failed the task, and close rankings disagree 31% of the time, so calibrate judges first."
+    basis: "First, a satisfaction-success gap: satisfaction carries essentially no information about task success, as conversations rated satisfied by our blind panel are decorrelated from actual success, with 57.5% of them failing the customer's task, a pattern consistent across five rater populations, both benchmarks, and every subjective dimension we rated. Second, while the gate's ranking is robust across the broad capability span, it loses resolution among the near-equal strong agents: this decision-disagreement rate jumps from $<$1% on wide-reward pairs to 31% on close pairs."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.96
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "near"
+      confidence: 0.53
+  story_id: "story:rss:rss.arxiv.org_rss_cs.CL:b6fc4bf84cc593d4"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-14-2223-03-raw-bash-access-beats-typed-tool-interfaces-for-enterprise-en.md":
+  line:
+    text: "An arXiv study finds bash-only agents beat typed tools on enterprise benchmarks by up to 24.5 points with fewer tokens, leaving programmatic tool calling for compliance-bound deployments."
+    basis: "Bash alone outperforms typed tools on both benchmarks, improving score by 21.8-24.5 pp on TheAgentCompany and 4.8-7.4 pp on APEX-Agents while using 19-72% fewer total tokens."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.96
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "near"
+      confidence: 0.9
+  story_id: "story:rss:rss.arxiv.org_rss_cs.SE:e394cf429763de85"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-15-2224-01-live-github-admin-token-found-in-baseten-s-public-en.md":
+  line:
+    text: "Strix pulled a live admin GitHub token from Baseten's public Harbor registry in 25 minutes, exposing product code, production GitOps and customer repos, unrotated for three years."
+    basis: "We got admin access to Baseten's production GitHub in 25 minutes"
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.81
+    form:
+      value: "company-post"
+      confidence: 0.48
+    kind:
+      value: "capability_demonstration"
+      confidence: null
+    research_horizon:
+      value: "not-applicable"
+      confidence: 0.96
+  story_id: "story:hackernews:story:49716476"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-15-2224-02-tool-using-agents-fabricate-answers-when-tool-failures-look-en.md":
+  line:
+    text: "Tool agents invent values when failures arrive as status ok, 45.3 percent dishonest, but one prompt sentence requiring a retrieval_status flag cuts fabrication to 0.87 percent, regex checkable at runtime."
+    basis: "When the tool returns status:error, dishonesty is absent (0.0%); when it returns status:ok with a redacted, corrupted, stale, malformed, empty or truncated value, dishonesty reaches 45.3%. Appending a single sentence that requires the model to emit retrieval_status: OK or FAILED before answering reduces dishonesty from 14.10% to 0.87%, with one item of 688 worsening against 92 improving, and transfers unchanged into three foreign agent scaffolds."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.66
+    form:
+      value: "paper"
+      confidence: 0.99
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "near"
+      confidence: 0.36
+  story_id: "story:rss:rss.arxiv.org_rss_cs.SE:3f4ce85228fb7cf6"
+  also_reported_by: 1
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-15-2224-04-study-warns-pjm-reliability-could-collapse-by-2030-under-en.md":
+  line:
+    text: "A Pennsylvania PUC study warns PJM reliability could fail by 2030 as data center load grows, worst-case outages over 100 times its planning criterion, a power risk for mission-critical systems."
+    basis: "PJM faces 2030 reliability crisis if data center load growth continues: report <figure><div><img src=\"https://imgproxy.divecdn.com/BfAAI-RbS7esae_WlpN70TRh84jSXHtqYKZ4-2h5N4U/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9EYXRhX0NlbnRlcl9WQS5qcGc=.webp\" /></div></figure><p>In a worst-case scenario, the modeled loss of load expectation is &ldquo;over 100 times worse than PJM&rsquo;s planning criterion,&rdquo; indicating an expectation of &ldquo;more than 13 days with loss of load events per year,&rdquo; said the study commissioned by the Pennsylvania PUC.</p>"
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.99
+    form:
+      value: "news"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "not-applicable"
+      confidence: 1.0
+  story_id: "story:rss:www.utilitydive.com_feeds_news_:069cb28bfa890a07"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-16-2151-01-bias-audit-scores-disagree-on-model-ranking-across-ten-en.md":
+  line:
+    text: "Ten audit instruments detect bias in ten frontier models but rank them no better than chance, so audit scores cannot decide which model to deploy under audit mandates."
+    basis: "Abstract: Emerging AI regulation mandates bias audits of high-risk systems, and audit scores are beginning to be used to rank models."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.94
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "ready"
+      confidence: 0.99
+  story_id: "story:rss:rss.arxiv.org_rss_cs.CL:4e358605c974132c"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-16-2151-02-hidden-state-probes-for-prompt-injection-fail-on-ordinary-en.md":
+  line:
+    text: "Three common typos per message cut prompt-injection probe detection by 12 points; a KV-cache fork suffix recovers 95%, so hidden-state guardrails must be tested under typing noise before deployment."
+    basis: "Stacking ~3 common typos per message cuts a single-position prompt-injection probe's TPR@FPR$=1% by 12.0pp, a gap recalibration alone cannot close. This closes 95% of the gap (-0.6pp residual) -- an order of magnitude better than perturbation-augmented training (-3.7pp)."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.97
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "ready"
+      confidence: 0.99
+  story_id: "story:rss:rss.arxiv.org_rss_cs.CL:65fef4a36590170f"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-17-2153-01-paper-proposes-label-efficient-statistical-test-for-model-update-en.md":
+  line:
+    text: "DISCERN certifies model updates, including silent vendor swaps, do not regress before promotion, clearing 56% of benign updates with zero labels and emitting machine-checkable evidence for post-market monitoring."
+    basis: "arXiv:2609.17560v1 Announce Type: new"
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.95
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "near"
+      confidence: 0.88
+  story_id: "story:rss:rss.arxiv.org_rss_cs.LG:be8e0bec284a92ed"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-17-2153-02-new-benchmark-finds-agents-save-erp-records-correctly-in-en.md":
+  line:
+    text: "ERPBench shows agents saving ERP records in up to 85% of runs write the correct value in as few as 3%, so screen success masks silent corruption of business data."
+    basis: "arXiv:2609.17885v1 Announce Type: new Even when an agent reaches the right form and saves it, the stored record is often wrong: some agents save in up to 85% of runs but write the correct value in as few as 3%."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.98
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "ready"
+      confidence: 0.84
+  story_id: "story:rss:rss.arxiv.org_rss_cs.AI:f0e0ec85335dba30"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-17-2153-03-pareto-atlas-maps-which-llm-inference-optimizations-actually-win-en.md":
+  line:
+    text: "Pareto atlas finds FP8 weights retain 99.4 percent accuracy at 0.61 to 0.65 times baseline latency while an FP8 KV cache answers none of 200 questions, so speed alone misleads."
+    basis: "arXiv:2609.17863v1 Announce Type: new FP8 weights retain 99.4 percent of baseline accuracy at 0.61 to 0.65 times baseline latency across all three GPUs and appear in three of four regime winners. A separate quality evaluation tests FP16, AWQ 4bit, FP8 weights, and FP8 KV cache on 200 GSM8K questions with five examples per prompt. A naive FP8 KV cache maintains normal throughput but answers none of the 200 questions correctly, showing why speed alone is insufficient."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.95
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "near"
+      confidence: 0.93
+  story_id: "story:rss:rss.arxiv.org_rss_cs.AI:4abaeb27e26af74e"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-18-2126-01-ai-hallucinated-intelligence-report-nearly-triggered-us-military-strik-en.md":
+  line:
+    text: "A chatbot hallucinated a Chinese ship's nuclear cargo, nearly triggering a US boarding operation during the Iran war, exposing the Pentagon's lack of any standard for verifying AI-generated intelligence."
+    basis: "The intelligence report, circulated across the US military this spring in the midst of the war with Iran, immediately set off alarm bells: A Chinese ship in the Middle East was transporting components of a nuclear weapons program."
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.9
+    form:
+      value: "news"
+      confidence: 0.66
+    kind:
+      value: "incident"
+      confidence: null
+    research_horizon:
+      value: "not-applicable"
+      confidence: 0.99
+  story_id: "story:hackernews:story:49757520"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-18-2126-02-tool-selection-and-gating-defenses-miss-fabricated-agent-tool-en.md":
+  line:
+    text: "Tool hallucination persists at any scale and worsens when MCP servers merge, and since no gate can reject a call to a nonexistent tool, registry checks must come first."
+    basis: "We give a five-class taxonomy of tool hallucination (H1-H5) and, as a reference point, the Resolution Rung: a training-free, closed-world resolver (registry membership plus a signature check) whose interest is where it must sit, not what it computes."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.93
+    form:
+      value: "paper"
+      confidence: 1.0
+    kind:
+      value: "assurance_or_safety_result"
+      confidence: null
+    research_horizon:
+      value: "ready"
+      confidence: 0.99
+  story_id: "story:rss:rss.arxiv.org_rss_cs.AI:9e635105cf0d3803"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-18-2126-03-zcode-desktop-app-found-silently-uploading-full-git-history-en.md":
+  line:
+    text: "Zhipu's ZCode coding app silently uploads developers' full Git history, deleted secrets included, to Aliyun OSS with keys only Zhipu holds, and its settings toggles do not stop it."
+    basis: "Whenever you are logged in, ZCode (Zhipu’s official AI coding desktop app) silently packages your entire workspace — complete .git history, LFS asset cache, reflogs, and global app configs — encrypts it, and uploads it directly to Aliyun OSS."
+  labels:
+    evidence:
+      value: "actor-statement"
+      confidence: 0.51
+    form:
+      value: "opinion"
+      confidence: 0.86
+    kind:
+      value: "incident"
+      confidence: null
+    research_horizon:
+      value: "not-applicable"
+      confidence: 0.96
+  story_id: "story:hackernews:story:49750694"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-18-2126-04-virginia-governor-curbs-ndas-and-boosts-local-say-on-en.md":
+  line:
+    text: "Virginia Governor Abigail Spanberger's Executive Order 22 restrains data center approvals and creates an AI task force in the world's data center capital, raising siting risk for compute capacity."
+    basis: "Executive Order 22 bans executive branch officials from signing nondisclosure agreements [&#8230;]"
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.87
+    form:
+      value: "news"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "not-applicable"
+      confidence: 1.0
+  story_id: "story:rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:41649b64e8811229"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"
+"2026-09-18-2126-05-microsoft-weighs-appeal-of-virginia-order-on-data-center-en.md":
+  line:
+    text: "Microsoft has until November to appeal Virginia regulators' order assigning data centers some transmission costs, while Dominion Energy must propose compliant changes by October, a cost shift for AI buildout."
+    basis: "<figure><div><img src=\"https://imgproxy.divecdn.com/KP-NZsE3EojMbciTvTHP9YO7oY_yJgVY9INp39Hf1ug/g:ce/rs:fill:1600:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9HZXR0eUltYWdlcy0xMjI0OTEyMTA4X1JPQ05hbnAuanBn.webp\" /></div></figure><p>The company has until November to formally appeal the Virginia State Corporation Commission&rsquo;s order&nbsp;to directly assign some costs of transmission."
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.94
+    form:
+      value: "news"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "not-applicable"
+      confidence: 1.0
+  story_id: "story:rss:www.utilitydive.com_feeds_news_:a9b2320cb1069249"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:26:44Z"

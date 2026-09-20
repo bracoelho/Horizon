@@ -9,6 +9,38 @@ when an item carries them, else `theme` and `theme_name`.
 {%- endcomment -%}
 {%- assign shelf = page.shelf | default: page.theme -%}
 {%- assign shelf_name = page.shelf_name | default: page.theme_name -%}
+{%- comment -%}
+The v2 enrichment, radar N-584. The 122 published item pages live only on the
+deploy branch, so the migration cannot write their front matter without a hand
+commit the owner has to authorise. It lands instead as one tracked data file,
+`_data/enrichment.yml`, and the published markdown stays byte-identical.
+
+KEYED BY FILENAME, NOT URL: 7 links on this site carry two live pages each
+(N-577), so a url does not identify a page. The sample's keys carry the `.md`,
+so it is NOT stripped here. (The spec's own snippet strips it, which would
+miss every key in the sample it ships with; reported back.)
+
+ONE RENDERING, TWO SOURCES. From Tuesday the pipeline writes these values into
+an item's own front matter; the migration supplies them for older pages from
+the data file. Front matter wins where both exist, so the page does not care
+which era it belongs to and nothing has to be re-rendered when the migration
+is superseded.
+{%- endcomment -%}
+{%- assign enr_key = page.path | split: "/" | last -%}
+{%- assign enr = site.data.enrichment[enr_key] -%}
+{%- assign enr_line = enr.line.text -%}
+{%- assign lead_line = page.why | default: enr_line -%}
+{%- assign lab_ev = page.ev | default: enr.labels.evidence.value -%}
+{%- assign lab_form = page.form | default: enr.labels.form.value -%}
+{%- assign lab_kind = page.kind | default: enr.labels.kind.value -%}
+{%- assign lab_horizon = page.research_horizon | default: enr.labels.research_horizon.value -%}
+{%- comment -%}
+`not-applicable` is a real value and not a reader's label: it says the question
+does not arise, which is what showing nothing already says. Suppressed rather
+than printed, and flagged as a judgement rather than a rule from the spec.
+{%- endcomment -%}
+{%- if lab_horizon == "not-applicable" -%}{%- assign lab_horizon = nil -%}{%- endif -%}
+{%- assign also_n = page.also_reported_by | default: enr.also_reported_by | default: 0 -%}
 <article class="item-page">
 
   <header class="item-head">
@@ -19,8 +51,27 @@ when an item carries them, else `theme` and `theme_name`.
       <span>Surfaced <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time></span>
       {% if page.link %}<span aria-hidden="true">·</span> <a class="item-source-link" href="{{ page.link }}">Read the original</a>{% endif %}
     </p>
-    {% if page.soon or page.ev %}
-    <p class="item-labels">{% if page.soon %}<span class="lab" data-l="soon" data-v="{{ page.soon }}">{% include label.html kind="soon" v=page.soon %}</span>{% endif %}{% if page.ev %}<span class="lab" data-l="ev" data-v="{{ page.ev }}">{% include label.html kind="ev" v=page.ev %}</span>{% endif %}</p>
+    {%- comment -%}
+    `soon` is gone rather than left dead: E74 refuted it on the owner's own
+    blind reading of twenty cards, contract v2 forbids it, and 0 of 122 pages
+    fed the branch. The door closes while this pass is open.
+
+    A label with no value is not a label. `kind` is null on 5 of the 12
+    enriched records because those stories never reached the step that writes
+    it, and the data says so in a `note` that is honest for us and not for a
+    reader. Confidence is never printed: it is null on every `kind` by
+    construction, it ranges 0.32 to 1.0 on the rest, and a number beside a word
+    invites a precision the reader cannot act on.
+
+    Values print through their mechanics only, never reworded: an underscore or
+    hyphen becomes a space and the first letter rises, so
+    `capability_demonstration` reads "Capability demonstration". The reader's
+    wording for these values is undecided (E74, "reader wording to come") and
+    is not design's to invent.
+    {%- endcomment -%}
+    {%- capture ev_text -%}{% if lab_ev %}{% include label.html kind="ev" v=lab_ev %}{% endif %}{%- endcapture -%}
+    {% if lab_ev or lab_form or lab_kind or lab_horizon %}
+    <p class="item-labels">{% if lab_ev %}<span class="lab" data-l="ev" data-v="{{ lab_ev }}">{{ ev_text | replace: "-", " " | replace: "_", " " | capitalize }}</span>{% endif %}{% if lab_form %}<span class="lab" data-l="form" data-v="{{ lab_form }}">{{ lab_form | replace: "-", " " | replace: "_", " " | capitalize }}</span>{% endif %}{% if lab_kind %}<span class="lab" data-l="kind" data-v="{{ lab_kind }}">{{ lab_kind | replace: "-", " " | replace: "_", " " | capitalize }}</span>{% endif %}{% if lab_horizon %}<span class="lab" data-l="horizon" data-v="{{ lab_horizon }}">{{ lab_horizon | replace: "-", " " | replace: "_", " " | capitalize }}</span>{% endif %}</p>
     {% endif %}
   </header>
 
@@ -28,11 +79,29 @@ when an item carries them, else `theme` and `theme_name`.
   <p class="item-thin">Background research did not complete for this item, so it carries the headline and the summary only.</p>
   {% endunless %}
 
-  {% if page.why or page.act %}
-  <div class="item-brief">
-    {% if page.why %}<div><p class="brief-h">Why it matters</p><p>{{ page.why }}</p></div>{% endif %}
-    {% if page.act %}<div class="brief-act"><p class="brief-h">What a team does</p><p>{{ page.act }}</p></div>{% endif %}
-  </div>
+  {%- comment -%}
+  The one sentence, set as a standfirst above the body because it is the
+  shortest true statement of what the item says and a reader should meet it
+  before the prose. Under thirty words by contract; the sample runs 27 to 30.
+
+  `act` is gone with `soon`, for the same reason and by the same refutation.
+
+  The data's `basis` (the source sentence the line was written from) and
+  `writer` (the model that wrote it) are NOT rendered. They are provenance for
+  review. Whether a page attributes a sentence to a model is a disclosure
+  judgement about what the site tells a reader, which belongs to the owner and
+  the Editor rather than to this layout, and the method page already says a
+  model does the scoring and the background research. Flagged, not decided.
+
+  `continues` carries earlier STORY ids, which resolve to no page on this
+  site, so nothing is rendered for it and a link cannot be offered yet.
+  {%- endcomment -%}
+  {% if lead_line %}
+  <p class="item-line">{{ lead_line }}</p>
+  {% endif %}
+
+  {% if also_n > 0 %}
+  <p class="item-also">Also reported by {{ also_n }} other source{% if also_n != 1 %}s{% endif %}.</p>
   {% endif %}
 
   <div class="item-body">
