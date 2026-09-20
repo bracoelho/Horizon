@@ -33,6 +33,16 @@ exclude:
   # 2026-09-07 removed six and verified 404 on all six; it enumerated its own
   # list rather than this directory, and this file was in neither.
   - "twitter-cookies.md"
+  # The eighth and ninth, found 2026-09-20 (N-603). BOTH WERE PUBLIC: /presets.html
+  # answered 200 with upstream's source-preset library entirely in Chinese, and
+  # /recommendations.html answered 200 describing a feature this pipeline does
+  # not have. Neither file is on main; both survive on gh-pages under
+  # keep_files, so excluding them here is what takes them down.
+  # THIRD OCCURRENCE OF ONE DEFECT: 2026-09-06 removed six and verified those
+  # six, 2026-09-10 found a seventh (N-244), and this found two more. Each
+  # check enumerated its own list instead of reading the branch.
+  - "presets.md"
+  - "recommendations.md"
 
 collections:
   commentary:
