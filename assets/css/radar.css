@@ -266,7 +266,7 @@ img { max-width: 100%; height: auto; }
 .take-meta { display: block; margin-top: var(--s-1); font-family: var(--font-mono); font-size: 0.7rem; color: var(--graphite); }
 /* The commentary index and the reverse link from an item page, radar N-554.
    Both reuse .takes, so a piece is listed the same way wherever it appears. */
-.home-block-more { margin: var(--s-4) 0 0; font-family: var(--font-mono); font-size: var(--text-xs); }
+.more-link { margin: var(--s-4) 0 0; font-family: var(--font-mono); font-size: var(--text-xs); }
 .takes-index { gap: var(--s-6) var(--s-8); }
 .take-on { display: block; max-width: var(--measure); margin-top: var(--s-2); font-size: var(--text-sm); color: var(--graphite); }
 /* The story link stays graphite so the piece's own title is the one thing

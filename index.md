@@ -144,7 +144,7 @@ lead the owner picked (S1 and T1) replaces the first step.
     {%- endfor %}
   </ul>
   {%- if takes.size > 3 %}
-  <p class="home-block-more"><a href="{{ '/commentary/' | relative_url }}">All {{ takes.size }} commentaries</a></p>
+  <p class="more-link"><a href="{{ '/commentary/' | relative_url }}">All {{ takes.size }} commentaries</a></p>
   {%- endif %}
 </section>
 {% endif %}
