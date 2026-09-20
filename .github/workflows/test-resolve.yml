@@ -1,0 +1,23 @@
+# Throwaway measurement: can this runner follow a Google News redirect?
+# Manual only. No secrets, no model calls, no writes, no publish.
+# Delete once the question is answered (NEWS-Radar N-614).
+name: Test Google News resolution from the runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright and Chromium
+        run: |
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+      - name: Resolve five links
+        run: python .github/scripts/test_resolve.py
