@@ -736,6 +736,92 @@ class DigestConfig(BaseModel):
         return value
 
 
+class V2Config(BaseModel):
+    """v2's DECISION surface: what is selected, and how it is described.
+
+    Every row carries its name, its statistic and its measured default, so a
+    ruling is a number rather than a rewrite and the acceptance harness reads
+    the same file the producer does. Radar spec: specs/v2/PARAMETERS.md.
+
+    Read by nothing yet. The block exists so the values are visible and
+    rulable before the producer that consumes them is written.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool = False
+
+    # THESE THREE WERE ONE LITERAL (`TH = 0.85`) until 2026-09-21, serving shelf
+    # placement, story folding and cross-night continuation at once, so a ruling
+    # on the placing bar silently moved what a STORY IS. Split here and in the
+    # lab (TH_PLACE / TH_FOLD / TH_CONTINUE); the split was validated as
+    # behaviour-neutral across eight nights, story counts unchanged.
+    place_min_confidence: float = Field(default=0.85, ge=0.0, le=1.0)
+    fold_min_confidence: float = Field(default=0.85, ge=0.0, le=1.0)
+    continue_min_confidence: float = Field(default=0.85, ge=0.0, le=1.0)
+
+    # The gate keeps on either score alone; a `none` remit drops outright.
+    gate_keep_floor: float = Field(default=0.5, ge=0.0, le=1.0)
+    gate_keep_rule: str = Field(default="any", pattern="^(any|all)$")
+
+    # Articles per shelf on the edition. Was a bare slice, `[:4]`.
+    publish_per_shelf: int = Field(default=4, gt=0)
+
+    # Whether the `other` shelf is ever ranked. FALSE today, and this is the
+    # switch behind the finding that 43.6 per cent of the gate's keeps never
+    # reach the site: they are placed on `other` and `other` is never judged.
+    other_judged: bool = False
+
+    # A story publishes when ANY member is a keep, not only its anchor.
+    story_publishable_rule: str = Field(
+        default="any_member_keep", pattern="^(any_member_keep|anchor_keep)$"
+    )
+
+    # The line under each story. These are the voice standard in numeric form,
+    # which is why they sit in the owner's block rather than the runtime one.
+    line_max_words: int = Field(default=30, gt=0)
+    line_max_sentences: int = Field(default=1, gt=0)
+
+    # Which model writes which block. A cost-against-quality choice, so it is
+    # the owner's, not the runtime block's.
+    blocks_writers: Dict[str, List[str]] = Field(default_factory=dict)
+
+    # The judgement text the lab rules: a flattened taxonomy version, never the
+    # six-arm inheritance chain, because a definition assembled by inheritance
+    # is a definition nobody can read.
+    taxonomy_version: str = "v2_3"
+    labels_emitted: List[str] = Field(
+        default_factory=lambda: ["form", "evidence", "research_horizon"]
+    )
+    vote_form: str = Field(default="single_choice", pattern="^(single_choice|per_shelf)$")
+
+
+class V2RuntimeConfig(BaseModel):
+    """v2's OPERATIONAL surface: how the machine runs, never what it decides.
+
+    Separated from V2Config because a row in the wrong block puts a number in
+    front of the wrong person. Guarded by a consistency check rather than by
+    anyone reading it: the drift it can hide is already present in the lab
+    (timeouts 90 except 120 twice, backoff 2x except 3x twice, workers 6 except
+    8 for folding) and human attention is not a control.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    runs_per_stage: int = Field(default=3, gt=0)
+    workers: int = Field(default=6, gt=0)
+    workers_pairwise: int = Field(default=8, gt=0)
+    retry_attempts: int = Field(default=3, gt=0)
+    retry_timeout_seconds: int = Field(default=90, gt=0)
+    retry_backoff_seconds: int = Field(default=2, gt=0)
+    line_max_tokens: int = Field(default=16000, gt=0)
+    block_max_tokens: int = Field(default=6000, gt=0)
+    analysis_max_chars: int = Field(default=6000, gt=0)
+    contract_max_chars: int = Field(default=8000, gt=0)
+    models: Dict[str, str] = Field(default_factory=dict)
+    temperatures: Dict[str, Optional[float]] = Field(default_factory=dict)
+
+
 class Config(BaseModel):
     """Main configuration model."""
 
@@ -751,3 +837,5 @@ class Config(BaseModel):
     extractors: Dict[str, ExtractorConfig] = Field(default_factory=dict)
     email: Optional[EmailConfig] = None
     webhook: Optional[WebhookConfig] = None
+    v2: V2Config = Field(default_factory=V2Config)
+    v2_runtime: V2RuntimeConfig = Field(default_factory=V2RuntimeConfig)

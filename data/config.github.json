@@ -681,5 +681,54 @@
       "Google News",
       "google_news"
     ]
+  },
+  "v2": {
+    "enabled": false,
+    "place_min_confidence": 0.85,
+    "fold_min_confidence": 0.85,
+    "continue_min_confidence": 0.85,
+    "gate_keep_floor": 0.5,
+    "gate_keep_rule": "any",
+    "publish_per_shelf": 4,
+    "other_judged": false,
+    "story_publishable_rule": "any_member_keep",
+    "line_max_words": 30,
+    "line_max_sentences": 1,
+    "blocks_writers": {
+      "anthropic/claude-sonnet-5": [
+        "background",
+        "operator_implication"
+      ],
+      "openai/gpt-5-mini": [
+        "summary",
+        "constraints"
+      ]
+    },
+    "taxonomy_version": "v2_3",
+    "labels_emitted": [
+      "form",
+      "evidence",
+      "research_horizon"
+    ],
+    "vote_form": "single_choice"
+  },
+  "v2_runtime": {
+    "runs_per_stage": 3,
+    "workers": 6,
+    "workers_pairwise": 8,
+    "retry_attempts": 3,
+    "retry_timeout_seconds": 90,
+    "retry_backoff_seconds": 2,
+    "line_max_tokens": 16000,
+    "block_max_tokens": 6000,
+    "analysis_max_chars": 6000,
+    "contract_max_chars": 8000,
+    "models": {
+      "line": "z-ai/glm-5.3-flash"
+    },
+    "temperatures": {
+      "line": 0.3,
+      "blocks": null
+    }
   }
 }
