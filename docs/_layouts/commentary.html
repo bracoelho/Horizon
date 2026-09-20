@@ -62,6 +62,49 @@ no `related` the block is exactly the single anchor, as before.
     {{ content }}
   </div>
 
+  {%- comment -%}
+  The next piece, radar N-555 (a piece offers no way to the next piece). A
+  reader who finishes a piece has proved they want more of it, and the foot
+  offered four exits and no next piece.
+
+  It sits ABOVE the sign-off rather than below it: a reader who reaches the
+  end should meet the next piece before the bio and the four exit links,
+  not past them.
+
+  Same shelf first, then backfilled by date, because the corpus decides the
+  rule rather than taste: of 11 published pieces 9 are Reliability &
+  Assurance and two shelves hold one each, so a same-shelf-only block would
+  be EMPTY on exactly those two pieces. Backfilling means the block is never
+  empty while a second piece exists.
+  {%- endcomment -%}
+  {%- assign all_takes = site.commentary | where_exp: "c", "c.title" | sort: "date" | reverse -%}
+  {%- assign want = 3 -%}
+  {%- assign shown = 0 -%}
+  {%- capture next_rows -%}
+    {%- for c in all_takes -%}
+      {%- if c.url != page.url and c.theme == page.theme and shown < want -%}
+        <li class="take"><a class="take-title" href="{{ c.url | relative_url }}">{{ c.title }}</a><span class="take-meta">{{ c.date | date: "%-d %b %Y" }}{% if c.theme %} <span aria-hidden="true">·</span> {{ c.theme }}{% endif %}</span></li>
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- for c in all_takes -%}
+      {%- if c.url != page.url and c.theme != page.theme and shown < want -%}
+        <li class="take"><a class="take-title" href="{{ c.url | relative_url }}">{{ c.title }}</a><span class="take-meta">{{ c.date | date: "%-d %b %Y" }}{% if c.theme %} <span aria-hidden="true">·</span> {{ c.theme }}{% endif %}</span></li>
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- assign next_rows = next_rows | strip -%}
+  {% if next_rows != "" %}
+  <section class="commentary-next" aria-labelledby="commentary-next-h">
+    <h2 class="section-label" id="commentary-next-h">More commentary</h2>
+    <ul class="takes">{{ next_rows }}</ul>
+    {%- if all_takes.size > 4 %}
+    <p class="more-link"><a href="{{ '/commentary/' | relative_url }}">All {{ all_takes.size }} commentaries</a></p>
+    {%- endif %}
+  </section>
+  {% endif %}
+
   <footer class="commentary-sign">
     <p class="commentary-author"><strong>Bruno Coelho</strong>. Technology leadership across Europe, Asia-Pacific and the Middle East, from strategy through execution.</p>
     <p class="commentary-stance">Strategy holds when technology, regulatory and market signals are read together, continuously, and followed through to a decision.</p>
