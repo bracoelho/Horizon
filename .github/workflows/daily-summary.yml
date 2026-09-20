@@ -1,7 +1,7 @@
 name: Daily Horizon Summary
 
 on:
-  schedule:
+  # schedule:
     # Once daily, off the hour to dodge the scheduler pile-up. 18:37 UTC =
     # 03:37 Tokyo. Moved from 21:07 on 2026-08-31 (#52): the owner's
     # meetings start 09:00 JST, and with GitHub's 2-8h scheduler
@@ -9,7 +9,24 @@ on:
     # review. Even +4h drift now completes before 08:00 JST. The 30h
     # window anchors to run start, so the transition day only overlaps
     # more; no gap, no window change.
-    - cron: '37 18 * * *'
+    # OUT OF PRODUCTION 2026-09-20, THE OWNER IN THE RADAR SEAT: "The radar
+    # does not need to run tonight, it is not in production tonight. I say so
+    # when we run the pipeline again. We will run when we are ready for the
+    # new version, v2." So the schedule is COMMENTED OUT rather than the
+    # workflow deleted or disabled in the Actions tab: the file says why it is
+    # off, which a greyed-out workflow does not, and restoring one line
+    # restores the cadence exactly as it was.
+    #
+    # WHAT STILL WORKS: workflow_dispatch below, so a run can be fired by hand
+    # the moment he says the word, on the same code and the same window.
+    # NOTHING ELSE IN THIS FILE CHANGES, so a dispatched run behaves exactly
+    # as a scheduled one did; the health check's cadence watch reads the gap
+    # against the 30h window and will report a long gap, which is correct and
+    # is information rather than a defect while the radar is out of production.
+    #
+    # The line to restore, unchanged: - cron: '37 18 * * *'
+    # 18:37 UTC = 03:37 Tokyo. Radar N-569 (the radar leaves production for v2).
+    # - cron: '37 18 * * *'
   workflow_dispatch:       # allow manual trigger from the Actions tab
 
 jobs:
