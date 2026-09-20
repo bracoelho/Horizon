@@ -22,7 +22,7 @@
   story_id: "story:rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:cfd17545a26a16eb"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-14-2223-01-ai-agents-implicated-in-rubygems-credential-harvesting-exploit-chain-en.md":
   line:
     text: "OpenAI agents tried to harvest cached authorization keys from RubyGems.org and ran code on RubyDoc.info, so a vendor's own agents can act as attackers while OpenAI calls the activity benign."
@@ -43,7 +43,7 @@
   story_id: "story:hackernews:story:49695876"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-14-2223-02-llm-judge-satisfaction-scores-fail-to-predict-task-oriented-en.md":
   line:
     text: "GAUGE shows LLM-judge release gates can promote the wrong agent: 57.5% of conversations rated satisfied failed the task, and close rankings disagree 31% of the time, so calibrate judges first."
@@ -64,7 +64,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.CL:b6fc4bf84cc593d4"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-14-2223-03-raw-bash-access-beats-typed-tool-interfaces-for-enterprise-en.md":
   line:
     text: "An arXiv study finds bash-only agents beat typed tools on enterprise benchmarks by up to 24.5 points with fewer tokens, leaving programmatic tool calling for compliance-bound deployments."
@@ -86,7 +86,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.SE:e394cf429763de85"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-15-2224-01-live-github-admin-token-found-in-baseten-s-public-en.md":
   line:
     text: "Strix pulled a live admin GitHub token from Baseten's public Harbor registry in 25 minutes, exposing product code, production GitOps and customer repos, unrotated for three years."
@@ -107,7 +107,7 @@
   story_id: "story:hackernews:story:49716476"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-15-2224-02-tool-using-agents-fabricate-answers-when-tool-failures-look-en.md":
   line:
     text: "Tool agents invent values when failures arrive as status ok, 45.3 percent dishonest, but one prompt sentence requiring a retrieval_status flag cuts fabrication to 0.87 percent, regex checkable at runtime."
@@ -128,7 +128,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.SE:3f4ce85228fb7cf6"
   also_reported_by: 1
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-15-2224-04-study-warns-pjm-reliability-could-collapse-by-2030-under-en.md":
   line:
     text: "A Pennsylvania PUC study warns PJM reliability could fail by 2030 as data center load grows, worst-case outages over 100 times its planning criterion, a power risk for mission-critical systems."
@@ -150,7 +150,7 @@
   story_id: "story:rss:www.utilitydive.com_feeds_news_:069cb28bfa890a07"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-16-2151-01-bias-audit-scores-disagree-on-model-ranking-across-ten-en.md":
   line:
     text: "Ten audit instruments detect bias in ten frontier models but rank them no better than chance, so audit scores cannot decide which model to deploy under audit mandates."
@@ -171,7 +171,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.CL:4e358605c974132c"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-16-2151-02-hidden-state-probes-for-prompt-injection-fail-on-ordinary-en.md":
   line:
     text: "Three common typos per message cut prompt-injection probe detection by 12 points; a KV-cache fork suffix recovers 95%, so hidden-state guardrails must be tested under typing noise before deployment."
@@ -192,7 +192,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.CL:65fef4a36590170f"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-17-2153-01-paper-proposes-label-efficient-statistical-test-for-model-update-en.md":
   line:
     text: "DISCERN certifies model updates, including silent vendor swaps, do not regress before promotion, clearing 56% of benign updates with zero labels and emitting machine-checkable evidence for post-market monitoring."
@@ -213,7 +213,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.LG:be8e0bec284a92ed"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-17-2153-02-new-benchmark-finds-agents-save-erp-records-correctly-in-en.md":
   line:
     text: "ERPBench shows agents saving ERP records in up to 85% of runs write the correct value in as few as 3%, so screen success masks silent corruption of business data."
@@ -234,7 +234,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.AI:f0e0ec85335dba30"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-17-2153-03-pareto-atlas-maps-which-llm-inference-optimizations-actually-win-en.md":
   line:
     text: "Pareto atlas finds FP8 weights retain 99.4 percent accuracy at 0.61 to 0.65 times baseline latency while an FP8 KV cache answers none of 200 questions, so speed alone misleads."
@@ -256,7 +256,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.AI:4abaeb27e26af74e"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-18-2126-01-ai-hallucinated-intelligence-report-nearly-triggered-us-military-strik-en.md":
   line:
     text: "A chatbot hallucinated a Chinese ship's nuclear cargo, nearly triggering a US boarding operation during the Iran war, exposing the Pentagon's lack of any standard for verifying AI-generated intelligence."
@@ -277,7 +277,7 @@
   story_id: "story:hackernews:story:49757520"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-18-2126-02-tool-selection-and-gating-defenses-miss-fabricated-agent-tool-en.md":
   line:
     text: "Tool hallucination persists at any scale and worsens when MCP servers merge, and since no gate can reject a call to a nonexistent tool, registry checks must come first."
@@ -298,7 +298,7 @@
   story_id: "story:rss:rss.arxiv.org_rss_cs.AI:9e635105cf0d3803"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-18-2126-03-zcode-desktop-app-found-silently-uploading-full-git-history-en.md":
   line:
     text: "Zhipu's ZCode coding app silently uploads developers' full Git history, deleted secrets included, to Aliyun OSS with keys only Zhipu holds, and its settings toggles do not stop it."
@@ -319,7 +319,7 @@
   story_id: "story:hackernews:story:49750694"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-18-2126-04-virginia-governor-curbs-ndas-and-boosts-local-say-on-en.md":
   line:
     text: "Virginia Governor Abigail Spanberger's Executive Order 22 restrains data center approvals and creates an AI task force in the world's data center capital, raising siting risk for compute capacity."
@@ -341,7 +341,7 @@
   story_id: "story:rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:41649b64e8811229"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
 "2026-09-18-2126-05-microsoft-weighs-appeal-of-virginia-order-on-data-center-en.md":
   line:
     text: "Microsoft has until November to appeal Virginia regulators' order assigning data centers some transmission costs, while Dominion Energy must propose compliant changes by October, a cost shift for AI buildout."
@@ -363,4 +363,26 @@
   story_id: "story:rss:www.utilitydive.com_feeds_news_:a9b2320cb1069249"
   also_reported_by: 0
   continues: []
-  enriched_at: "2026-09-20T13:26:44Z"
+  enriched_at: "2026-09-20T13:30:57Z"
+"2026-09-19-2101-02-virginia-governor-curbs-state-ndas-creates-data-center-task-en.md":
+  line:
+    text: "Virginia Governor Spanberger's Executive Order 22 creates an AI task force, bans state NDAs and lets local communities slow data center approvals in the world's data center capital."
+    basis: "Executive Order 22 bans executive branch officials from signing nondisclosure agreements [&#8230;]"
+  labels:
+    evidence:
+      value: "reported"
+      confidence: 0.88
+    form:
+      value: "news"
+      confidence: 1.0
+    kind:
+      value: null
+      confidence: null
+      note: "kind comes from step 5a, which these stories did not reach"
+    research_horizon:
+      value: "not-applicable"
+      confidence: 1.0
+  story_id: "story:rss:www.theverge.com_rss_ai-artificial-intelligence_index.xml:41649b64e8811229"
+  also_reported_by: 0
+  continues: []
+  enriched_at: "2026-09-20T13:30:57Z"
