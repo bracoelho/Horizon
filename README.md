@@ -1,3 +1,22 @@
+> ## This fork is frozen
+>
+> This repository is a fork of [Thysrael/Horizon](https://github.com/Thysrael/Horizon),
+> configured and extended to run **AI Radar**, an early-warning radar for AI and agentic
+> AI news aimed at a technical leadership audience. Its editions are published at
+> **[radar.bcoelho.com](https://radar.bcoelho.com)**.
+>
+> **It is frozen as of 21 September 2026.** The pipeline no longer runs from this
+> repository. The published site stays online, and every edition and item page keeps
+> the address it has.
+>
+> A second version is being built from scratch and is not public. What stands here is
+> the state this project reached on the fork, kept as a record of it.
+>
+> What derives from upstream and what is original is set out in [NOTICE.md](NOTICE.md),
+> measured file by file. Upstream's own README follows below, unchanged.
+
+---
+
 <div align="center">
 <h1>🌅 Horizon</h1>
 
