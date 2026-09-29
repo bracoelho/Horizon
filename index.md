@@ -132,6 +132,38 @@ lead the owner picked (S1 and T1) replaces the first step.
 </div>
 {% endif %}
 
+{%- comment -%}
+The version 2 film, added 2026-09-30 on the owner's word for one push to the
+frozen fork. It sits BELOW the edition, not above it, for three reasons that agree:
+rule 2 makes the night's edition the page's lead; the page's h1 is the
+edition's date, and a section above it would put an h2 before the h1; and a
+reader's page leads with what is there. It is a section of its own rather
+than part of the edition block, so the edition never reads as version 2.
+
+The film is the radar master's: 78 seconds, silent, its words burned in and
+its figures sourced in the radar's content/film/FIGURES.md. This page states
+only what the film is and which version the editions below are.
+
+`preload="metadata"` and no autoplay, matching the film on the version page:
+10MB does not load until a reader asks for it, and nothing moves on arrival.
+{%- endcomment -%}
+<section class="home-block film-block" aria-labelledby="film-h">
+  <h2 class="home-block-h" id="film-h">The next version, in a film</h2>
+  <figure class="film">
+    <video class="film-video"
+           controls
+           preload="metadata"
+           muted
+           playsinline
+           width="1920" height="1080"
+           poster="{{ '/assets/img/one-morning-v2-poster-1920x1080.png' | relative_url }}">
+      <source src="{{ '/assets/video/one-morning-v2-1920x1080.mp4' | relative_url }}" type="video/mp4">
+      <p class="film-caption">This browser cannot play the film. It runs 78 seconds and has no sound; every word in it is on screen.</p>
+    </video>
+    <figcaption class="film-caption">One morning on version 2, 29 September 2026: how it reads the day and decides what reaches an edition. Version 2 runs privately while it is built, so the editions below it are version 1.</figcaption>
+  </figure>
+</section>
+
 {% if takes.size > 0 %}
 <section class="home-block" id="commentary" aria-labelledby="commentary-h">
   <h2 class="home-block-h" id="commentary-h">Commentary</h2>
